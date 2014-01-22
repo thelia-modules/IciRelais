@@ -1,0 +1,11 @@
+<routes xmlns="http://symfony.com/schema/routing"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
+
+	<route id="icirelais.searchroute" path="/admin/icirelais/{postal}/{city}" methods="post">
+		<default key="_controller">IciRelais\Controller\SearchCityController::searchAction</default>
+		<requirement key="postal">\d{5}</requirement>
+		<requirement key="city">.+</requirement>
+	</route>
+
+</routes>

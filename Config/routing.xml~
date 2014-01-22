@@ -1,0 +1,19 @@
+<routes xmlns="http://symfony.com/schema/routing"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <!-- Route to logo file -->
+    <route id="icirelais.logofile" path="/module/icirelais/logo_pr.png">
+    </route>
+    
+    <!-- FAIRE É CONTROLLERS QUI RENVOIENT LES FICHIERS -->
+    <!-- Route to js file -->
+    <route id="icirelais.jsscript" path="/module/icirelais/icirelaismaps.js">
+    </route> 
+	<route id="icirelais.searchroute" path="/admin/icirelais/{postal}/{city}" methods="post">
+		<default key="_controller">IciRelais\Controller\SearchCityController::searchAction</default>
+		<requirement key="postal">\d{5}</requirement>
+		<requirement key="city">.+</requirement>
+	</route>
+
+</routes>

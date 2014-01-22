@@ -1,0 +1,31 @@
+{form name="thelia.order.delivery"}
+{loop type="delivery_ici" name="deliveries" force_return="true" country=$country}
+
+{assign var="isDeliveryMethodChecked" value="0"}
+	{if $ID eq $ICI_RELAIS_MODULE}
+    <div class="radio">
+    {else}
+    <div class="radio">
+    {/if}
+        {form_field form=$form field='delivery-module'}
+        {if $isPost}
+            {if $value == $ID}
+                {assign var="isDeliveryMethodChecked" value="1"}
+            {/if}
+        {elseif $LOOP_COUNT == 1}
+            {assign var="isDeliveryMethodChecked" value="1"}
+        {/if}
+            <label for="delivery-method_{$ID}">
+                <input type="radio" name="{$name}" id="delivery-method_{$ID}"{if $isDeliveryMethodChecked} checked="checked"{/if} value="{$ID}">
+                <strong>{$TITLE}</strong> / {$POSTAGE} {currency attr="symbol"}
+            </label>
+        {/form_field}
+        {if $ID eq $ICI_RELAIS_MODULE}
+        	<div id="google-map-ici-relais"> <!--class="hidden"-->
+        		test
+        	</div>
+        {/if}
+    </div>
+{/loop}
+{elseloop rel="deliveries"}<div class="deliveries-warning">{intl l="<strong>Sorry!</strong> We are not able to give you a delivery method for your order."}</div>{/elseloop}
+{/form}
