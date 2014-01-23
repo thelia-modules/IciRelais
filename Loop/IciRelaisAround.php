@@ -83,7 +83,6 @@ class IciRelaisAround extends BaseLoop implements PropelSearchLoopInterface
     {
     	$date = date('d/m/Y');
     	try {
-    		ini_set("soap.wsdl_cache_enabled", 0);
 	    	$getPudoSoap = new \SoapClient(__DIR__."/../Config/exapaq.wsdl", array('soap_version'   => SOAP_1_2));
 			
 			if($this->addressflag) {
