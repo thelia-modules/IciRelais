@@ -21,11 +21,23 @@
 /*                                                                                   */
 /*************************************************************************************/
 
-namespace IciRelais\Controller\SearchCityController;
+namespace IciRelais\Controller;
+
+use IciRelais\Loop\IciRelaisAround;
+
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
+use Thelia\Core\Template\Element\LoopResult;
+use Thelia\Core\Template\Element\LoopResultRow;
+
+
+use Thelia\Controller\Front\BaseFrontController;
 
 class SearchCityController extends BaseFrontController {
-	public static function searchAction() {
-
+	public function searchAction($zipcode, $city) {
+		print $this->renderRaw(__DIR__."/../templates/getSpecificLocation");
+		//print $zipcode." ".$city; 
+		die();
 	}
 }
 ?>

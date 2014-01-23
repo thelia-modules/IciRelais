@@ -43,79 +43,87 @@ use Thelia\Core\Template\Loop\Argument\Argument;
  */
 class IciRelaisAround extends BaseLoop implements PropelSearchLoopInterface
 {
-
+	private $addressflag=false; 
     /**
      * @return ArgumentCollection
      */
     protected function getArgDefinitions()
     {
         return new ArgumentCollection(
-            Argument::createIntTypeArgument("address", 0)
-        );
+			//Argument::createIntType
+		);
     }
 	
 	public function buildModelCriteria()
 	{
 		$search = AddressQuery::create();
 		
-		$address=$this->getAddress();
-		if($address) {
-			$search->filterById($address);
+		$customer=$this->securityContext->getCustomerUser();
+		if($customer !== null) {
+			$search->filterByCustomerId($customer->getId());
+			$search->filterByIsDefault("1");
 		}
 		return $search;
 	}
 
     public function parseResults(LoopResult $loopResult)
     {
-    	foreach($loopResult->getResultDataCollection() as $address) {		
-			try {
-				ini_set("soap.wsdl_cache_enabled", 0);
-	    		$getPudoSoap = new \SoapClient(__DIR__."/../Config/exapaq.wsdl", array('soap_version'   => SOAP_1_2));
-				$date = date('d/m/Y');
-				
-				$request = $getPudoSoap->GetPudoList(array("address"=>str_replace(" ","%",$address->getAddress1()), 
-														"zipCode"=>$address->getZipcode(), 
-														"city"=>str_replace(" ","%",$address->getCity()), 
-														"request_id"=>"1234",
-														"date_from"=>$date
-												)
-											);
-				 foreach($request as $r) {
-				 	$val = $r->any;
-				 }
-				$xml = new \SimpleXMLElement($val);
-				foreach($xml->PUDO_ITEMS->PUDO_ITEM as $item) {
-					$loopResultRow = new LoopResultRow();
-					// Write distance in m / km
-					$distance = $item->DISTANCE;
-					if(strlen($distance) < 4) {
-						$distance .= " m";
-					} else {
-						$distance = (string)floatval($distance)/1000;
-						while(substr($distance, strlen($distance)-1, 1) == "0") {
-							$distance = substr($distance, 0, strlen($distance)-1);
-						}
-						$distance = str_replace(".", ",", $distance)." km";
-					}
-					
-					// Then define all the variables
-					$loopResultRow->set("NAME", $item->NAME)
-								->set("LONGITUDE", str_replace(",",".",$item->LONGITUDE))
-								->set("LATITUDE", str_replace(",",".",$item->LATITUDE))
-								->set("CODE", $item->PUDO_ID)
-								->set("ADDRESS", $item->ADDRESS1)
-								->set("ZIPCODE", $item->ZIPCODE)
-								->set("CITY", $item->CITY)
-								->set("DISTANCE", $distance);
-					$loopResult->addRow($loopResultRow);
+    	$date = date('d/m/Y');
+    	try {
+    		ini_set("soap.wsdl_cache_enabled", 0);
+	    	$getPudoSoap = new \SoapClient(__DIR__."/../Config/exapaq.wsdl", array('soap_version'   => SOAP_1_2));
+			
+			if($this->addressflag) {
+				foreach($loopResult->getResultDataCollection() as $address) {
+					$request = $getPudoSoap->GetPudoList(array("address"=>str_replace(" ","%",$address->getAddress1()), 
+															"zipCode"=>$address->getZipcode(), 
+															"city"=>str_replace(" ","%",$address->getCity()), 
+															"request_id"=>"1234",
+															"date_from"=>$date
+													)
+												);
 				}
-			} catch(SoapFault $e) {
-				$stderr = fopen("php://stderr", 'w');
-				fprintf($stderr, "[%s %s - SOAP Error %d]: %s\n", $dateliv, date("H:i:s"),(int)$e->getCode(), (string)$e->getMessage());
-				fclose($stderr);
+			} else {
+				$request = $getPudoSoap->GetPudoList(array("zipCode"=>"43000", 
+																"city"=>str_replace(" ","%","Le puy en velay"), 
+																"request_id"=>"1234",
+																"date_from"=>$date
+														)
+													);
+			}
+    	} catch(\SoapFault $e) {
+			fprintf(STDERR, "[%s %s - SOAP Error %d]: %s\n", $dateliv, date("H:i:s"),(int)$e->getCode(), (string)$e->getMessage());
+			die();
+		}
+		foreach($request as $r) {
+		 	$val = $r->any;
+		}
+		
+		$xml = new \SimpleXMLElement($val);
+		foreach($xml->PUDO_ITEMS->PUDO_ITEM as $item) {
+			$loopResultRow = new LoopResultRow();
+			// Write distance in m / km
+			$distance = $item->DISTANCE;
+			if(strlen($distance) < 4) {
+				$distance .= " m";
+			} else {
+				$distance = (string)floatval($distance)/1000;
+				while(substr($distance, strlen($distance)-1, 1) == "0") {
+					$distance = substr($distance, 0, strlen($distance)-1);
+				}
+				$distance = str_replace(".", ",", $distance)." km";
 			}
 			
-			
+			// Then define all the variables
+			$loopResultRow->set("NAME", $item->NAME)
+						->set("LONGITUDE", str_replace(",",".",$item->LONGITUDE))
+						->set("LATITUDE", str_replace(",",".",$item->LATITUDE))
+						->set("CODE", $item->PUDO_ID)
+						->set("ADDRESS", $item->ADDRESS1)
+						->set("ZIPCODE", $item->ZIPCODE)
+						->set("CITY", $item->CITY)
+						->set("DISTANCE", $distance);
+			$loopResult->addRow($loopResultRow);
 		}
 		return $loopResult;
     }

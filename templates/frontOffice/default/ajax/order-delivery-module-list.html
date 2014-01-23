@@ -1,5 +1,5 @@
 {form name="thelia.order.delivery"}
-{loop type="delivery_ici" name="deliveries" force_return="true" country=$country}
+{loop type="delivery.ici" name="deliveries" force_return="true" country=$country}
 
 {assign var="isDeliveryMethodChecked" value="0"}
 	{if $ID eq $ICI_RELAIS_MODULE}
@@ -20,9 +20,144 @@
                 <strong>{$TITLE}</strong> / {$POSTAGE} {currency attr="symbol"}
             </label>
         {/form_field}
-        {if $ID eq $ICI_RELAIS_MODULE}
+        {if $ID eq $ICI_RELAIS_MODULE}<br/><br/>
         	<div id="google-map-ici-relais"> <!--class="hidden"-->
-        		test
+        		<script src="http://maps.google.com/maps/api/js?sensor=true&callback=initialize"></script>
+				<script>	
+				<!--	                            	
+					function check_selection_relais() 
+					{
+						if ($('input[name=choix]:checked').length == 0) 
+						{
+							alert("{intl l="Please choose a pick-up & Go store"}.");
+							return false;
+						}
+						return true;
+					}	
+					
+					function show_relay(url)
+					{
+		            	window.open(url, "mondialrelay", 'width=772,height=570,status=0,menubar=0,location=0,titlebar=0');
+		            }
+
+		        	/*
+		        	initMaps(adr_geoloc, locations, url_site);
+		        	*/
+		        	function initialize() {
+		        		// Get site base url
+		        		var url_site = '{url path="/"}';
+		        		// Get customer address
+		        		
+		        		{loop type="icirelais.map" name="delivery-selection-icirelais" address=$currentAddressSelection}
+		        		var adr_geoloc = "{$ADDRESS}, {$ZIPCODE} {$CITY}";
+		        		{/loop}
+		        		// Get every relay around customer's address
+		        		var locations = new Array();
+						
+				        {loop type="icirelais.relais.around" name="delivery-selection-icirelais"}
+				        	locations.push(['{$NAME}', {$LATITUDE}, {$LONGITUDE}, '{$CODE}', '{$ADDRESS}', '{$ZIPCODE}', '{$CITY}', '{$DISTANCE}']);
+				        {/loop}
+			        	// Define MAP
+			        	var mapOptions = {
+							 zoom: 13,
+							 mapTypeId: google.maps.MapTypeId.ROADMAP
+						}
+							
+						// On va créer la map dans la div qui a l'id relaymap
+						var map = new google.maps.Map(document.getElementById('relaymap'), mapOptions);
+			        	
+			        	// Then, display everything on the map
+		        		var geocoder = new google.maps.Geocoder();
+		        		// We get latitude and longitude for the customer's adress
+		        		var b = [];
+		        		b['address'] = adr_geoloc;
+						geocoder.geocode(b, function(results, status){
+						  	if(status == google.maps.GeocoderStatus.OK){
+						  		// Et on centre la map sur cette position
+						    	map.setCenter(results[0].geometry.location);
+						    } 
+						    else{
+						    	// Sinon on met le centre de la map sur Clermont-Ferrand ;)
+						        alert('{intl l="Actual address can\'t be geolocated"}');
+						        var myLatLng = new google.maps.LatLng(45.7789, 3.0782);
+						        map.setCenter(myLatLng);
+						        map.setZoom(3);
+						    }
+						});
+
+						var infowindow = new google.maps.InfoWindow();
+	
+						var marker, i;
+						
+						// Pour chaque point relais dans locations on crée un nouveau marker
+						for(i = 0; i < locations.length; i++){  
+							marker = new google.maps.Marker({
+						    	position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+						    	// Icone d'un point relai
+						    	icon: new google.maps.MarkerImage(url_site + "../assets/frontOffice/default/IciRelais/img/logo_pr.png"),
+						    	map: map
+						    });
+						    
+						    // Lors du clic sur un point relai on affiche une bulle avec les informations
+						    google.maps.event.addListener(marker, 'click', (function(marker, i) {
+								return function() {
+						    		infowindow.setContent(locations[i][0]+'<br/>'+locations[i][4]+'<br/>'+locations[i][5]+' '+locations[i][6]+'<br/>'+locations[i][7]);
+						    		infowindow.open(map, marker);
+						    		$('#pr'+locations[i][3]).attr('checked','checked');
+						    	}
+						    })(marker, i));
+						    
+						     // Lors de la fermeture de la bulle d'information on déselectionne le bouton radio associé
+						    google.maps.event.addListener(infowindow, 'closeclick', (function(marker, i) {
+								return function() {
+						    		$('#pr'+locations[i][3]).removeAttr('checked');
+						    	}
+						    })(marker, i));
+						    
+						}
+					}
+				
+				// Search city pseudo-form
+				document.getElementById("search-city-submit").onclick = function() {
+					initialize();
+				}
+				</script>
+                <!-- If delivery method is Ici Relais -->
+				<div id="relaymap" style="width: 450px; height: 420px; float: left;"></div>
+				<div class="form-container">
+						<table style="height: 311px;">
+						{loop type="icirelais.relais.around" name="delivery-selection-icirelais" address=$currentAddressSelection}
+						<tr>
+							<td style="padding: 5px;">{$NAME}, {$ADDRESS}, {$ZIPCODE} {$CITY} - {$DISTANCE} <!--<a href="#" onclick="show_relay('?fond=details_pr&choix=#CODE'); return false;">+ d'infos</a>--></td>
+							<td>
+								<input type="radio" name="pr_choice" id="pr{$CODE}" value="{$CODE}" />
+							</td>
+						</tr>
+						{/loop}
+					</table>
+					<!-- Search city -->
+					<div style="float: left;">
+							<div class="form-group">
+								<label for="search-city" class="control-label">
+									{intl l="city"} :
+								</label>
+					
+								<input type="text" id="search-city" placeholder="{intl l='city'}" class="form-control" style="width: 450px;"/>
+							</div>
+							<div class="form-group">
+								<label for="search-zipcode" class="control-label">
+									{intl l="zipcode"} :
+								</label>
+					
+								<input type="text" id="search-zipcode" placeholder="{intl l='zipcode'}" class="form-control" style="width: 450px;"/>
+							</div>
+					
+							<div class="form-group">
+								<button id="search-city-submit" class="form-submit-button btn btn-sm btn-default" title="{intl l='Search'}">{intl l='Search'}</button>
+							</div>
+					</div>
+					<!-- --- -->
+				</div>
         	</div>
         {/if}
     </div>
