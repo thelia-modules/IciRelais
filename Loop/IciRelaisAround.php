@@ -105,6 +105,7 @@ class IciRelaisAround extends BaseLoop implements PropelSearchLoopInterface
 			}
     	} catch(\SoapFault $e) {
 			Tlog::getInstance()->error(sprintf("[%s %s - SOAP Error %d]: %s", $date, date("H:i:s"),(int)$e->getCode(), (string)$e->getMessage()));
+
 		}
 		
 		$xml = new \SimpleXMLElement($response->GetPudoListResult->any);
