@@ -43,10 +43,10 @@ class SearchCityForm extends BaseForm {
 					new NotBlank()
 				)
 			))
-			->add('postal', 'text', array(
-				'label' => Translator::getInstance()->trans('postal'),
+			->add('zipcode', 'text', array(
+				'label' => Translator::getInstance()->trans('zipcode'),
 				'label_attr' => array(
-					'for' => 'postal'
+					'for' => 'zipcode'
 				),
 				'constraints' => array(
 					new NotBlank()

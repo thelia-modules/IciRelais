@@ -67,27 +67,57 @@ class IciRelaisAround extends BaseLoop implements PropelSearchLoopInterface
 
     public function parseResults(LoopResult $loopResult)
     {
-    	foreach($loopResult->getResultDataCollection() as $address) {
-    		$loopResultRow = new LoopResultRow();    		
-	    	$dateliv = date('d/m/Y');
-	        $requestID = 1234;
-			/*
-	        $ville = str_replace(" ", "%", $ville);
-	        $adresse = str_replace(" ", "%", $adresse);
-			*/
+    	foreach($loopResult->getResultDataCollection() as $address) {		
 			try {
 				ini_set("soap.wsdl_cache_enabled", 0);
 	    		$getPudoSoap = new \SoapClient(__DIR__."/../Config/exapaq.wsdl", array('soap_version'   => SOAP_1_2));
-				var_dump($getPudoSoap->GetPudoList(array("GetPudoList"=>array("zipCode" => "63000"))));
-				die();
+				$date = date('d/m/Y');
+				
+				$request = $getPudoSoap->GetPudoList(array("address"=>str_replace(" ","%",$address->getAddress1()), 
+														"zipCode"=>$address->getZipcode(), 
+														"city"=>str_replace(" ","%",$address->getCity()), 
+														"request_id"=>"1234",
+														"date_from"=>$date
+												)
+											);
+				 foreach($request as $r) {
+				 	$val = $r->any;
+				 }
+				$xml = new \SimpleXMLElement($val);
+				foreach($xml->PUDO_ITEMS->PUDO_ITEM as $item) {
+					$loopResultRow = new LoopResultRow();
+					// Write distance in m / km
+					$distance = $item->DISTANCE;
+					if(strlen($distance) < 4) {
+						$distance .= " m";
+					} else {
+						$distance = (string)floatval($distance)/1000;
+						while(substr($distance, strlen($distance)-1, 1) == "0") {
+							$distance = substr($distance, 0, strlen($distance)-1);
+						}
+						$distance = str_replace(".", ",", $distance)." km";
+					}
+					
+					// Then define all the variables
+					$loopResultRow->set("NAME", $item->NAME)
+								->set("LONGITUDE", str_replace(",",".",$item->LONGITUDE))
+								->set("LATITUDE", str_replace(",",".",$item->LATITUDE))
+								->set("CODE", $item->PUDO_ID)
+								->set("ADDRESS", $item->ADDRESS1)
+								->set("ZIPCODE", $item->ZIPCODE)
+								->set("CITY", $item->CITY)
+								->set("DISTANCE", $distance);
+					$loopResult->addRow($loopResultRow);
+				}
 			} catch(SoapFault $e) {
 				$stderr = fopen("php://stderr", 'w');
 				fprintf($stderr, "[%s %s - SOAP Error %d]: %s\n", $dateliv, date("H:i:s"),(int)$e->getCode(), (string)$e->getMessage());
 				fclose($stderr);
 			}
 			
-			$loopResult->addRow($loopResultRow);
+			
 		}
 		return $loopResult;
     }
 }
+?>
