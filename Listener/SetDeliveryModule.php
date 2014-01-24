@@ -50,9 +50,8 @@ class SetDeliveryModule extends BaseAction implements EventSubscriberInterface
     public function isModuleIciRelais(OrderEvent $event)
     {
         if($this->check_module($event)) {
-        	// Using raw data : correct me if i'm wrong
         	if(isset($_POST['pr_code']) && !empty($_POST['pr_code'])) {
-        		// SOAP a response
+        		// Get details w/ SOAP
         		$con = new \SoapClient(__DIR__."/../Config/exapaq.wsdl", array('soap_version'=>SOAP_1_2));
 				$response = $con->GetPudoDetails(array("pudo_id"=>$_POST['pr_code']));
 				$xml = new \SimpleXMLElement($response->GetPudoDetailsResult->any);
@@ -61,46 +60,47 @@ class SetDeliveryModule extends BaseAction implements EventSubscriberInterface
 				}
 				
 				$sess=$this->container->get('request')->getSession();
-				
-				$sess->set('IciRelais.company',(string)$xml->PUDO_ITEMS->PUDO_ITEM->NAME);
-				$sess->set('IciRelais.address1',(string)$xml->PUDO_ITEMS->PUDO_ITEM->ADDRESS1);
-				$sess->set('IciRelais.address2',(string)$xml->PUDO_ITEMS->PUDO_ITEM->ADDRESS2);
-				$sess->set('IciRelais.address3',(string)$xml->PUDO_ITEMS->PUDO_ITEM->ADDRESS3);
-				$sess->set('IciRelais.zipcode',(string)$xml->PUDO_ITEMS->PUDO_ITEM->ZIPCODE);
-				$sess->set('IciRelais.city',(string)$xml->PUDO_ITEMS->PUDO_ITEM->CITY);
-				$sess->set('IciRelais.updateDeliveryAddress',"true");
+				//We can't use Symfony Session because of smarty in order-delivery.html
+				$_SESSION['IciRelaiscompany']=(string)$xml->PUDO_ITEMS->PUDO_ITEM->NAME;
+				$_SESSION['IciRelaisaddress1']=(string)$xml->PUDO_ITEMS->PUDO_ITEM->ADDRESS1;
+				$_SESSION['IciRelaisaddress2']=(string)$xml->PUDO_ITEMS->PUDO_ITEM->ADDRESS2;
+				$_SESSION['IciRelaisaddress3']=(string)$xml->PUDO_ITEMS->PUDO_ITEM->ADDRESS3;
+				$_SESSION['IciRelaiszipcode']=(string)$xml->PUDO_ITEMS->PUDO_ITEM->ZIPCODE;
+				$_SESSION['IciRelaiscity']=(string)$xml->PUDO_ITEMS->PUDO_ITEM->CITY;
+				$_SESSION['IciRelaisupdateDeliveryAddress'] = "true";
         	} else {
         		throw new \ErrorException("No pick-up & go store choosed for IciRelais delivery module");
         	}
+        } else {
+        	if(isset($_SESSION['IciRelaisupdateDeliveryAddress'])) unset($_SESSION['IciRelaisupdateDeliveryAddress']);
         }
     }
 
 	public function updateDeliveryAddress(OrderEvent $event) {
 		$sess=$this->container->get('request')->getSession();
-		if(!empty($sess->get('IciRelais.updateDeliveryAddress'))) {
-			if(empty($sess->get('IciRelais.address1')) ||
-				empty($sess->get('IciRelais.city')) ||
-				empty($sess->get('IciRelais.zipcode')) ||
-				empty($sess->get('IciRelais.company'))
+		if(isset($_SESSION['IciRelaisupdateDeliveryAddress'])) {
+			if(!(isset($_SESSION['IciRelaisaddress1']) && !empty($_SESSION['IciRelaisaddress1'])) ||
+				!(isset($_SESSION['IciRelaiscity']) && !empty($_SESSION['IciRelaiscity'])) ||
+				!(isset($_SESSION['IciRelaiszipcode']) && !empty($_SESSION['IciRelaiszipcode'])) ||
+				!(isset($_SESSION['IciRelaiscompany']) && !empty($_SESSION['IciRelaiscompany']))
 				) {
 					throw new \ErrorException("Got an error with IciRelais module. Please try again to checkout.");
 				}
 			$addr_to_update = OrderAddressQuery::create()->findPK($event->getOrder()->getDeliveryOrderAddressId());
-			$addr_to_update->setCompany($sess->get('IciRelais.company'))
-				->setAddress1($sess->get('IciRelais.address1'))
-				->setAddress2($sess->get('IciRelais.address2'))
-				->setAddress3($sess->get('IciRelais.address3'))
-				->setZipcode($sess->get('IciRelais.zipcode'))
-				->setCity($sess->get('IciRelais.city'))
+			$addr_to_update->setCompany($_SESSION['IciRelaiscompany'])
+				->setAddress1($_SESSION['IciRelaisaddress1'])
+				->setAddress2($_SESSION['IciRelaisaddress2'])
+				->setAddress3($_SESSION['IciRelaisaddress3'])
+				->setZipcode($_SESSION['IciRelaiszipcode'])
+				->setCity($_SESSION['IciRelaiscity'])
 				->save();
-			$sess->set('IciRelais.company',"");
-			$sess->set('IciRelais.address1',"");
-			$sess->set('IciRelais.address2',"");
-			$sess->set('IciRelais.address3',"");
-			$sess->set('IciRelais.zipcode',"");
-			$sess->set('IciRelais.city',"");
-			$sess->set('IciRelais.updateDeliveryAddress',"");
-			
+			unset($_SESSION['IciRelaiscompany']);
+			unset($_SESSION['IciRelaisaddress1']);
+			unset($_SESSION['IciRelaisaddress2']);
+			unset($_SESSION['IciRelaisaddress3']);
+			unset($_SESSION['IciRelaiszipcode']);
+			unset($_SESSION['IciRelaiscity']);
+			unset($_SESSION['IciRelaisupdateDeliveryAddress']);
 		}
 	}
 
