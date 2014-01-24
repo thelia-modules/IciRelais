@@ -21,61 +21,64 @@
 /*                                                                                   */
 /*************************************************************************************/
 
-namespace IciRelais\Loop;
+namespace IciRelais\Listener;
 
-use Thelia\Model\AddressQuery;
-use Thelia\Core\Template\Loop\Address;
-use Thelia\Core\Template\Element\PropelSearchLoopInterface;
-use Thelia\Core\Template\Element\BaseLoop;
-use Thelia\Core\Template\Element\LoopResult;
-use Thelia\Core\Template\Element\LoopResultRow;
-
-use Thelia\Core\Template\Loop\Argument\ArgumentCollection;
-use Thelia\Core\Template\Loop\Argument\Argument;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Thelia\Action\BaseAction;
+use Thelia\Model\ModuleQuery;
+use Thelia\Core\Event\Order\OrderEvent;
 
 /**
- *
- * Price loop
- *
- *
- * Class Price
- * @package IciRelais\Loop
- * @author Benjamin Perche <bperche9@gmail.com>
+ * Class CommentaireListener
+ * @package Commentaire\Listener
+ * @author manuel raynaud <mraynaud@openstudio.fr>
  */
-class IciRelaisMap extends BaseLoop implements PropelSearchLoopInterface
+class CommentaireListener extends BaseAction implements EventSubscriberInterface
 {
-    /**
-     * @return ArgumentCollection
-     */
-    protected function getArgDefinitions()
+
+    public function isModuleIciRelais(OrderEvent $event)
     {
-        return new ArgumentCollection(
-            Argument::createIntTypeArgument("address", 0)
+    	$mod_code = "IciRelais";
+    	$search = ModuleQuery::create()
+			->findOneByCode($mod_code);
+		$icirelaiskey = $search->getId();
+        if($event->getDeliveryModule() == $icirelaiskey) {
+        	// Using raw data : correct me if i'm wrong
+        	if(isset($_POST['pr_code'])) {
+        		
+        	} else {
+        		throw new \ErrorException("No pick-up & go store choosed for IciRelais module");
+        	}
+        }
+    }
+
+
+    /**
+     * Returns an array of event names this subscriber wants to listen to.
+     *
+     * The array keys are event names and the value can be:
+     *
+     *  * The method name to call (priority defaults to 0)
+     *  * An array composed of the method name to call and the priority
+     *  * An array of arrays composed of the method names to call and respective
+     *    priorities, or 0 if unset
+     *
+     * For instance:
+     *
+     *  * array('eventName' => 'methodName')
+     *  * array('eventName' => array('methodName', $priority))
+     *  * array('eventName' => array(array('methodName1', $priority), array('methodName2'))
+     *
+     * @return array The event names to listen to
+     *
+     * @api
+     */
+    public static function getSubscribedEvents()
+    {
+        return array(
+            TheliaEvents::ORDER_SET_DELIVERY_MODULE => array('isModuleIciRelais', 64)
         );
     }
-	
-	public function buildModelCriteria()
-	{
-		
-		$search = AddressQuery::create();
-		
-		$address=$this->getAddress();
-		if($address) {
-			$search->filterById($address);
-		}
-		return $search;
-	}
-
-    public function parseResults(LoopResult $loopResult)
-    {
-    	foreach($loopResult->getResultDataCollection() as $address) {
-    		$loopResultRow = new LoopResultRow();
-			$loopResultRow->set("ADDRESS", $address->getAddress1());
-			$loopResultRow->set("ZIPCODE", $address->getZipcode());
-			$loopResultRow->set("CITY", $address->getCity());
-			$loopResult->addRow($loopResultRow);
-		}
-        return $loopResult;
-
-    }
 }
+
+?>

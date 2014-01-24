@@ -7,7 +7,6 @@
     <loops>
     	<loop name="delivery.ici" class="IciRelais\Loop\IciRelaisDelivery" />
     	<loop name="icirelais" class="IciRelais\Loop\IciRelaisPrice" />
-    	<loop name="icirelais.map" class="IciRelais\Loop\IciRelaisMap" />
     	<loop name="icirelais.relais.around" class="IciRelais\Loop\IciRelaisAround" />
         <!-- sample definition
         <loop name="MySuperLoop" class="MyModule\Loop\MySuperLoop" />
@@ -15,7 +14,6 @@
     </loops>
 
     <forms>
-	<form name="icirelais.search" class="IciRelais\Form\SearchCityForm"/>
         <!--
         <form name="MyFormName" class="MyModule\Form\MySuperForm" />
         -->

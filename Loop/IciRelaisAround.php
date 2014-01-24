@@ -43,27 +43,39 @@ use Thelia\Core\Template\Loop\Argument\Argument;
  */
 class IciRelaisAround extends BaseLoop implements PropelSearchLoopInterface
 {
-	private $addressflag=false; 
+	private $addressflag=true; 
+	private $zipcode="";
+	private $city="";
     /**
      * @return ArgumentCollection
      */
     protected function getArgDefinitions()
     {
         return new ArgumentCollection(
-			//Argument::createIntType
+			Argument::createAnyTypeArgument("zipcode", ""),
+			Argument::createAnyTypeArgument("city","")
 		);
     }
 	
 	public function buildModelCriteria()
 	{
-		$search = AddressQuery::create();
-		
-		$customer=$this->securityContext->getCustomerUser();
-		if($customer !== null) {
-			$search->filterByCustomerId($customer->getId());
-			$search->filterByIsDefault("1");
+		if(!empty($this->getZipcode()) and !empty($this->getCity())) {
+			$this->zipcode = $this->getZipcode();
+			$this->city = $this->getCity();
+			$this->addressflag =  false;
+		} else {
+			$search = AddressQuery::create();
+			
+			$customer=$this->securityContext->getCustomerUser();
+			if($customer !== null) {
+				$search->filterByCustomerId($customer->getId());
+				$search->filterByIsDefault("1");
+			} else {
+				throw new ErrorException("Customer not connected.");
+			}
+			
+			return $search;
 		}
-		return $search;
 	}
 
     public function parseResults(LoopResult $loopResult)
@@ -75,7 +87,7 @@ class IciRelaisAround extends BaseLoop implements PropelSearchLoopInterface
 			
 			if($this->addressflag) {
 				foreach($loopResult->getResultDataCollection() as $address) {
-					$request = $getPudoSoap->GetPudoList(array("address"=>str_replace(" ","%",$address->getAddress1()), 
+					$response = $getPudoSoap->GetPudoList(array("address"=>str_replace(" ","%",$address->getAddress1()), 
 															"zipCode"=>$address->getZipcode(), 
 															"city"=>str_replace(" ","%",$address->getCity()), 
 															"request_id"=>"1234",
@@ -84,22 +96,19 @@ class IciRelaisAround extends BaseLoop implements PropelSearchLoopInterface
 												);
 				}
 			} else {
-				$request = $getPudoSoap->GetPudoList(array("zipCode"=>"43000", 
-																"city"=>str_replace(" ","%","Le puy en velay"), 
+				$response = $getPudoSoap->GetPudoList(array("zipCode"=>$this->zipcode, 
+																"city"=>str_replace(" ","%",$this->city), 
 																"request_id"=>"1234",
 																"date_from"=>$date
 														)
 													);
 			}
     	} catch(\SoapFault $e) {
-			fprintf(STDERR, "[%s %s - SOAP Error %d]: %s\n", $dateliv, date("H:i:s"),(int)$e->getCode(), (string)$e->getMessage());
+			fprintf(STDERR, "[%s %s - SOAP Error %d]: %s\n", $date, date("H:i:s"),(int)$e->getCode(), (string)$e->getMessage());
 			die();
 		}
-		foreach($request as $r) {
-		 	$val = $r->any;
-		}
 		
-		$xml = new \SimpleXMLElement($val);
+		$xml = new \SimpleXMLElement($response->GetPudoListResult->any);
 		foreach($xml->PUDO_ITEMS->PUDO_ITEM as $item) {
 			$loopResultRow = new LoopResultRow();
 			// Write distance in m / km
