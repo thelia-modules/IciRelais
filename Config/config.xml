@@ -31,9 +31,12 @@
         -->
     </templateDirectives>
 
-    <!--
+    
     <services>
-
+		<service id="hook.order.module" class="IciRelais\Listener\SetDeliveryModule">
+            <argument type="service" id="service_container"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
     </services>
-    -->
+    
 </config>

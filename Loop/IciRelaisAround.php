@@ -23,6 +23,7 @@
 
 namespace IciRelais\Loop;
 
+use Thelia\Log\Tlog;
 use Thelia\Model\AddressQuery;
 use Thelia\Core\Template\Loop\Address;
 use Thelia\Core\Template\Element\PropelSearchLoopInterface;
@@ -71,7 +72,7 @@ class IciRelaisAround extends BaseLoop implements PropelSearchLoopInterface
 				$search->filterByCustomerId($customer->getId());
 				$search->filterByIsDefault("1");
 			} else {
-				throw new ErrorException("Customer not connected.");
+				throw new \ErrorException("Customer not connected.");
 			}
 			
 			return $search;
@@ -104,11 +105,13 @@ class IciRelaisAround extends BaseLoop implements PropelSearchLoopInterface
 													);
 			}
     	} catch(\SoapFault $e) {
-			fprintf(STDERR, "[%s %s - SOAP Error %d]: %s\n", $date, date("H:i:s"),(int)$e->getCode(), (string)$e->getMessage());
-			die();
+			Tlog::getInstance()->error(sprintf("[%s %s - SOAP Error %d]: %s", $date, date("H:i:s"),(int)$e->getCode(), (string)$e->getMessage()));
 		}
 		
 		$xml = new \SimpleXMLElement($response->GetPudoListResult->any);
+		if(isset($xml->ERROR)) {
+			throw new \ErrorException("Error while choosing pick-up & go store: ".$xml->ERROR);
+		}
 		foreach($xml->PUDO_ITEMS->PUDO_ITEM as $item) {
 			$loopResultRow = new LoopResultRow();
 			// Write distance in m / km
