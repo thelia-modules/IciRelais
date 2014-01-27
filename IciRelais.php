@@ -47,7 +47,7 @@ class IciRelais extends BaseModule implements DeliveryModuleInterface
 
     private static $prices = null;
     
-    const JSON_PRICE_RESOURCE = "prices.json";
+    const JSON_PRICE_RESOURCE = "/Config/prices.json";
 
 	/*
 	private static function listTemplates($dir) {
@@ -96,7 +96,7 @@ class IciRelais extends BaseModule implements DeliveryModuleInterface
 	public static function getPrices()
     {
         if(null === self::$prices) {
-            self::$prices = json_decode(file_get_contents(sprintf('%s/Config/%s', __DIR__, self::JSON_PRICE_RESOURCE)), true);
+            self::$prices = json_decode(file_get_contents(sprintf('%s/%s', __DIR__, self::JSON_PRICE_RESOURCE)), true);
         }
 
         return self::$prices;

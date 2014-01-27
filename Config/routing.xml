@@ -15,4 +15,8 @@
 	<route id="icirelais.export.exaprint" path="/admin/module/icirelais/export" methods="post">
 		<default key="_controller">IciRelais\Controller\ExportExaprint::export</default>
 	</route>
+	
+	<route id="icirelais.edit.prices" path="/admin/module/icirelais/prices" methods="post">
+		<default key="_controller">IciRelais\Controller\EditPrices::editprices</default>
+	</route>
 </routes>

@@ -123,14 +123,31 @@
         </div>
 
         <div class="general-block-decorator">
-
+			{* -- Add price slice confirmation dialog ----------------------------------- *}
             {loop type="area" name="list area" backend_context=true}
+            {include
+			    file = "includes/generic-create-dialog.html"
+			
+			    dialog_id    = "price_slice_create_dialog_{$ID}"
+			    dialog_title = {intl l="Create a price slice"}
+			    dialog_body  = "<input type=\"hidden\" name=\"operation\" value=\"add\"/>
+			    				<input type=\"hidden\" name=\"area\" value=\"{$ID}\" />
+			    				<label for=\"weight\">{intl l="Weight up to ... (kg)"}</label></label>
+			    				<input type=\"number\" id=\"weight\" name=\"weight\" value=\"0\" class=\"form-control\" pattern=\"\\d+\" required/>
+			    				<label for=\"weight\">{intl l="Price (€)"}</label></label>
+			    				<input type=\"number\" id=\"price\" name=\"price\" value=\"0\" class=\"form-control\" pattern=\"\\d+\" required/>"
+				
+				form_action="{url path="/admin/module/icirelais/prices"}"
+				
+			    dialog_ok_label     = {intl l="Create"}
+			    dialog_cancel_label = {intl l="Cancel"}
+			}
             <div class="table-responsive">
                 <table class="table table-striped table-condensed table-left-aligned">
                     <caption class="clearfix">
                         {intl l="Area : "}{$NAME}
                         {loop type="auth" name="can_create" role="ADMIN" module="icirelais" access="CREATE"}
-                            <a class="btn btn-default btn-primary pull-right" title="{intl l='Create a new price slice'}" href="#price_slice_create_dialog" data-toggle="modal">
+                            <a class="btn btn-default btn-primary pull-right" title="{intl l='Create a new price slice'}" href="#price_slice_create_dialog_{$ID}" data-toggle="modal">
                                 <span class="glyphicon glyphicon-plus"></span>
                             </a>
                         {/loop}
@@ -144,13 +161,29 @@
                     </thead>
                     <tbody>
                         {loop type="icirelais" name="icirelais" area=$ID}
+                        {* -- Delete price slice confirmation dialog ----------------------------------- *}
+						{include
+						    file = "includes/generic-confirm-dialog.html"
+						
+						    dialog_id    = "price_slice_delete_dialog"
+						    dialog_title = {intl l="Delete a price slice"}
+						    dialog_message  = "<input type=\"hidden\" name=\"operation\" value=\"delete\"/>
+						    				   <input type=\"hidden\" name=\"area\" value=\"{$ID}\"/>
+						    				   <input type=\"hidden\" name=\"slice\" value=\"{$MAX_WEIGHT}\"/>
+						    				   {intl l="Do you really want to delete this slice ?"}"
+						    
+						    dialog_ok_label     = {intl l="Delete"}
+						    dialog_cancel_label = {intl l="Cancel"}
+						}
                         <tr>
                             <td>{$MAX_WEIGHT}</td>
                             <td>{$PRICE}</td>
                             <td>
                                 <div class="btn-group">
                                     {loop type="auth" name="can_change" role="ADMIN" module="icirelais" access="UPDATE"}
-                                        <a class="btn btn-default btn-xs" title="{intl l='Delete this price slice'}" href="#price_slice_delete_dialog" data-toggle="modal"><span class="glyphicon glyphicon-trash"></span></a>
+                                        <a class="btn btn-default btn-xs" title="{intl l='Delete this price slice'}" href="#price_slice_delete_dialog" data-toggle="modal">
+                                        	<span class="glyphicon glyphicon-trash"></span>
+                                        </a>
                                     {/loop}
                                 </div>
                             </td>
@@ -165,29 +198,3 @@
 
     </div>
 </div>
-
-{* -- Add price slice confirmation dialog ----------------------------------- *}
-
-{include
-    file = "includes/generic-create-dialog.html"
-
-    dialog_id    = "price_slice_create_dialog"
-    dialog_title = {intl l="Create a price slice"}
-    dialog_body  = "Not available yet."
-
-    dialog_ok_label     = {intl l="Create"}
-    dialog_cancel_label = {intl l="Cancel"}
-}
-
-{* -- Delete price slice confirmation dialog ----------------------------------- *}
-
-{include
-    file = "includes/generic-confirm-dialog.html"
-
-    dialog_id    = "price_slice_delete_dialog"
-    dialog_title = {intl l="Delete a price slice"}
-    dialog_message  = "Not available yet."
-
-    dialog_ok_label     = {intl l="Delete"}
-    dialog_cancel_label = {intl l="Cancel"}
-}
