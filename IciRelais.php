@@ -27,9 +27,11 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Thelia\Exception\OrderException;
 use Thelia\Module\BaseModule;
+use Thelia\Model\ModuleQuery;
 use Thelia\Module\DeliveryModuleInterface;
 use Thelia\Model\Country;
 use Propel\Runtime\Connection\ConnectionInterface;
+use Thelia\Install\Database;
 
 class IciRelais extends BaseModule implements DeliveryModuleInterface
 {
@@ -46,7 +48,7 @@ class IciRelais extends BaseModule implements DeliveryModuleInterface
     private static $prices = null;
     
     const JSON_PRICE_RESOURCE = "prices.json";
-	
+
 	/*
 	private static function listTemplates($dir) {
 		$files = array();
@@ -166,6 +168,13 @@ class IciRelais extends BaseModule implements DeliveryModuleInterface
 	
 	public function getCode() {
 		return "Icirelais";
+	}
+	
+	public static function getModCode() {
+		$mod_code = "IciRelais";
+    	$search = ModuleQuery::create()
+			->findOneByCode($mod_code);
+		return $search->getId();
 	}
 }
 

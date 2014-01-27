@@ -23,28 +23,26 @@
 
 namespace IciRelais\Listener;
 
+use IciRelais\IciRelais;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Thelia\Action\BaseAction;
-use Thelia\Model\ModuleQuery;
 use Thelia\Core\Event\Order\OrderEvent;
 use Thelia\Core\Event\Order\OrderAddressEvent;
 use Thelia\Core\Event\TheliaEvents;
 
-
+use IciRelais\Model\OrderAddressIcirelais;
 use Thelia\Model\OrderAddressQuery;
+
 /**
  * Class SetDeliveryModule
  * @package IciRelais\Listener
  * @author benjamin perche <bperche9@gmail.com>
  */
+ 
 class SetDeliveryModule extends BaseAction implements EventSubscriberInterface
 {
 	protected function check_module($event) {
-		$mod_code = "IciRelais";
-    	$search = ModuleQuery::create()
-			->findOneByCode($mod_code);
-		$icirelaiskey = $search->getId();
-		return $event->getDeliveryModule() == $icirelaiskey;
+		return $event->getDeliveryModule() == IciRelais::getModCode();
 	}
 		
     public function isModuleIciRelais(OrderEvent $event)
@@ -59,8 +57,8 @@ class SetDeliveryModule extends BaseAction implements EventSubscriberInterface
 					throw new \ErrorException("Error while choosing pick-up & go store: ".$xml->ERROR);
 				}
 				
-				$sess=$this->container->get('request')->getSession();
 				//We can't use Symfony Session because of smarty in order-delivery.html
+				$_SESSION['IciRelaiscode']=$_POST['pr_code'];
 				$_SESSION['IciRelaiscompany']=(string)$xml->PUDO_ITEMS->PUDO_ITEM->NAME;
 				$_SESSION['IciRelaisaddress1']=(string)$xml->PUDO_ITEMS->PUDO_ITEM->ADDRESS1;
 				$_SESSION['IciRelaisaddress2']=(string)$xml->PUDO_ITEMS->PUDO_ITEM->ADDRESS2;
@@ -77,23 +75,33 @@ class SetDeliveryModule extends BaseAction implements EventSubscriberInterface
     }
 
 	public function updateDeliveryAddress(OrderEvent $event) {
-		$sess=$this->container->get('request')->getSession();
 		if(isset($_SESSION['IciRelaisupdateDeliveryAddress'])) {
 			if(!(isset($_SESSION['IciRelaisaddress1']) && !empty($_SESSION['IciRelaisaddress1'])) ||
 				!(isset($_SESSION['IciRelaiscity']) && !empty($_SESSION['IciRelaiscity'])) ||
 				!(isset($_SESSION['IciRelaiszipcode']) && !empty($_SESSION['IciRelaiszipcode'])) ||
-				!(isset($_SESSION['IciRelaiscompany']) && !empty($_SESSION['IciRelaiscompany']))
+				!(isset($_SESSION['IciRelaiscompany']) && !empty($_SESSION['IciRelaiscompany'])) ||
+				!(isset($_SESSION['IciRelaiscode']) && !empty($_SESSION['IciRelaiscode']))
 				) {
 					throw new \ErrorException("Got an error with IciRelais module. Please try again to checkout.");
 				}
-			$addr_to_update = OrderAddressQuery::create()->findPK($event->getOrder()->getDeliveryOrderAddressId());
-			$addr_to_update->setCompany($_SESSION['IciRelaiscompany'])
+			
+			$savecode = new OrderAddressIcirelais();
+			$savecode->setNew(true);
+			$savecode->setId($event->getOrder()->getDeliveryOrderAddressId())
+				->setCode($_SESSION['IciRelaiscode']) 
+				->save();
+				
+			$update = OrderAddressQuery::create()
+				->findPK($event->getOrder()->getDeliveryOrderAddressId())
+				->setCompany($_SESSION['IciRelaiscompany'])
 				->setAddress1($_SESSION['IciRelaisaddress1'])
 				->setAddress2($_SESSION['IciRelaisaddress2'])
 				->setAddress3($_SESSION['IciRelaisaddress3'])
 				->setZipcode($_SESSION['IciRelaiszipcode'])
 				->setCity($_SESSION['IciRelaiscity'])
 				->save();
+				
+			unset($_SESSION['IciRelaiscode']);
 			unset($_SESSION['IciRelaiscompany']);
 			unset($_SESSION['IciRelaisaddress1']);
 			unset($_SESSION['IciRelaisaddress2']);

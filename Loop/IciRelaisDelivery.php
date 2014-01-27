@@ -23,12 +23,13 @@
 
 namespace IciRelais\Loop;
 
+
 use Thelia\Core\Template\Loop\Delivery;
 use Thelia\Core\Template\Element\LoopResult;
 use Thelia\Core\Template\Element\LoopResultRow;
 
 use Thelia\Model\ModuleQuery;
-
+use IciRelais\IciRelais;
 /**
  *
  * New Address loop
@@ -41,11 +42,8 @@ use Thelia\Model\ModuleQuery;
 class IciRelaisDelivery extends Delivery
 {
 	public function parseResults(LoopResult $loopResult) {
-		$mod_code =  "IciRelais";
-		$search = ModuleQuery::create()
-			->findOneByCode($mod_code);
-		$icirelaiskey = $search->getId();
 		
+		$icirelaiskey = IciRelais::getModCode();
 		
 		$loopResult = parent::parseResults($loopResult);
 		for($loopResult->rewind(); $loopResult->valid(); $loopResult->next()) {

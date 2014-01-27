@@ -8,6 +8,10 @@
 		<requirement key="city">.+</requirement>
 	</route>
 	
+	<route id="icirelais.export" path="/admin/module/icirelais/exportgo" methods="get">
+		<default key="_controller">IciRelais\Controller\Export::exportfile</default>
+	</route>
+	
 	<route id="icirelais.export.exaprint" path="/admin/module/icirelais/export" methods="post">
 		<default key="_controller">IciRelais\Controller\ExportExaprint::export</default>
 	</route>
