@@ -114,12 +114,7 @@
     <div class="col-md-12">
 
         <div class="alert alert-info">
-            <p>{intl l="Ici Relais Module allows to send your products all around the world with La Poste."}</p>
-        </div>
-
-        <div class="alert alert-danger">
-            <p>{intl l="Prices are not dynamically editable yet."}</p>
-            <p>{intl l="Prices below can be edited in local/modules/Colissimo/Config/prices.json file."}</p>
+            <p>{intl l="Ici Relais Module allows you to send your products in France."}</p>
         </div>
 
         <div class="general-block-decorator">
@@ -132,10 +127,10 @@
 			    dialog_title = {intl l="Create a price slice"}
 			    dialog_body  = "<input type=\"hidden\" name=\"operation\" value=\"add\"/>
 			    				<input type=\"hidden\" name=\"area\" value=\"{$ID}\" />
-			    				<label for=\"weight\">{intl l="Weight up to ... (kg)"}</label></label>
-			    				<input type=\"number\" id=\"weight\" name=\"weight\" value=\"0\" class=\"form-control\" pattern=\"\\d+\" required/>
-			    				<label for=\"weight\">{intl l="Price (€)"}</label></label>
-			    				<input type=\"number\" id=\"price\" name=\"price\" value=\"0\" class=\"form-control\" pattern=\"\\d+\" required/>"
+			    				<label for=\"weight_{$ID}\">{intl l="Weight up to ... (kg)"}</label></label>
+			    				<input type=\"number\" id=\"weight_{$ID}\" name=\"weight\" value=\"1\" class=\"form-control\" pattern=\"\\d+\\.?\\d*\" required/>
+			    				<label for=\"price_{$ID}\">{intl l="Price (€)"}</label></label>
+			    				<input type=\"number\" id=\"price_{$ID}\" name=\"price\" value=\"1\" class=\"form-control\" pattern=\"\\d+\\.?\\d*\" required/>"
 				
 				form_action="{url path="/admin/module/icirelais/prices"}"
 				
@@ -161,27 +156,48 @@
                     </thead>
                     <tbody>
                         {loop type="icirelais" name="icirelais" area=$ID}
-                        {* -- Delete price slice confirmation dialog ----------------------------------- *}
-						{include
-						    file = "includes/generic-confirm-dialog.html"
+	                        {* -- EDIT price slice confirmation dialog ----------------------------------- *}
+							{include
+							    file = "includes/generic-confirm-dialog.html"
+							
+							    dialog_id    = "price_slice_edit_dialog_{$ID}_{$MAX_WEIGHT|replace:'.':'-'}"
+							    dialog_title = {intl l="Edit a price slice"}
+							    dialog_message  = "<input type=\"hidden\" name=\"operation\" value=\"add\"/>
+							    				   <input type=\"hidden\" name=\"area\" value=\"{$ID}\"/>
+							    				   <input type=\"hidden\" name=\"weight\" value=\"{$MAX_WEIGHT}\"/>
+							    				   <label for=\"price_edit_{$ID}_{$MAX_WEIGHT}\">{intl l='Price (€)'}</label>
+							    				   <input type=\"number\" id=\"price_edit_{$ID}_{$MAX_WEIGHT}\" class=\"form-control\" name=\"price\" value=\"{$PRICE}\" pattern=\"\\d+\\.?\\d*\" required/>"
+							    
+							    form_action="{url path="/admin/module/icirelais/prices"}"
+							    dialog_ok_label     = {intl l="Edit"}
+							    dialog_cancel_label = {intl l="Cancel"}
+							}
+	                        {* -- Delete price slice confirmation dialog ----------------------------------- *}
+							{include
+							    file = "includes/generic-confirm-dialog.html"
+							
+							    dialog_id    = "price_slice_delete_dialog_{$ID}_{$MAX_WEIGHT|replace:'.':'-'}"
+							    dialog_title = {intl l="Delete a price slice"}
+							    dialog_message  = "<input type=\"hidden\" name=\"operation\" value=\"delete\"/>
+							    				   <input type=\"hidden\" name=\"area\" value=\"{$ID}\"/>
+							    				   <input type=\"hidden\" name=\"weight\" value=\"{$MAX_WEIGHT}\"/>
+							    				   {intl l="Do you really want to delete this slice ?"}"
+							    
+							    form_action="{url path="/admin/module/icirelais/prices"}"
+							    dialog_ok_label     = {intl l="Delete"}
+							    dialog_cancel_label = {intl l="Cancel"}
+							}
 						
-						    dialog_id    = "price_slice_delete_dialog"
-						    dialog_title = {intl l="Delete a price slice"}
-						    dialog_message  = "<input type=\"hidden\" name=\"operation\" value=\"delete\"/>
-						    				   <input type=\"hidden\" name=\"area\" value=\"{$ID}\"/>
-						    				   <input type=\"hidden\" name=\"slice\" value=\"{$MAX_WEIGHT}\"/>
-						    				   {intl l="Do you really want to delete this slice ?"}"
-						    
-						    dialog_ok_label     = {intl l="Delete"}
-						    dialog_cancel_label = {intl l="Cancel"}
-						}
                         <tr>
                             <td>{$MAX_WEIGHT}</td>
                             <td>{$PRICE}</td>
                             <td>
                                 <div class="btn-group">
                                     {loop type="auth" name="can_change" role="ADMIN" module="icirelais" access="UPDATE"}
-                                        <a class="btn btn-default btn-xs" title="{intl l='Delete this price slice'}" href="#price_slice_delete_dialog" data-toggle="modal">
+                                    	<a class="btn btn-default btn-xs" title="{intl l='Edit this price slice'}" href="#price_slice_edit_dialog_{$ID}_{$MAX_WEIGHT|replace:'.':'-'}" data-toggle="modal">
+                                        	<span class="glyphicon glyphicon-edit"></span>
+                                        </a>
+                                        <a class="btn btn-default btn-xs" title="{intl l='Delete this price slice'}" href="#price_slice_delete_dialog_{$ID}_{$MAX_WEIGHT|replace:'.':'-'}" data-toggle="modal">
                                         	<span class="glyphicon glyphicon-trash"></span>
                                         </a>
                                     {/loop}

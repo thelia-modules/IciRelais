@@ -17,7 +17,7 @@
 /*      GNU General Public License for more details.                                 */
 /*                                                                                   */
 /*      You should have received a copy of the GNU General Public License            */
-/*	    along with this program. If not, see <http://www.gnu.org/licenses/>.     */
+/*	    along with this program. If not, see <http://www.gnu.org/licenses/>.         */
 /*                                                                                   */
 /*************************************************************************************/
 
@@ -29,6 +29,11 @@ use Thelia\Core\Translation\Translator;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use IciRelais\Controller\ExportExaprint;
 
+/**
+ * Class ExportExaprintForm
+ * @package IciRelais\Form
+ * @author benjamin perche <bperche9@gmail.com>
+ */
 class ExportExaprintForm extends BaseForm {
 	
 	public function getName() {
@@ -78,7 +83,7 @@ class ExportExaprintForm extends BaseForm {
 					'for' => 'city'
 				)			))
 			->add('tel', 'text', array(
-				'label' => Translator::getInstance()->trans('Sender\'s telephone'),
+				'label' => Translator::getInstance()->trans('Sender\'s phone'),
 				'data' => (isset($values['tel']) ? $values['tel']:""),
 				'constraints' => array(new NotBlank()),
 				'label_attr' => array(
