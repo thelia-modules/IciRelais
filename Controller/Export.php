@@ -24,14 +24,14 @@
 // This have to produce a downloadable file
 namespace IciRelais\Controller;
 
-header("Content-Type: application/csv-tab-delimited-table");
-header("Content-disposition: filename=export.dat");
+
 
 use IciRelais\IciRelais;
 use Thelia\Controller\Admin\BaseAdminController;
 use IciRelais\Controller\ExportExaprint;
 
 use IciRelais\Model\OrderAddressIcirelaisQuery;
+use Thelia\Core\HttpFoundation\Response;
 use Thelia\Model\AddressQuery;
 use Thelia\Model\OrderAddressQuery;
 use Thelia\Model\OrderQuery;
@@ -186,8 +186,17 @@ class Export extends BaseAdminController
 			$res .= "\r\n";
 		}
 
-		echo $res;
-		die(); // Die to only get the generated file
+        $response = new Response(
+            $res,
+            200,
+            array(
+                'Content-Type' => 'application/csv-tab-delimited-table',
+                'Content-disposition' => 'filename=export.dat'
+            )
+
+        );
+
+        return $response;
 	}
 }
 ?>

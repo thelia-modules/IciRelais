@@ -48,6 +48,7 @@ class SetDeliveryModule extends BaseAction implements EventSubscriberInterface
     public function isModuleIciRelais(OrderEvent $event)
     {
         if($this->check_module($event)) {
+
         	if(isset($_POST['pr_code']) && !empty($_POST['pr_code'])) {
         		// Get details w/ SOAP
         		$con = new \SoapClient(__DIR__."/../Config/exapaq.wsdl", array('soap_version'=>SOAP_1_2));

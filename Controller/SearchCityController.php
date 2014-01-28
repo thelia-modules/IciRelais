@@ -32,4 +32,4 @@ class SearchCityController extends BaseFrontController {
 		return $this->render("getSpecificLocation", array("_zipcode_"=>$zipcode, "_city_"=>$city));
 	}
 }
-?>
+

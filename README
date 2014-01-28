@@ -8,7 +8,7 @@ I)   Installation
 II)  Utilisation
 III) Intégration
 
-en_EN:
+en_US:
 I)   Install notes
 II)  How to use
 III) Integration
@@ -44,7 +44,7 @@ En effet, le module n'interagit pas avec pendant la commande.
 Une fois le module activé, il devient néanmoins indispensable de transmettre une variable $_POST['pr_code'] dans le formulaire "thelia.order.delivery",
 sinon, vous ne pourrez plus passer à l'étape 3 ( order-invoice ).
 De plus, une boucle "delivery.ici" est disponible et doit remplacer la boucle "delivery" dans order-delivery-module-list.html,
-les deux sont semblable, mais delivery.ici possède une variable un plus, qui permet de savoir si le module est ou non IciRelais ( ce qui permet une intégration spécifique
+les deux sont semblable, mais delivery.ici possède une variable en plus, qui permet de savoir si le module est ou non IciRelais ( ce qui permet une intégration spécifique
 de la ligne IciRelais).
 La variable "pr_code" doit contenir l'identifiant du point relais choisi par l'utilisateur.
 Une boucle vous est fournie pour obtenir les 10 points relais les plus proches de l'adresse par défault de l'utilisateur: icirelais.relais.around
@@ -55,7 +55,7 @@ L'adresse de livraison n'étant pas disponible avant la validation de order-invo
 l'utilisation des variables de session pour afficher l'adresse du point relais comme adresse de livraison est possible avec smarty.
 
 
-=== en_EN ===
+=== en_US ===
 
 I) Install notes
 ---------------
