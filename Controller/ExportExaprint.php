@@ -47,22 +47,27 @@ class ExportExaprint extends BaseAdminController {
 				preg_match("#^[A-Z0-9\._%\+\-]{2,}@[A-Z0-9\.\-]{2,}\.[A-Z]{2,4}$#i",$vform->get('mail')->getData())
 			  ) {
 			  	$file_path = __DIR__."/../Config/exportdat.json";
-			  	$file = fopen(self::getJSONpath(), 'w');
-				fwrite($file, json_encode(
-							array(
-								"name"=>$vform->get('name')->getData(),
-								"addr"=>$vform->get('addr')->getData(),
-								"addr2"=>$vform->get('addr2')->getData(),
-								"zipcode"=>$vform->get('zipcode')->getData(),
-								"city"=>$vform->get('city')->getData(),
-								"tel"=>$vform->get('tel')->getData(),
-								"mobile"=>$vform->get('mobile')->getData(),
-								"mail"=>$vform->get('mail')->getData(),
-								"assur"=>($vform->get('assur')->getData()?"true":"")
+				if((file_exists($file_path) ? is_writable($file_path):is_writable(__DIR__."/../Config/"))) {
+				  	$file = fopen(self::getJSONpath(), 'w');
+					fwrite($file, json_encode(
+								array(
+									"name"=>$vform->get('name')->getData(),
+									"addr"=>$vform->get('addr')->getData(),
+									"addr2"=>$vform->get('addr2')->getData(),
+									"zipcode"=>$vform->get('zipcode')->getData(),
+									"city"=>$vform->get('city')->getData(),
+									"tel"=>$vform->get('tel')->getData(),
+									"mobile"=>$vform->get('mobile')->getData(),
+									"mail"=>$vform->get('mail')->getData(),
+									"assur"=>($vform->get('assur')->getData()?"true":"")
+								)
 							)
-						)
-					);
-				fclose($file);
+						);
+					fclose($file);
+				} else {
+					throw new \Exception("Can't write IciRelais/Config/exportdat.json. Please change the rights on the file and/or the directory.");
+					
+				}
 			  }
 		} catch(\Exception $e) {
             $error_message = $e->getMessage();
@@ -73,7 +78,7 @@ class ExportExaprint extends BaseAdminController {
             $error_message,
             $form
         );
-		return $this->redirectToRoute("admin.module.configure",array(),
+		$this->redirectToRoute("admin.module.configure",array(),
 			array ( 'module_code'=>"IciRelais",  
 				'_controller' => 'Thelia\\Controller\\Admin\\ModuleController::configureAction'));
 	}

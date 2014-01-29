@@ -51,9 +51,8 @@ Une boucle vous est fournie pour obtenir les 10 points relais les plus proches d
 Sinon, une route est disponible pour obtenir 10 points relais dans une ville: /module/icirelais/{ville}/{code postal}
 Cette route pointe vers le controlleur "SearchCityController" qui génère un fichier json, que vous pouvez utiliser, par exemple, avec jquery/ajax.
 
-L'adresse de livraison n'étant pas disponible avant la validation de order-invoice.html,
-l'utilisation des variables de session pour afficher l'adresse du point relais comme adresse de livraison est possible avec smarty.
-
+Pour afficher l'adresse du point relais en adresse de livraison sur la page order-invoice.html, 
+il vous suffit de replacer le type de la boucle nommée "delivery-address" en address.ici, à la place de "delivery"
 
 === en_US ===
 
@@ -91,5 +90,6 @@ A loop is provided to get the 10 nearest pick-up & go stores of user's default a
 There's also a route to get 10 pick-p & go stores in another city: /module/icirelais/{city}/{zipcode}
 This route uses "SearchCityController" controller. It generate a json output, which you can use with, for example, jquery/ajax.
 
-The delivery address is not available before the validation of order-invoice.html,
-so there's session variable defined to get the store's address.
+Pour afficher l'adresse du point relais en addresse de livraison sur la page order-invoice.html, 
+il vous suffit de replacer le type de la boucle nommée "delivery-address" en address.ici, à la place de "delivery"
+If you want to show the store's address as delivery address, you just have to replace the "delivery-address" loop type by address.ici

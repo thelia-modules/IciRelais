@@ -6,18 +6,14 @@
 
     <loops>
     	<loop name="delivery.ici" class="IciRelais\Loop\IciRelaisDelivery" />
+    	<loop name="address.ici" class="IciRelais\Loop\IciRelaisAddress" />
     	<loop name="icirelais" class="IciRelais\Loop\IciRelaisPrice" />
     	<loop name="icirelais.relais.around" class="IciRelais\Loop\IciRelaisAround" />
-        <!-- sample definition
-        <loop name="MySuperLoop" class="MyModule\Loop\MySuperLoop" />
-        -->
+        <loop name="icirelais.check.rights" class="IciRelais\Loop\CheckRightsLoop" />
     </loops>
 
     <forms>
-	<form name="icirelais.export" class="IciRelais\Form\ExportExaprintForm"/>
-        <!--
-        <form name="MyFormName" class="MyModule\Form\MySuperForm" />
-        -->
+		<form name="icirelais.export" class="IciRelais\Form\ExportExaprintForm"/>
     </forms>
 
     <commands>

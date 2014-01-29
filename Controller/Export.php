@@ -21,7 +21,6 @@
 /*                                                                                   */
 /*************************************************************************************/
 
-// This have to produce a downloadable file
 namespace IciRelais\Controller;
 
 
@@ -78,8 +77,19 @@ class Export extends BaseAdminController
     }
 		
 	public static function exportfile() {
-		$admici = json_decode(file_get_contents(ExportExaprint::getJSONpath()),true);
-		
+		if(is_readable(ExportExaprint::getJSONpath())) {
+			$admici = json_decode(file_get_contents(ExportExaprint::getJSONpath()),true);
+			$keys= array("name", "addr", "addr2", "zipcode","city","tel","mobile","mail","assur");
+			$valid = true;
+			foreach($keys as $key) {
+				$valid &= isset($admici[$key]) && ($key === "assur" ? true:!empty($admici[$key]));
+			}
+			if(!$valid) {
+				return new Response("File IciRelais/Config/exportdat.json is not valid", 500);
+			}
+		} else {
+			return new Response("Can't read IciRelais/Config/exportdat.json", 500);
+		}
         $exp_name=$admici['name'];
         $exp_address1=$admici['addr'];
         $exp_address2=$admici['addr2'];
@@ -122,14 +132,9 @@ class Export extends BaseAdminController
 			
 			//Weigth & price calc
 			$weight = 0.0;
-			$price = 0.0;
+			$price = $order->getTotalAmount(0,false); // tax = 0 && include postage = flase
 			foreach($products as $p) {
-				//Get OrderProductTax object
-				$tax = OrderProductTaxQuery::create()
-					->findOneByOrderProductId($p->getId());
-					
 				$weight += ((float)$p->getWeight())*(int)$p->getQuantity();
-				$price += ((float)($p->getWasInPromo() ?$p->getPromoPrice():$p->getPrice()) + (float)($tax->getAmount()))*(int)$p->getQuantity();
 			}
 			$weight = floor($weight*100);
 			$assur_price = ($assur_package == 'true') ? $price:0;

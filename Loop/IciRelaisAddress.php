@@ -23,12 +23,11 @@
 
 namespace IciRelais\Loop;
 
-
-use Thelia\Core\Template\Loop\Delivery;
+use IciRelais\Model\AddressIcirelaisQuery;
+use Thelia\Core\Template\Loop\Address;
 use Thelia\Core\Template\Element\LoopResult;
 use Thelia\Core\Template\Element\LoopResultRow;
-
-use Thelia\Model\ModuleQuery;
+use IciRelais\Model\CountryQuery;
 use IciRelais\IciRelais;
 /**
  *
@@ -39,17 +38,41 @@ use IciRelais\IciRelais;
  * @package IciRelais\Loop
  * @author Benjamin Perche <bperche9@gmail.com>
  */
-class IciRelaisDelivery extends Delivery
+class IciRelaisAddress extends Address
 {
+	protected $exists = false;
+	protected $timestampable = false;
+	
+	protected function setExists($id) {
+		$this->exists = AddressIcirelaisQuery::create()->findPK($id) !== null;
+	}
+	public function buildModelCriteria() {
+		$id = $this->getId();
+		$this->setExists($id[0]);
+		return $this->exists ? 
+				AddressIcirelaisQuery::create()->filterById($id[0]) : 
+				parent::buildModelCriteria();
+	}
 	public function parseResults(LoopResult $loopResult) {
-		
-		$icirelaiskey = IciRelais::getModCode();
-		
-		$loopResult = parent::parseResults($loopResult);
-		for($loopResult->rewind(); $loopResult->valid(); $loopResult->next()) {
-			$loopResult->current()->set("ICI_RELAIS_MODULE", $icirelaiskey);
+		if(!$this->exists) {
+			return parent::parseResults($loopResult);
+		} else {
+			foreach($loopResult->getResultDataCollection() as $address) {
+				$loopResultRow = new LoopResultRow();
+				$loopResultRow->set("TITLE", $address->getTitleId())
+	                ->set("COMPANY", $address->getCompany())
+	                ->set("FIRSTNAME", $address->getFirstname())
+	                ->set("LASTNAME", $address->getLastname())
+	                ->set("ADDRESS1", $address->getAddress1())
+	                ->set("ADDRESS2", $address->getAddress2())
+	                ->set("ADDRESS3", $address->getAddress3())
+	                ->set("ZIPCODE", $address->getZipcode())
+	                ->set("CITY", $address->getCity())
+					->set("COUNTRY", $address->getCountryId())
+				; $loopResult->addRow($loopResultRow);
+			}
+			return $loopResult;
 		}
-		return $loopResult;
 	}
 }
 	

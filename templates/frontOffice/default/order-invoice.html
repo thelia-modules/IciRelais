@@ -182,42 +182,27 @@
                 {if $form_error}<div class="alert alert-danger">{$form_error_message}</div>{/if}
                 <div id="cart-address">
                     <div class="panel">
-                    	{if isset($smarty.session.IciRelaisupdateDeliveryAddress) and !empty($smarty.session.IciRelaisupdateDeliveryAddress)}	
-                    	<div class="panel-heading">{intl l="Delivery address"}</div>
-                        <div class="panel-body">
-                            <span class="org">{$smarty.session.IciRelaiscompany}</span>
-                            <address class="adr">
-                                <span class="street-address">{$smarty.session.IciRelaisaddress1}</span><br>
-                                {if $smarty.session.IciRelaisaddress2 != ""}
-                                    <span class="street-address">{$smarty.session.IciRelaisaddress2}</span><br>
-                                {/if}
-                                {if $smarty.session.IciRelaisaddress3 != ""}
-                                    <span class="street-address">{$smarty.session.IciRelaisaddress3}</span><br>
-                                {/if}
-                                <span class="postal-code">{$smarty.session.IciRelaiszipcode}</span>
-                                <span class="locality">{$smarty.session.IciRelaiscity}, <span class="country-name">France</span></span>
-                            </address>
-                        </div>
-                    	{else}
-                        {loop type="address" name="delivery-address" id={order attr="delivery_address"}}
+                        {loop type="address.ici" name="delivery-address" id={order attr="delivery_address"}}
                         <div class="panel-heading">{intl l="Delivery address"}</div>
                         <div class="panel-body">
                             <span class="fn">{loop type="title" name="customer.title.info" id=$TITLE}{$SHORT}{/loop} {$LASTNAME|upper} {$FIRSTNAME|ucwords}</span>
-                            <span class="org">{$COMPANY}</span>
-                            <address class="adr">
-                                <span class="street-address">{$ADDRESS1}</span><br>
-                                {if $ADDRESS2 != ""}
-                                    <span class="street-address">{$ADDRESS2}</span><br>
-                                {/if}
-                                {if $ADDRESS3 != ""}
-                                    <span class="street-address">{$ADDRESS3}</span><br>
-                                {/if}
-                                <span class="postal-code">{$ZIPCODE}</span>
-                                <span class="locality">{$CITY}, <span class="country-name">{loop type="country" name="customer.country.info" id=$COUNTRY}{$TITLE}{/loop}</span></span>
-                            </address>
+                            <div id="replace_icirelais">
+	                            <span class="org">{$COMPANY}</span>
+	                            <address class="adr">
+	                                <span class="street-address">{$ADDRESS1}</span><br>
+	                                {if $ADDRESS2 != ""}
+	                                    <span class="street-address">{$ADDRESS2}</span><br>
+	                                {/if}
+	                                {if $ADDRESS3 != ""}
+	                                    <span class="street-address">{$ADDRESS3}</span><br>
+	                                {/if}
+	                                <span class="postal-code">{$ZIPCODE}</span>
+	                                <span class="locality">{$CITY}, <span class="country-name">{loop type="country" name="customer.country.info" id=$COUNTRY}{$TITLE}{/loop}</span></span>
+	                            </address>
+                            </div>
                         </div>
                         {/loop}
-                        {/if}
+                        
                     </div>
 
                     {form_field form=$form field='invoice-address'}

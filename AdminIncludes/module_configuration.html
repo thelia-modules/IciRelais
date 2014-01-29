@@ -1,4 +1,13 @@
 <div class="row">
+	<!-- Errors -->
+	{loop name="checkrights" type="icirelais.check.rights"}
+	<div class="alert alert-danger">
+    	<p>{intl l="{$ERRMES}"}  {$ERRFILE} | {intl l="Please change the access rights"}.</p>
+    </div>
+	{/loop}
+</div>
+{elseloop rel="checkrights"}
+<div class="row">
 	<h2>{intl l="Export EXAPRINT file"}</h2>
 	<div class="general-block-decorator">
 		<div class="form-container">
@@ -214,3 +223,4 @@
 
     </div>
 </div>
+{/elseloop}

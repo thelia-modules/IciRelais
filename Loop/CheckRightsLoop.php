@@ -23,33 +23,47 @@
 
 namespace IciRelais\Loop;
 
-
-use Thelia\Core\Template\Loop\Delivery;
-use Thelia\Core\Template\Element\LoopResult;
+use Thelia\Core\Template\Loop\Argument\ArgumentCollection;
+use Thelia\Core\Template\Element\BaseLoop;
 use Thelia\Core\Template\Element\LoopResultRow;
+use Thelia\Core\Template\Element\LoopResult;
+use Thelia\Core\Template\Element\ArraySearchLoopInterface;
 
-use Thelia\Model\ModuleQuery;
-use IciRelais\IciRelais;
-/**
- *
- * New Address loop
- *
- *
- * Class IciRelaisDelivery
- * @package IciRelais\Loop
- * @author Benjamin Perche <bperche9@gmail.com>
- */
-class IciRelaisDelivery extends Delivery
+class CheckRightsLoop extends BaseLoop implements ArraySearchLoopInterface
 {
-	public function parseResults(LoopResult $loopResult) {
-		
-		$icirelaiskey = IciRelais::getModCode();
-		
-		$loopResult = parent::parseResults($loopResult);
-		for($loopResult->rewind(); $loopResult->valid(); $loopResult->next()) {
-			$loopResult->current()->set("ICI_RELAIS_MODULE", $icirelaiskey);
+	protected function getArgDefinitions()
+    {
+        return new ArgumentCollection();
+    }
+	
+	public function buildArray()
+	{
+		$ret = array();
+		$dir = __DIR__."/../Config/";
+		if($handle = opendir($dir)) {
+			while(false !== ($file = readdir($handle))) {
+				if(strlen($file) > 5 && substr($file, -5) === ".json") {
+					if(!is_readable($dir.$file)) {
+						$ret[] = array("ERRMES"=>"Can't read file", "ERRFILE"=>"Icirelais/Config/".$file);
+					}
+					if(!is_writable($dir.$file)) {
+						$ret[] = array("ERRMES"=>"Can't write file", "ERRFILE"=>"Icirelais/Config/".$file);
+					}
+				}
+			}
+		} else {
+			$ret[] = array("ERRMES"=>"Can't read Config directory", "ERRFILE"=>"");
+		}
+		return $ret;
+	}
+	public function parseResults(LoopResult $loopResult)
+	{
+		foreach($loopResult->getResultDataCollection() as $arr) {
+			$loopResultRow = new LoopResultRow();
+			$loopResultRow->set("ERRMES", $arr["ERRMES"])
+				->set("ERRFILE", $arr["ERRFILE"]);
+			$loopResult->addRow($loopResultRow);
 		}
 		return $loopResult;
 	}
 }
-	

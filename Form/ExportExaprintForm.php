@@ -43,7 +43,7 @@ class ExportExaprintForm extends BaseForm {
 	protected function buildForm() {
 		// Add value(s) if Config/exportdat.json exists
 		
-		if(file_exists(ExportExaprint::getJSONpath())) {
+		if(is_readable(ExportExaprint::getJSONpath())) {
 			$values = json_decode(file_get_contents(ExportExaprint::getJSONpath()),true);
 		}
 		$this->formBuilder

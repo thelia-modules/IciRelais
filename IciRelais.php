@@ -48,55 +48,23 @@ class IciRelais extends BaseModule implements DeliveryModuleInterface
     private static $prices = null;
     
     const JSON_PRICE_RESOURCE = "/Config/prices.json";
+	
+	public function postActivation(ConnectionInterface $con = null)
+    {
+        $database = new Database($con->getWrappedConnection());
 
-	/*
-	private static function listTemplates($dir) {
-		$files = array();
-		if($handle = opendir($dir)) {
-			while(false !== ($file = readdir($handle))) {
-				if(preg_match("#(\.html)$#i", $file)) {
-					$files[] = $file;
-				}
-			}
-			closedir($handle);
-		}
-		return $files;
-	}
-	
-	public function preActivation(ConnectionInterface $con = NULL) 
-	{
-		$dir = __DIR__."/templates/";
-		$files = self::listTemplates($dir);
-		
-		foreach($files as $f) {
-			$orig_path = __DIR__."/../../templates/frontOffice/default/";
-			if(is_file($orig_path.$f)) {
-				copy($orig_path.$f,$orig_path.$f.".bak");
-				unlink($orig_path.$f);
-				copy($dir.$f, $orig_path.$f);
-			}
-		}
-	}
-	
-	public function preDeactivation(ConnectionInterface $con = NULL) 
-	{
-		$dir = __DIR__."/templates/";
-		$files = self::listTemplates($dir);
-		
-		foreach($files as $f) {
-			$orig_path = __DIR__."/../../templates/frontOffice/default/";
-			if(is_file($orig_path.$f.".bak") && is_file($orig_path.$f)) {
-				unlink($orig_path.$f);
-				copy($orig_path.$f.".bak",$orig_path.$f);
-				unlink($orig_path.$f.".bak");
-			}
-		}
-	}
-	*/
+        $database->insertSql(null, array(__DIR__ . '/Config/thelia.sql'));
+    }
+
 	public static function getPrices()
     {
         if(null === self::$prices) {
-            self::$prices = json_decode(file_get_contents(sprintf('%s/%s', __DIR__, self::JSON_PRICE_RESOURCE)), true);
+        	if(is_readable(sprintf('%s/%s', __DIR__, self::JSON_PRICE_RESOURCE))) {
+        		self::$prices = json_decode(file_get_contents(sprintf('%s/%s', __DIR__, self::JSON_PRICE_RESOURCE)), true);
+        	} else {
+        		self::$prices = null;
+        	}
+            
         }
 
         return self::$prices;

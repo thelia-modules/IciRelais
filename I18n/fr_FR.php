@@ -44,6 +44,10 @@ return array(
 	'Sender\'s phone' => 'Téléphone  de l\'expéditeur',
 	'Sender\'s mobile phone' => 'Télépgone mobile  de l\'expéditeur',
 	'Sender\'s email' => 'Email de  de l\'expéditeur',
-	'Package warranty' => 'Garantie des colis'
+	'Package warranty' => 'Garantie des colis',
+	'Can\'t read file' => 'Le fichier suivant ne peut être lu',
+	'Can\'t write file' => 'Le fichier suivant ne peut être écrit',
+	'Can\'t read Config directory' => 'Le dossier Config ne peut être lu',
+	'Please change the access rights' => 'Veuillez changer les droits d\'accès'
 );
 ?>

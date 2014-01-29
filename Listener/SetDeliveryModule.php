@@ -30,8 +30,12 @@ use Thelia\Core\Event\Order\OrderEvent;
 use Thelia\Core\Event\Order\OrderAddressEvent;
 use Thelia\Core\Event\TheliaEvents;
 
+use Symfony\Component\HttpFoundation\Session\Session;
 use IciRelais\Model\OrderAddressIcirelais;
 use Thelia\Model\OrderAddressQuery;
+use IciRelais\Model\AddressIcirelais;
+use IciRelais\Model\AddressIcirelaisQuery;
+use Thelia\Model\AddressQuery;
 
 /**
  * Class SetDeliveryModule
@@ -41,76 +45,81 @@ use Thelia\Model\OrderAddressQuery;
  
 class SetDeliveryModule extends BaseAction implements EventSubscriberInterface
 {
-	protected function check_module($event) {
-		return $event->getDeliveryModule() == IciRelais::getModCode();
+	protected function check_module($id) {
+		return $id == IciRelais::getModCode();
 	}
 		
     public function isModuleIciRelais(OrderEvent $event)
     {
-        if($this->check_module($event)) {
-
-        	if(isset($_POST['pr_code']) && !empty($_POST['pr_code'])) {
+        if($this->check_module($event->getDeliveryModule())) {
+        	//tmp solution
+			$request = $this->container->get('request');
+			$pr_code=$request->get('pr_code');
+        	if(!empty($pr_code)) {
         		// Get details w/ SOAP
         		$con = new \SoapClient(__DIR__."/../Config/exapaq.wsdl", array('soap_version'=>SOAP_1_2));
-				$response = $con->GetPudoDetails(array("pudo_id"=>$_POST['pr_code']));
+				$response = $con->GetPudoDetails(array("pudo_id"=>$pr_code));
 				$xml = new \SimpleXMLElement($response->GetPudoDetailsResult->any);
 				if(isset($xml->ERROR)) {
 					throw new \ErrorException("Error while choosing pick-up & go store: ".$xml->ERROR);
 				}
 				
-				//We can't use Symfony Session because of smarty in order-delivery.html
-				$_SESSION['IciRelaiscode']=$_POST['pr_code'];
-				$_SESSION['IciRelaiscompany']=(string)$xml->PUDO_ITEMS->PUDO_ITEM->NAME;
-				$_SESSION['IciRelaisaddress1']=(string)$xml->PUDO_ITEMS->PUDO_ITEM->ADDRESS1;
-				$_SESSION['IciRelaisaddress2']=(string)$xml->PUDO_ITEMS->PUDO_ITEM->ADDRESS2;
-				$_SESSION['IciRelaisaddress3']=(string)$xml->PUDO_ITEMS->PUDO_ITEM->ADDRESS3;
-				$_SESSION['IciRelaiszipcode']=(string)$xml->PUDO_ITEMS->PUDO_ITEM->ZIPCODE;
-				$_SESSION['IciRelaiscity']=(string)$xml->PUDO_ITEMS->PUDO_ITEM->CITY;
-				$_SESSION['IciRelaisupdateDeliveryAddress'] = "true";
+				$customer_name = AddressQuery::create()
+					->findPk($event->getDeliveryAddress());
+				
+				$address = AddressIcirelaisQuery::create()
+					->findPk($event->getDeliveryAddress());
+				
+				$request->getSession()->set('IciRelaisDeliveryId', $event->getDeliveryAddress());
+				if($address === null) {
+					$address = new AddressIcirelais();
+					$address->setId($event->getDeliveryAddress());
+				}
+				
+				// France Métropolitaine
+				$address->setCode($pr_code)
+					->setCompany((string)$xml->PUDO_ITEMS->PUDO_ITEM->NAME)
+					->setAddress1((string)$xml->PUDO_ITEMS->PUDO_ITEM->ADDRESS1)
+					->setAddress2((string)$xml->PUDO_ITEMS->PUDO_ITEM->ADDRESS2)
+					->setAddress3((string)$xml->PUDO_ITEMS->PUDO_ITEM->ADDRESS3)
+					->setZipcode((string)$xml->PUDO_ITEMS->PUDO_ITEM->ZIPCODE)
+					->setCity((string)$xml->PUDO_ITEMS->PUDO_ITEM->CITY)
+					->setFirstname($customer_name->getFirstname())
+					->setLastname($customer_name->getLastname())
+					->setCountryId("64") 
+					->save(); 
         	} else {
         		throw new \ErrorException("No pick-up & go store choosed for IciRelais delivery module");
         	}
-        } else {
-        	if(isset($_SESSION['IciRelaisupdateDeliveryAddress'])) unset($_SESSION['IciRelaisupdateDeliveryAddress']);
         }
     }
 
 	public function updateDeliveryAddress(OrderEvent $event) {
-		if(isset($_SESSION['IciRelaisupdateDeliveryAddress'])) {
-			if(!(isset($_SESSION['IciRelaisaddress1']) && !empty($_SESSION['IciRelaisaddress1'])) ||
-				!(isset($_SESSION['IciRelaiscity']) && !empty($_SESSION['IciRelaiscity'])) ||
-				!(isset($_SESSION['IciRelaiszipcode']) && !empty($_SESSION['IciRelaiszipcode'])) ||
-				!(isset($_SESSION['IciRelaiscompany']) && !empty($_SESSION['IciRelaiscompany'])) ||
-				!(isset($_SESSION['IciRelaiscode']) && !empty($_SESSION['IciRelaiscode']))
-				) {
-					throw new \ErrorException("Got an error with IciRelais module. Please try again to checkout.");
-				}
-			
-			$savecode = new OrderAddressIcirelais();
-			$savecode->setNew(true);
-			$savecode->setId($event->getOrder()->getDeliveryOrderAddressId())
-				->setCode($_SESSION['IciRelaiscode']) 
-				->save();
-				
-			$update = OrderAddressQuery::create()
-				->findPK($event->getOrder()->getDeliveryOrderAddressId())
-				->setCompany($_SESSION['IciRelaiscompany'])
-				->setAddress1($_SESSION['IciRelaisaddress1'])
-				->setAddress2($_SESSION['IciRelaisaddress2'])
-				->setAddress3($_SESSION['IciRelaisaddress3'])
-				->setZipcode($_SESSION['IciRelaiszipcode'])
-				->setCity($_SESSION['IciRelaiscity'])
-				->save();
-				
-			unset($_SESSION['IciRelaiscode']);
-			unset($_SESSION['IciRelaiscompany']);
-			unset($_SESSION['IciRelaisaddress1']);
-			unset($_SESSION['IciRelaisaddress2']);
-			unset($_SESSION['IciRelaisaddress3']);
-			unset($_SESSION['IciRelaiszipcode']);
-			unset($_SESSION['IciRelaiscity']);
-			unset($_SESSION['IciRelaisupdateDeliveryAddress']);
+		$request = $this->container->get('request');
+		$tmp_address = AddressIcirelaisQuery::create()
+			->findPk($request->getSession()->get('IciRelaisDeliveryId'));
+
+		if($this->check_module($event->getOrder()->getDeliveryModuleId()) && 
+			$tmp_address === null) {
+			throw new \ErrorException("Got an error with IciRelais module. Please try again to checkout.");
 		}
+		
+		$savecode = new OrderAddressIcirelais();
+		$savecode->setId($event->getOrder()->getDeliveryOrderAddressId())
+			->setCode($tmp_address->getCode())
+			->save();
+			
+		$update = OrderAddressQuery::create()
+			->findPK($event->getOrder()->getDeliveryOrderAddressId())
+			->setCompany($tmp_address->getCompany())
+			->setAddress1($tmp_address->getAddress1())
+			->setAddress2($tmp_address->getAddress2())
+			->setAddress3($tmp_address->getAddress3())
+			->setZipcode($tmp_address->getZipcode())
+			->setCity($tmp_address->getCity())
+			->save();
+		
+		$tmp_address->delete();
 	}
 
     /**
