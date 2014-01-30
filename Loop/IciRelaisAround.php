@@ -60,9 +60,11 @@ class IciRelaisAround extends BaseLoop implements PropelSearchLoopInterface
 
     public function buildModelCriteria()
     {
-        if (!empty($this->getZipcode()) and !empty($this->getCity())) {
-            $this->zipcode = $this->getZipcode();
-            $this->city = $this->getCity();
+    	$zipcode = $this->getZipcode();
+		$city = $this->getCity();
+        if (!empty($zipcode) and !empty($city)) {
+            $this->zipcode = $zipcode;
+            $this->city = $city;
             $this->addressflag =  false;
         } else {
             $search = AddressQuery::create();

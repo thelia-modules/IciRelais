@@ -24,9 +24,19 @@
         {/form_field}
         {if $ID eq $ICI_RELAIS_MODULE}<br/><br/>
         	<div id="google-map-ici-relais" style="display: none;"> <!--class="hidden"-->
-        		<script src="http://maps.google.com/maps/api/js?sensor=true&callback=initialize"></script>
 				<script>	
-				<!--	                   
+				<!--	  
+				function loadScript() {
+				  var script = document.createElement('script');
+				  script.type = 'text/javascript';
+				  script.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&' +
+				      'callback=initialize';
+				  document.body.appendChild(script);
+				}
+				if(typeof(google) === 'undefined') {
+					loadScript();
+				}
+				                
 					function show_hide_ici_relais_map(flag) {
 						if(flag) {
 							document.getElementById('google-map-ici-relais').style.display = 'block';
