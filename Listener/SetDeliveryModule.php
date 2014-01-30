@@ -110,30 +110,32 @@ class SetDeliveryModule implements EventSubscriberInterface
 
     public function updateDeliveryAddress(OrderEvent $event)
     {
-        $request = $this->getRequest();
-        $tmp_address = AddressIcirelaisQuery::create()
-            ->findPk($request->getSession()->get('IciRelaisDeliveryId'));
+        if($this->check_module($event->getOrder()->getDeliveryModuleId())) {
+            $request = $this->getRequest();
+            $tmp_address = AddressIcirelaisQuery::create()
+                ->findPk($request->getSession()->get('IciRelaisDeliveryId'));
 
-        if ($this->check_module($event->getOrder()->getDeliveryModuleId()) && $tmp_address === null) {
-            throw new \ErrorException("Got an error with IciRelais module. Please try again to checkout.");
+            if ($tmp_address === null) {
+                throw new \ErrorException("Got an error with IciRelais module. Please try again to checkout.");
+            }
+
+            $savecode = new OrderAddressIcirelais();
+            $savecode->setId($event->getOrder()->getDeliveryOrderAddressId())
+                ->setCode($tmp_address->getCode())
+                ->save();
+
+            $update = OrderAddressQuery::create()
+                ->findPK($event->getOrder()->getDeliveryOrderAddressId())
+                ->setCompany($tmp_address->getCompany())
+                ->setAddress1($tmp_address->getAddress1())
+                ->setAddress2($tmp_address->getAddress2())
+                ->setAddress3($tmp_address->getAddress3())
+                ->setZipcode($tmp_address->getZipcode())
+                ->setCity($tmp_address->getCity())
+                ->save();
+
+            $tmp_address->delete();
         }
-
-        $savecode = new OrderAddressIcirelais();
-        $savecode->setId($event->getOrder()->getDeliveryOrderAddressId())
-            ->setCode($tmp_address->getCode())
-            ->save();
-
-        $update = OrderAddressQuery::create()
-            ->findPK($event->getOrder()->getDeliveryOrderAddressId())
-            ->setCompany($tmp_address->getCompany())
-            ->setAddress1($tmp_address->getAddress1())
-            ->setAddress2($tmp_address->getAddress2())
-            ->setAddress3($tmp_address->getAddress3())
-            ->setZipcode($tmp_address->getZipcode())
-            ->setCity($tmp_address->getCity())
-            ->save();
-
-        $tmp_address->delete();
     }
 
     /**
