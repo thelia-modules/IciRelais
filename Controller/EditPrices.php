@@ -29,7 +29,7 @@ use Thelia\Controller\Admin\BaseAdminController;
 /**
  * Class EditPrices
  * @package IciRelais\Controller
- * @author benjamin perche <bperche9@gmail.com>
+ * @author Thelia <info@thelia.net>
  */
 class EditPrices extends BaseAdminController
 {

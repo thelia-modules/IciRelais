@@ -85,7 +85,7 @@ class Export extends BaseAdminController
         }
         $exp_name=$admici['name'];
         $exp_address1=$admici['addr'];
-        $exp_address2=isset($admici['addr2']) ?$adminici['addr2']:"";
+        $exp_address2=isset($admici['addr2']) ?$admici['addr2']:"";
         $exp_zipcode=$admici['zipcode'];
         $exp_city=$admici['city'];
         $exp_phone=$admici['tel'];
