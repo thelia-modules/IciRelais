@@ -23,7 +23,7 @@
             </label>
         {/form_field}
         {if $ID eq $ICI_RELAIS_MODULE}<br/><br/>
-        	<div id="google-map-ici-relais" style="display: none;"> <!--class="hidden"-->
+        	<div id="google-map-ici-relais" {if !$isDeliveryMethodChecked} style="display: none;" {/if}>
 				<script>	
 				<!--	  
 				function loadScript() {
