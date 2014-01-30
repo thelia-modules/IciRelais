@@ -48,5 +48,8 @@ return array(
     'Can\'t read file' => 'Can\'t read file',
     'Can\'t write file' => 'Can\'t write file',
     'Can\'t read Config directory' => 'Can\'t read Config directory',
-    'Please change the access rights' => 'Please change the access rights'
+    'Please change the access rights' => 'Please change the access rights',
+    'Can\'t write IciRelais/Config/exportdat.json. Please change the rights on the file and/or the directory.'=>'Can\'t write IciRelais/Config/exportdat.json. Please change the rights on the file and/or the directory.',
+    'The file IciRelais/Config/exportdat.json is not valid. Please correct it.'=>'The file IciRelais/Config/exportdat.json is not valid. Please correct it.',
+    'Can\'t read IciRelais/Config/exportdat.json. Did you save the export information ?' =>'Can\'t read IciRelais/Config/exportdat.json. Did you save the export information ?'
 );

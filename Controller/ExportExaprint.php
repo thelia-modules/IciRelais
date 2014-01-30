@@ -24,6 +24,7 @@
 namespace IciRelais\Controller;
 use IciRelais\Form\ExportExaprintForm;
 use Thelia\Controller\Admin\BaseAdminController;
+use Thelia\Core\Translation\Translator;
 
 /**
  * Class ExportExaprint
@@ -67,7 +68,7 @@ class ExportExaprint extends BaseAdminController
                         );
                     fclose($file);
                 } else {
-                    throw new \Exception("Can't write IciRelais/Config/exportdat.json. Please change the rights on the file and/or the directory.");
+                    throw new \Exception(Translator::getInstance()->trans("Can't write IciRelais/Config/exportdat.json. Please change the rights on the file and/or the directory."));
 
                 }
               }

@@ -42,11 +42,14 @@ return array(
     'Sender\'s zipcode' => 'Code postal  de l\'expéditeur',
     'Sender\'s city' => 'Ville  de l\'expéditeur',
     'Sender\'s phone' => 'Téléphone  de l\'expéditeur',
-    'Sender\'s mobile phone' => 'Télépgone mobile  de l\'expéditeur',
+    'Sender\'s mobile phone' => 'Téléphone mobile  de l\'expéditeur',
     'Sender\'s email' => 'Email de  de l\'expéditeur',
     'Package warranty' => 'Garantie des colis',
     'Can\'t read file' => 'Le fichier suivant ne peut être lu',
     'Can\'t write file' => 'Le fichier suivant ne peut être écrit',
     'Can\'t read Config directory' => 'Le dossier Config ne peut être lu',
-    'Please change the access rights' => 'Veuillez changer les droits d\'accès'
+    'Please change the access rights' => 'Veuillez changer les droits d\'accès',
+    'Can\'t write IciRelais/Config/exportdat.json. Please change the rights on the file and/or the directory.' => 'Le fichier IciRelais/Config/exportdat.json ne peut être écrit. Veuillez changer les droits d\'accès sur le fichier et/ou dossier',
+    'The file IciRelais/Config/exportdat.json is not valid. Please correct it.'=>'Le fichier IciRelais/Config/exportdat.json n\'est pas valide. Veuillez le corriger.',
+    'Can\'t read IciRelais/Config/exportdat.json. Did you save the export information ?'=>'Le fichier IciRelais/Config/exportdat.json ne peut être lu. Avez vous enregistré les informations d\'export ?'
 );

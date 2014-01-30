@@ -65,7 +65,6 @@ class ExportExaprintForm extends BaseForm
             ->add('addr2', 'text', array(
                 'label' => Translator::getInstance()->trans('Sender\'s address2'),
                 'data' => (isset($values['addr2']) ? $values['addr2']:""),
-                'constraints' => array(new NotBlank()),
                 'label_attr' => array(
                     'for' => 'addr2'
                 )			))
