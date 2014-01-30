@@ -23,12 +23,9 @@
 
 namespace IciRelais\Loop;
 
-
 use Thelia\Core\Template\Loop\Delivery;
 use Thelia\Core\Template\Element\LoopResult;
-use Thelia\Core\Template\Element\LoopResultRow;
 
-use Thelia\Model\ModuleQuery;
 use IciRelais\IciRelais;
 /**
  *
@@ -41,15 +38,15 @@ use IciRelais\IciRelais;
  */
 class IciRelaisDelivery extends Delivery
 {
-	public function parseResults(LoopResult $loopResult) {
-		
-		$icirelaiskey = IciRelais::getModCode();
-		
-		$loopResult = parent::parseResults($loopResult);
-		for($loopResult->rewind(); $loopResult->valid(); $loopResult->next()) {
-			$loopResult->current()->set("ICI_RELAIS_MODULE", $icirelaiskey);
-		}
-		return $loopResult;
-	}
+    public function parseResults(LoopResult $loopResult)
+    {
+        $icirelaiskey = IciRelais::getModCode();
+
+        $loopResult = parent::parseResults($loopResult);
+        for ($loopResult->rewind(); $loopResult->valid(); $loopResult->next()) {
+            $loopResult->current()->set("ICI_RELAIS_MODULE", $icirelaiskey);
+        }
+
+        return $loopResult;
+    }
 }
-	

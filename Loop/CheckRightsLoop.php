@@ -31,39 +31,41 @@ use Thelia\Core\Template\Element\ArraySearchLoopInterface;
 
 class CheckRightsLoop extends BaseLoop implements ArraySearchLoopInterface
 {
-	protected function getArgDefinitions()
+    protected function getArgDefinitions()
     {
         return new ArgumentCollection();
     }
-	
-	public function buildArray()
-	{
-		$ret = array();
-		$dir = __DIR__."/../Config/";
-		if($handle = opendir($dir)) {
-			while(false !== ($file = readdir($handle))) {
-				if(strlen($file) > 5 && substr($file, -5) === ".json") {
-					if(!is_readable($dir.$file)) {
-						$ret[] = array("ERRMES"=>"Can't read file", "ERRFILE"=>"Icirelais/Config/".$file);
-					}
-					if(!is_writable($dir.$file)) {
-						$ret[] = array("ERRMES"=>"Can't write file", "ERRFILE"=>"Icirelais/Config/".$file);
-					}
-				}
-			}
-		} else {
-			$ret[] = array("ERRMES"=>"Can't read Config directory", "ERRFILE"=>"");
-		}
-		return $ret;
-	}
-	public function parseResults(LoopResult $loopResult)
-	{
-		foreach($loopResult->getResultDataCollection() as $arr) {
-			$loopResultRow = new LoopResultRow();
-			$loopResultRow->set("ERRMES", $arr["ERRMES"])
-				->set("ERRFILE", $arr["ERRFILE"]);
-			$loopResult->addRow($loopResultRow);
-		}
-		return $loopResult;
-	}
+
+    public function buildArray()
+    {
+        $ret = array();
+        $dir = __DIR__."/../Config/";
+        if ($handle = opendir($dir)) {
+            while (false !== ($file = readdir($handle))) {
+                if (strlen($file) > 5 && substr($file, -5) === ".json") {
+                    if (!is_readable($dir.$file)) {
+                        $ret[] = array("ERRMES"=>"Can't read file", "ERRFILE"=>"Icirelais/Config/".$file);
+                    }
+                    if (!is_writable($dir.$file)) {
+                        $ret[] = array("ERRMES"=>"Can't write file", "ERRFILE"=>"Icirelais/Config/".$file);
+                    }
+                }
+            }
+        } else {
+            $ret[] = array("ERRMES"=>"Can't read Config directory", "ERRFILE"=>"");
+        }
+
+        return $ret;
+    }
+    public function parseResults(LoopResult $loopResult)
+    {
+        foreach ($loopResult->getResultDataCollection() as $arr) {
+            $loopResultRow = new LoopResultRow();
+            $loopResultRow->set("ERRMES", $arr["ERRMES"])
+                ->set("ERRFILE", $arr["ERRFILE"]);
+            $loopResult->addRow($loopResultRow);
+        }
+
+        return $loopResult;
+    }
 }

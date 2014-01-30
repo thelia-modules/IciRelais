@@ -25,11 +25,10 @@ namespace IciRelais\Controller;
 
 use Thelia\Controller\Front\BaseFrontController;
 
-class SearchCityController extends BaseFrontController {
-
-	public function searchAction($zipcode, $city)
+class SearchCityController extends BaseFrontController
+{
+    public function searchAction($zipcode, $city)
     {
-		return $this->render("getSpecificLocation", array("_zipcode_"=>$zipcode, "_city_"=>$city));
-	}
+        return $this->render("getSpecificLocation", array("_zipcode_"=>$zipcode, "_city_"=>$city));
+    }
 }
-

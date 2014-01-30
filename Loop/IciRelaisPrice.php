@@ -63,7 +63,7 @@ class IciRelaisPrice extends BaseLoop implements ArraySearchLoopInterface
 
         $prices = IciRelais::getPrices();
 
-        if(!isset($prices[$area]) || !isset($prices[$area]["slices"])) {
+        if (!isset($prices[$area]) || !isset($prices[$area]["slices"])) {
             return array();
         }
 

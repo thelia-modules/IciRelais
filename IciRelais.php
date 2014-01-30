@@ -41,41 +41,41 @@ class IciRelais extends BaseModule implements DeliveryModuleInterface
      *
      * Have fun !
      */
-     
+
     protected $request;
     protected $dispatcher;
 
     private static $prices = null;
-    
+
     const JSON_PRICE_RESOURCE = "/Config/prices.json";
-	
-	public function postActivation(ConnectionInterface $con = null)
+
+    public function postActivation(ConnectionInterface $con = null)
     {
         $database = new Database($con->getWrappedConnection());
 
         $database->insertSql(null, array(__DIR__ . '/Config/thelia.sql'));
     }
 
-	public static function getPrices()
+    public static function getPrices()
     {
-        if(null === self::$prices) {
-        	if(is_readable(sprintf('%s/%s', __DIR__, self::JSON_PRICE_RESOURCE))) {
-        		self::$prices = json_decode(file_get_contents(sprintf('%s/%s', __DIR__, self::JSON_PRICE_RESOURCE)), true);
-        	} else {
-        		self::$prices = null;
-        	}
-            
+        if (null === self::$prices) {
+            if (is_readable(sprintf('%s/%s', __DIR__, self::JSON_PRICE_RESOURCE))) {
+                self::$prices = json_decode(file_get_contents(sprintf('%s/%s', __DIR__, self::JSON_PRICE_RESOURCE)), true);
+            } else {
+                self::$prices = null;
+            }
+
         }
 
         return self::$prices;
     }
-	
-	public static function getPostageAmount($areaId, $weight)
+
+    public static function getPostageAmount($areaId, $weight)
     {
         $prices = self::getPrices();
 
         /* check if IciRelais delivers the asked area */
-        if(!isset($prices[$areaId]) || !isset($prices[$areaId]["slices"])) {
+        if (!isset($prices[$areaId]) || !isset($prices[$areaId]["slices"])) {
             throw new OrderException("Ici Relais delivery unavailable for the chosen delivery country", OrderException::DELIVERY_MODULE_UNAVAILABLE);
         }
 
@@ -85,14 +85,14 @@ class IciRelais extends BaseModule implements DeliveryModuleInterface
         /* check this weight is not too much */
         end($areaPrices);
         $maxWeight = key($areaPrices);
-        if($weight > $maxWeight) {
+        if ($weight > $maxWeight) {
             throw new OrderException(sprintf("Ici Relais delivery unavailable for this cart weight (%s kg)", $weight), OrderException::DELIVERY_MODULE_UNAVAILABLE);
         }
 
         $postage = current($areaPrices);
 
-        while(prev($areaPrices)) {
-            if($weight > key($areaPrices)) {
+        while (prev($areaPrices)) {
+            if ($weight > key($areaPrices)) {
                 break;
             }
 
@@ -133,18 +133,18 @@ class IciRelais extends BaseModule implements DeliveryModuleInterface
 
         return $postage;
     }
-	
-	public function getCode() {
-		return "Icirelais";
-	}
-	
-	public static function getModCode() {
-		$mod_code = "IciRelais";
-    	$search = ModuleQuery::create()
-			->findOneByCode($mod_code);
-		return $search->getId();
-	}
+
+    public function getCode()
+    {
+        return "Icirelais";
+    }
+
+    public static function getModCode()
+    {
+        $mod_code = "IciRelais";
+        $search = ModuleQuery::create()
+            ->findOneByCode($mod_code);
+
+        return $search->getId();
+    }
 }
-
-
-?>

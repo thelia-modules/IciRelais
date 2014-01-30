@@ -4,7 +4,6 @@ namespace IciRelais\Model;
 
 use IciRelais\Model\Base\AddressIcirelaisQuery as BaseAddressIcirelaisQuery;
 
-
 /**
  * Skeleton subclass for performing query and update operations on the 'address_icirelais' table.
  *

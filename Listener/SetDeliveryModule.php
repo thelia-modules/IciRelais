@@ -27,10 +27,8 @@ use IciRelais\IciRelais;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Thelia\Action\BaseAction;
 use Thelia\Core\Event\Order\OrderEvent;
-use Thelia\Core\Event\Order\OrderAddressEvent;
 use Thelia\Core\Event\TheliaEvents;
 
-use Symfony\Component\HttpFoundation\Session\Session;
 use IciRelais\Model\OrderAddressIcirelais;
 use Thelia\Model\OrderAddressQuery;
 use IciRelais\Model\AddressIcirelais;
@@ -42,85 +40,87 @@ use Thelia\Model\AddressQuery;
  * @package IciRelais\Listener
  * @author benjamin perche <bperche9@gmail.com>
  */
- 
+
 class SetDeliveryModule extends BaseAction implements EventSubscriberInterface
 {
-	protected function check_module($id) {
-		return $id == IciRelais::getModCode();
-	}
-		
+    protected function check_module($id)
+    {
+        return $id == IciRelais::getModCode();
+    }
+
     public function isModuleIciRelais(OrderEvent $event)
     {
-        if($this->check_module($event->getDeliveryModule())) {
-        	//tmp solution
-			$request = $this->container->get('request');
-			$pr_code=$request->get('pr_code');
-        	if(!empty($pr_code)) {
-        		// Get details w/ SOAP
-        		$con = new \SoapClient(__DIR__."/../Config/exapaq.wsdl", array('soap_version'=>SOAP_1_2));
-				$response = $con->GetPudoDetails(array("pudo_id"=>$pr_code));
-				$xml = new \SimpleXMLElement($response->GetPudoDetailsResult->any);
-				if(isset($xml->ERROR)) {
-					throw new \ErrorException("Error while choosing pick-up & go store: ".$xml->ERROR);
-				}
-				
-				$customer_name = AddressQuery::create()
-					->findPk($event->getDeliveryAddress());
-				
-				$address = AddressIcirelaisQuery::create()
-					->findPk($event->getDeliveryAddress());
-				
-				$request->getSession()->set('IciRelaisDeliveryId', $event->getDeliveryAddress());
-				if($address === null) {
-					$address = new AddressIcirelais();
-					$address->setId($event->getDeliveryAddress());
-				}
-				
-				// France Métropolitaine
-				$address->setCode($pr_code)
-					->setCompany((string)$xml->PUDO_ITEMS->PUDO_ITEM->NAME)
-					->setAddress1((string)$xml->PUDO_ITEMS->PUDO_ITEM->ADDRESS1)
-					->setAddress2((string)$xml->PUDO_ITEMS->PUDO_ITEM->ADDRESS2)
-					->setAddress3((string)$xml->PUDO_ITEMS->PUDO_ITEM->ADDRESS3)
-					->setZipcode((string)$xml->PUDO_ITEMS->PUDO_ITEM->ZIPCODE)
-					->setCity((string)$xml->PUDO_ITEMS->PUDO_ITEM->CITY)
-					->setFirstname($customer_name->getFirstname())
-					->setLastname($customer_name->getLastname())
-					->setCountryId("64") 
-					->save(); 
-        	} else {
-        		throw new \ErrorException("No pick-up & go store choosed for IciRelais delivery module");
-        	}
+        if ($this->check_module($event->getDeliveryModule())) {
+            //tmp solution
+            $request = $this->container->get('request');
+            $pr_code=$request->get('pr_code');
+            if (!empty($pr_code)) {
+                // Get details w/ SOAP
+                $con = new \SoapClient(__DIR__."/../Config/exapaq.wsdl", array('soap_version'=>SOAP_1_2));
+                $response = $con->GetPudoDetails(array("pudo_id"=>$pr_code));
+                $xml = new \SimpleXMLElement($response->GetPudoDetailsResult->any);
+                if (isset($xml->ERROR)) {
+                    throw new \ErrorException("Error while choosing pick-up & go store: ".$xml->ERROR);
+                }
+
+                $customer_name = AddressQuery::create()
+                    ->findPk($event->getDeliveryAddress());
+
+                $address = AddressIcirelaisQuery::create()
+                    ->findPk($event->getDeliveryAddress());
+
+                $request->getSession()->set('IciRelaisDeliveryId', $event->getDeliveryAddress());
+                if ($address === null) {
+                    $address = new AddressIcirelais();
+                    $address->setId($event->getDeliveryAddress());
+                }
+
+                // France Métropolitaine
+                $address->setCode($pr_code)
+                    ->setCompany((string) $xml->PUDO_ITEMS->PUDO_ITEM->NAME)
+                    ->setAddress1((string) $xml->PUDO_ITEMS->PUDO_ITEM->ADDRESS1)
+                    ->setAddress2((string) $xml->PUDO_ITEMS->PUDO_ITEM->ADDRESS2)
+                    ->setAddress3((string) $xml->PUDO_ITEMS->PUDO_ITEM->ADDRESS3)
+                    ->setZipcode((string) $xml->PUDO_ITEMS->PUDO_ITEM->ZIPCODE)
+                    ->setCity((string) $xml->PUDO_ITEMS->PUDO_ITEM->CITY)
+                    ->setFirstname($customer_name->getFirstname())
+                    ->setLastname($customer_name->getLastname())
+                    ->setCountryId("64")
+                    ->save();
+            } else {
+                throw new \ErrorException("No pick-up & go store choosed for IciRelais delivery module");
+            }
         }
     }
 
-	public function updateDeliveryAddress(OrderEvent $event) {
-		$request = $this->container->get('request');
-		$tmp_address = AddressIcirelaisQuery::create()
-			->findPk($request->getSession()->get('IciRelaisDeliveryId'));
+    public function updateDeliveryAddress(OrderEvent $event)
+    {
+        $request = $this->container->get('request');
+        $tmp_address = AddressIcirelaisQuery::create()
+            ->findPk($request->getSession()->get('IciRelaisDeliveryId'));
 
-		if($this->check_module($event->getOrder()->getDeliveryModuleId()) && 
-			$tmp_address === null) {
-			throw new \ErrorException("Got an error with IciRelais module. Please try again to checkout.");
-		}
-		
-		$savecode = new OrderAddressIcirelais();
-		$savecode->setId($event->getOrder()->getDeliveryOrderAddressId())
-			->setCode($tmp_address->getCode())
-			->save();
-			
-		$update = OrderAddressQuery::create()
-			->findPK($event->getOrder()->getDeliveryOrderAddressId())
-			->setCompany($tmp_address->getCompany())
-			->setAddress1($tmp_address->getAddress1())
-			->setAddress2($tmp_address->getAddress2())
-			->setAddress3($tmp_address->getAddress3())
-			->setZipcode($tmp_address->getZipcode())
-			->setCity($tmp_address->getCity())
-			->save();
-		
-		$tmp_address->delete();
-	}
+        if($this->check_module($event->getOrder()->getDeliveryModuleId()) &&
+            $tmp_address === null) {
+            throw new \ErrorException("Got an error with IciRelais module. Please try again to checkout.");
+        }
+
+        $savecode = new OrderAddressIcirelais();
+        $savecode->setId($event->getOrder()->getDeliveryOrderAddressId())
+            ->setCode($tmp_address->getCode())
+            ->save();
+
+        $update = OrderAddressQuery::create()
+            ->findPK($event->getOrder()->getDeliveryOrderAddressId())
+            ->setCompany($tmp_address->getCompany())
+            ->setAddress1($tmp_address->getAddress1())
+            ->setAddress2($tmp_address->getAddress2())
+            ->setAddress3($tmp_address->getAddress3())
+            ->setZipcode($tmp_address->getZipcode())
+            ->setCity($tmp_address->getCity())
+            ->save();
+
+        $tmp_address->delete();
+    }
 
     /**
      * Returns an array of event names this subscriber wants to listen to.
@@ -150,4 +150,3 @@ class SetDeliveryModule extends BaseAction implements EventSubscriberInterface
         );
     }
 }
-?>
