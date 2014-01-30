@@ -25,6 +25,11 @@ namespace IciRelais\Controller;
 
 use Thelia\Controller\Front\BaseFrontController;
 
+/**
+ * Class SearchCityController
+ * @package IciRelais\Controller
+ * @author Thelia <info@thelia.net>
+ */
 class SearchCityController extends BaseFrontController
 {
     public function searchAction($zipcode, $city)

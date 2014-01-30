@@ -29,13 +29,9 @@ use Thelia\Core\Template\Element\LoopResult;
 use Thelia\Core\Template\Element\LoopResultRow;
 use IciRelais\IciRelais;
 /**
- *
- * New Address loop
- *
- *
  * Class IciRelaisDelivery
  * @package IciRelais\Loop
- * @author Benjamin Perche <bperche9@gmail.com>
+ * @author Thelia <info@thelia.net>
  */
 class IciRelaisAddress extends Address
 {

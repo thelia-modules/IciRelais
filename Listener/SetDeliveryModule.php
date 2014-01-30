@@ -38,7 +38,7 @@ use Thelia\Model\AddressQuery;
 /**
  * Class SetDeliveryModule
  * @package IciRelais\Listener
- * @author benjamin perche <bperche9@gmail.com>
+ * @author Thelia <info@thelia.net>
  */
 
 class SetDeliveryModule implements EventSubscriberInterface

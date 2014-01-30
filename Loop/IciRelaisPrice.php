@@ -33,13 +33,9 @@ use Thelia\Core\Template\Loop\Argument\ArgumentCollection;
 use Thelia\Core\Template\Loop\Argument\Argument;
 
 /**
- *
- * Price loop
- *
- *
  * Class IciRelaisPrice
  * @package IciRelais\Loop
- * @author Benjamin Perche <bperche9@gmail.com>
+ * @author Thelia <info@thelia.net>
  * @original_author Etienne Roudeix <eroudeix@openstudio.fr>
  */
 class IciRelaisPrice extends BaseLoop implements ArraySearchLoopInterface

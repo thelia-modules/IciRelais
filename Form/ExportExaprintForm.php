@@ -31,7 +31,7 @@ use IciRelais\Controller\ExportExaprint;
 /**
  * Class ExportExaprintForm
  * @package IciRelais\Form
- * @author benjamin perche <bperche9@gmail.com>
+ * @author Thelia <info@thelia.net>
  */
 class ExportExaprintForm extends BaseForm
 {

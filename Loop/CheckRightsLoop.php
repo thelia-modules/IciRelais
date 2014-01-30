@@ -29,6 +29,12 @@ use Thelia\Core\Template\Element\LoopResultRow;
 use Thelia\Core\Template\Element\LoopResult;
 use Thelia\Core\Template\Element\ArraySearchLoopInterface;
 
+/**
+ * Class CheckRightsLoop
+ * @package IciRelais\Looop
+ * @author Thelia <info@thelia.net>
+ */
+
 class CheckRightsLoop extends BaseLoop implements ArraySearchLoopInterface
 {
     protected function getArgDefinitions()

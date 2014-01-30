@@ -37,11 +37,10 @@ use Thelia\Model\CustomerQuery;
 
 /**
  * Class Export
- * @package IciRelais
- * @author benjamin perche <bperche9@gmail.com>
+ * @package IciRelais\Controller
+ * @author Thelia <info@thelia.net>
  * @original_author etienne roudeix <eroudeix@openstudio.fr>
  */
-
 class Export extends BaseAdminController
 {
     // FONCTION POUR LE FICHIER D'EXPORT BY Maitre eroudeix@openstudio.fr

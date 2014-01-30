@@ -29,7 +29,7 @@ use Thelia\Core\Translation\Translator;
 /**
  * Class ExportExaprint
  * @package IciRelais\Controller
- * @author benjamin perche <bperche9@gmail.com>
+ * @author Thelia <info@thelia.net>
  */
 class ExportExaprint extends BaseAdminController
 {
