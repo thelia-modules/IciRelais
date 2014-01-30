@@ -25,11 +25,11 @@ namespace IciRelais\Listener;
 
 use IciRelais\IciRelais;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Thelia\Action\BaseAction;
 use Thelia\Core\Event\Order\OrderEvent;
 use Thelia\Core\Event\TheliaEvents;
 
 use IciRelais\Model\OrderAddressIcirelais;
+use Thelia\Core\HttpFoundation\Request;
 use Thelia\Model\OrderAddressQuery;
 use IciRelais\Model\AddressIcirelais;
 use IciRelais\Model\AddressIcirelaisQuery;
@@ -41,8 +41,22 @@ use Thelia\Model\AddressQuery;
  * @author benjamin perche <bperche9@gmail.com>
  */
 
-class SetDeliveryModule extends BaseAction implements EventSubscriberInterface
+class SetDeliveryModule implements EventSubscriberInterface
 {
+    protected $request;
+    public function __construct(Request $request)
+    {
+        $this->request = $request;
+    }
+
+    /**
+     * @return \Thelia\Core\HttpFoundation\Request
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
     protected function check_module($id)
     {
         return $id == IciRelais::getModCode();
@@ -52,8 +66,8 @@ class SetDeliveryModule extends BaseAction implements EventSubscriberInterface
     {
         if ($this->check_module($event->getDeliveryModule())) {
             //tmp solution
-            $request = $this->container->get('request');
-            $pr_code=$request->get('pr_code');
+            $request = $this->getRequest();
+            $pr_code = $request->request->get('pr_code');
             if (!empty($pr_code)) {
                 // Get details w/ SOAP
                 $con = new \SoapClient(__DIR__."/../Config/exapaq.wsdl", array('soap_version'=>SOAP_1_2));
@@ -85,7 +99,8 @@ class SetDeliveryModule extends BaseAction implements EventSubscriberInterface
                     ->setCity((string) $xml->PUDO_ITEMS->PUDO_ITEM->CITY)
                     ->setFirstname($customer_name->getFirstname())
                     ->setLastname($customer_name->getLastname())
-                    ->setCountryId("64")
+                    ->setTitleId($customer_name->getTitleId())
+                    ->setCountryId($customer_name->getCountryId())
                     ->save();
             } else {
                 throw new \ErrorException("No pick-up & go store choosed for IciRelais delivery module");
@@ -95,12 +110,11 @@ class SetDeliveryModule extends BaseAction implements EventSubscriberInterface
 
     public function updateDeliveryAddress(OrderEvent $event)
     {
-        $request = $this->container->get('request');
+        $request = $this->getRequest();
         $tmp_address = AddressIcirelaisQuery::create()
             ->findPk($request->getSession()->get('IciRelaisDeliveryId'));
 
-        if($this->check_module($event->getOrder()->getDeliveryModuleId()) &&
-            $tmp_address === null) {
+        if ($this->check_module($event->getOrder()->getDeliveryModuleId()) && $tmp_address === null) {
             throw new \ErrorException("Got an error with IciRelais module. Please try again to checkout.");
         }
 

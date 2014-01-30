@@ -83,34 +83,46 @@ class IciRelaisAround extends BaseLoop implements PropelSearchLoopInterface
     {
         $date = date('d/m/Y');
         try {
-            $getPudoSoap = new \SoapClient(__DIR__."/../Config/exapaq.wsdl", array('soap_version'   => SOAP_1_2));
+            $getPudoSoap = new \SoapClient(__DIR__ . "/../Config/exapaq.wsdl", array('soap_version' => SOAP_1_2));
 
             if ($this->addressflag) {
                 foreach ($loopResult->getResultDataCollection() as $address) {
-                    $response = $getPudoSoap->GetPudoList(array("address"=>str_replace(" ","%",$address->getAddress1()),
-                                                            "zipCode"=>$address->getZipcode(),
-                                                            "city"=>str_replace(" ","%",$address->getCity()),
-                                                            "request_id"=>"1234",
-                                                            "date_from"=>$date
-                                                    )
-                                                );
+                    $response = $getPudoSoap->GetPudoList(
+                        array(
+                            "address"    => str_replace(" ", "%", $address->getAddress1()),
+                            "zipCode"    => $address->getZipcode(),
+                            "city"       => str_replace(" ", "%", $address->getCity()),
+                            "request_id" => "1234",
+                            "date_from"  => $date
+                        )
+                    );
                 }
             } else {
-                $response = $getPudoSoap->GetPudoList(array("zipCode"=>$this->zipcode,
-                                                                "city"=>str_replace(" ","%",$this->city),
-                                                                "request_id"=>"1234",
-                                                                "date_from"=>$date
-                                                        )
-                                                    );
+                $response = $getPudoSoap->GetPudoList(
+                    array(
+                        "zipCode"    => $this->zipcode,
+                        "city"       => str_replace(" ", "%", $this->city),
+                        "request_id" => "1234",
+                        "date_from"  => $date
+                    )
+                );
             }
         } catch (\SoapFault $e) {
-            Tlog::getInstance()->error(sprintf("[%s %s - SOAP Error %d]: %s", $date, date("H:i:s"),(int) $e->getCode(), (string) $e->getMessage()));
+            Tlog::getInstance()->error(
+                sprintf(
+                    "[%s %s - SOAP Error %d]: %s",
+                    $date,
+                    date("H:i:s"),
+                    (int)$e->getCode(),
+                    (string)$e->getMessage()
+                )
+            );
 
         }
 
         $xml = new \SimpleXMLElement($response->GetPudoListResult->any);
         if (isset($xml->ERROR)) {
-            throw new \ErrorException("Error while choosing pick-up & go store: ".$xml->ERROR);
+            throw new \ErrorException("Error while choosing pick-up & go store: " . $xml->ERROR);
         }
         foreach ($xml->PUDO_ITEMS->PUDO_ITEM as $item) {
             $loopResultRow = new LoopResultRow();
@@ -119,22 +131,22 @@ class IciRelaisAround extends BaseLoop implements PropelSearchLoopInterface
             if (strlen($distance) < 4) {
                 $distance .= " m";
             } else {
-                $distance = (string) floatval($distance)/1000;
-                while (substr($distance, strlen($distance)-1, 1) == "0") {
-                    $distance = substr($distance, 0, strlen($distance)-1);
+                $distance = (string)floatval($distance) / 1000;
+                while (substr($distance, strlen($distance) - 1, 1) == "0") {
+                    $distance = substr($distance, 0, strlen($distance) - 1);
                 }
-                $distance = str_replace(".", ",", $distance)." km";
+                $distance = str_replace(".", ",", $distance) . " km";
             }
 
             // Then define all the variables
             $loopResultRow->set("NAME", $item->NAME)
-                        ->set("LONGITUDE", str_replace(",",".",$item->LONGITUDE))
-                        ->set("LATITUDE", str_replace(",",".",$item->LATITUDE))
-                        ->set("CODE", $item->PUDO_ID)
-                        ->set("ADDRESS", $item->ADDRESS1)
-                        ->set("ZIPCODE", $item->ZIPCODE)
-                        ->set("CITY", $item->CITY)
-                        ->set("DISTANCE", $distance);
+                ->set("LONGITUDE", str_replace(",", ".", $item->LONGITUDE))
+                ->set("LATITUDE", str_replace(",", ".", $item->LATITUDE))
+                ->set("CODE", $item->PUDO_ID)
+                ->set("ADDRESS", $item->ADDRESS1)
+                ->set("ZIPCODE", $item->ZIPCODE)
+                ->set("CITY", $item->CITY)
+                ->set("DISTANCE", $distance);
             $loopResult->addRow($loopResultRow);
         }
 
