@@ -24,12 +24,82 @@
             <li class="{if $tab eq "1"}active{/if}"><a data-toggle="tab" href="#configure_export_exaprint">{intl l="Configure EXAPRINT file"}</a></li>
             <li class="{if $tab eq "2"}active{/if}"><a data-toggle="tab" href="#prices_slices_tab">{intl l="Price slices"}</a></li>
         </ul>
+        <br/>
         <div class="tab-content">
             <div id="export_exaprint" class="tab-pane {if $tab eq "0"}active{/if} form-container">
-                <form action="{url path="/admin/module/icirelais/exportgo"}">
-                    <button type="submit" name="save_mode" value="stay" class="form-submit-button btn btn-sm btn-default" title="{intl l='Export'}">{intl l='Export'} <span class="glyphicon glyphicon-ok"></span></button>
-                </form>
-            </div>
+                <script>
+                    function checkboxManagement(operation) {
+                        var checkboxes = [{loop name="icirelais.get.checkboxes.names" type="icirelais.orders"}"{$REF|replace:'.':'-'}",{/loop}];
+                        for(var i= 0; i< checkboxes.length;i++) {
+                            document.getElementById(checkboxes[i]).checked=
+                                    (operation == '0' ?
+                                            false:
+                                            (operation=='1'?
+                                                    true:
+                                                    !document.getElementById(checkboxes[i]).checked
+                                            )
+                                    );
+                        }
+                    }
+                </script>
+                <div class="panel panel-default panel">
+                    <div class="panel-heading clearfix">
+                        {intl l="operations"}
+                    </div>
+                    <div class="panel-body">
+                        <button onclick="checkboxManagement('1');" title="{intl l="Check all"}" class="form-submit-button btn btn-sm btn-default">{intl l="Check all"}</button>
+                        <button onclick="checkboxManagement('0');" title="{intl l="Uncheck all"}" class="form-submit-button btn btn-sm btn-default">{intl l="Uncheck all"}</button>
+                        <button onclick="checkboxManagement('2');" title="{intl l="Reverse selection"}" class="form-submit-button btn btn-sm btn-default">{intl l="Reverse selection"}</button>
+                    </div>
+                </div>
+                {form name="icirelais.selection"}
+                    <form action="{url path="/admin/module/icirelais/exportgo"}">
+                    {form_hidden_fields form=$form}
+                        <table class="table table-striped table-condensed">
+                            <thead>
+                                <tr>
+                                    <th class="object-title">
+                                        {intl l="REF"}
+                                    </th>
+                                    <th class="object-title">
+                                        {intl l="Date"}
+                                    </th>
+                                    <th>
+                                        {intl l="Total taxed amount"}
+                                    </th>
+                                    <th class="object-title">
+                                        {intl l="Export"}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="icirelais-orders-form-selection-container">
+                                    {loop name="list.icirelais.orders" type="icirelais.orders"}
+                                        {form_field form=$form field=$REF|replace:'.':'-'}
+                                        <tr>
+                                            <td>
+                                                <label for="{$label_attr.for}">
+                                                    {$REF}
+                                                </label>
+                                            </td>
+                                            <td>
+                                                {$CREATE_DATE|date_format}
+                                            </td>
+                                            <td>
+                                                {$TOTAL_TAXED_AMOUNT} {loop name="list.icirelais.getcurrency" type="currency" id=$CURRENCY}{$SYMBOL} {/loop}
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" name="{$name}" id="{$label_attr.for}" value=="true" class="form-control"/>
+                                            </td>
+                                        </tr>
+                                        {/form_field}
+                                    {/loop}
+
+                            </tbody>
+                        </table>
+                        <button type="submit" name="save_mode" value="stay" class="form-submit-button btn btn-sm btn-default" title="{intl l='Export'}">{intl l='Export'} <span class="glyphicon glyphicon-ok"></span></button>
+                    </form>
+                   {/form}
+                </div>
             <div id="configure_export_exaprint" class="tab-pane {if $tab eq "1"}active{/if} form-container">
             {form name="icirelais.export"} 
                 <form action="{url path="/admin/module/icirelais/export"}" method="POST" {form_enctype form=$form}>

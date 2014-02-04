@@ -51,5 +51,14 @@ return array(
     'Please change the access rights' => 'Please change the access rights',
     'Can\'t write IciRelais/Config/exportdat.json. Please change the rights on the file and/or the directory.'=>'Can\'t write IciRelais/Config/exportdat.json. Please change the rights on the file and/or the directory.',
     'The file IciRelais/Config/exportdat.json is not valid. Please correct it.'=>'The file IciRelais/Config/exportdat.json is not valid. Please correct it.',
-    'Can\'t read IciRelais/Config/exportdat.json. Did you save the export information ?' =>'Can\'t read IciRelais/Config/exportdat.json. Did you save the export information ?'
+    'Can\'t read IciRelais/Config/exportdat.json. Did you save the export information ?' =>'Can\'t read IciRelais/Config/exportdat.json. Did you save the export information ?',
+    'Configure EXAPRINT file'=>'Configure EXAPRINT file',
+    'REF'=>'Reference',
+    'Date'=>'Date',
+    'Total taxed amount'=>'Total taxed amount',
+    'Form sent with bad arguments'=>'Form sent with bad arguments',
+    'Check all'=>'Check all',
+    'Uncheck all'=>'Uncheck all',
+    'Reverse selection'=>'Reverse selection',
+    'operations'=>'Operations',
 );
