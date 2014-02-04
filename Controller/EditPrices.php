@@ -55,7 +55,7 @@ class EditPrices extends BaseAdminController
                 if (is_readable($json_path)) {
                     $json_data = json_decode(file_get_contents($json_path),true);
                 } else {
-                    throw new \Exception("Can't read IciRelais"+IciRelais::JSON_PRICE_RESOURCE+". Please change the rights on the file.");
+                    throw new \Exception("Can't read IciRelais".IciRelais::JSON_PRICE_RESOURCE.". Please change the rights on the file.");
                 }
                 if((float) $weight > 0 && $operation == "add"
                   && preg_match("#\d+\.?\d{0,}#", $price)) {
@@ -71,7 +71,7 @@ class EditPrices extends BaseAdminController
                     fwrite($file, json_encode($json_data));;
                     fclose($file);
                 } else {
-                    throw new \Exception("Can't write IciRelais"+IciRelais::JSON_PRICE_RESOURCE+". Please change the rights on the file.");
+                    throw new \Exception("Can't write IciRelais".IciRelais::JSON_PRICE_RESOURCE.". Please change the rights on the file.");
                 }
             } else {
                 throw new \Exception("Area not found");
@@ -82,6 +82,7 @@ class EditPrices extends BaseAdminController
 
         return $this->redirectToRoute("admin.module.configure",array(),
             array ( 'module_code'=>"IciRelais",
+                'current_tab'=>"price_slices_tab",
                 '_controller' => 'Thelia\\Controller\\Admin\\ModuleController::configureAction'));
     }
 }

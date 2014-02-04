@@ -83,6 +83,7 @@ class ExportExaprint extends BaseAdminController
         );
         $this->redirectToRoute("admin.module.configure",array(),
             array ( 'module_code'=>"IciRelais",
+                'current_tab'=>"configure_export_exaprint",
                 '_controller' => 'Thelia\\Controller\\Admin\\ModuleController::configureAction'));
     }
 }
