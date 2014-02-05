@@ -22,8 +22,10 @@
 /*************************************************************************************/
 
 namespace IciRelais\Loop;
+use Propel\Runtime\ActiveQuery\Criteria;
 use Thelia\Core\Template\Loop\Order;
 use IciRelais\IciRelais;
+use Thelia\Model\OrderQuery;
 
 /**
  * Class IciRelaisOrders
@@ -32,13 +34,14 @@ use IciRelais\IciRelais;
  */
 class IciRelaisOrders extends Order
 {
+    const STATUS_PAID = 2;
+    const STATUS_PROCESSING = 3;
+    const STATUS_SENT = 4;
     public function buildModelCriteria()
     {
-        $search = parent::buildModelCriteria();
-        $code = IciRelais::getModCode();
-        $search =  $search->filterByDeliveryModuleId($code);
-
-        return $search;
+        return OrderQuery::create()
+            ->filterByDeliveryModuleId(IciRelais::getModCode())
+            ->filterByStatusId(array(self::STATUS_PAID,self::STATUS_PROCESSING));
     }
 
 }

@@ -61,5 +61,11 @@ return array(
     'Uncheck all'=>'Tout décocher',
     'Reverse selection'=>'Inverser la sélection',
     'operations'=>'Opérations',
+    'Can\'t write Config directory'=>'Le dossier Config ne peut être écrit',
+    'Export EXAPRINT file of this order'=>'Exporter le fichier EXAPRINT de cette commande',
+    'Change orders status after export'=>'Modifier le statut des commandes après l\'export',
+    'Do not change'=>'Ne pas changer',
+    'Processing'=>'Traitement',
+    'Sent'=>'Envoyée',
 
 );

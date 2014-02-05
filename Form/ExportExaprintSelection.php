@@ -45,7 +45,20 @@ class ExportExaprintSelection extends BaseForm
         $entries = OrderQuery::create()
             ->filterByDeliveryModuleId(IciRelais::getModCode())
             ->find();
-
+        $this->formBuilder
+            ->add('new_status_id', 'choice',array(
+                    'label' => Translator::getInstance()->trans('server'),
+                    'choices' => array(
+                        "nochange" => Translator::getInstance()->trans("Do not change"),
+                        "processing" => Translator::getInstance()->trans("Set orders status as processing"),
+                        "sent" => Translator::getInstance()->trans("Set orders status as sent")
+                    ),
+                    'required' => 'true',
+                    'expanded'=>true,
+                    'multiple'=>false,
+                    'data'=>'nochange'
+                    )
+                );
         foreach($entries as $order) {
             $this->formBuilder
                 ->add(str_replace(".","-",$order->getRef()), 'checkbox', array(

@@ -2,7 +2,7 @@
 	<!-- Errors -->
 	{loop name="checkrights" type="icirelais.check.rights"}
 	<div class="alert alert-danger">
-    	<p>{intl l="{$ERRMES}"}  {$ERRFILE} | {intl l="Please change the access rights"}.</p>
+    	<p>{$ERRMES} {$ERRFILE} | {intl l="Please change the access rights"}.</p>
     </div>
 	{/loop}
 </div>
@@ -27,33 +27,54 @@
         <br/>
         <div class="tab-content">
             <div id="export_exaprint" class="tab-pane {if $tab eq "0"}active{/if} form-container">
-                <script>
-                    function checkboxManagement(operation) {
-                        var checkboxes = [{loop name="icirelais.get.checkboxes.names" type="icirelais.orders"}"{$REF|replace:'.':'-'}",{/loop}];
-                        for(var i= 0; i< checkboxes.length;i++) {
-                            document.getElementById(checkboxes[i]).checked=
-                                    (operation == '0' ?
-                                            false:
-                                            (operation=='1'?
-                                                    true:
-                                                    !document.getElementById(checkboxes[i]).checked
-                                            )
-                                    );
-                        }
-                    }
-                </script>
-                <div class="panel panel-default panel">
+                <div class="panel panel-default">
                     <div class="panel-heading clearfix">
                         {intl l="operations"}
                     </div>
                     <div class="panel-body">
-                        <button onclick="checkboxManagement('1');" title="{intl l="Check all"}" class="form-submit-button btn btn-sm btn-default">{intl l="Check all"}</button>
-                        <button onclick="checkboxManagement('0');" title="{intl l="Uncheck all"}" class="form-submit-button btn btn-sm btn-default">{intl l="Uncheck all"}</button>
-                        <button onclick="checkboxManagement('2');" title="{intl l="Reverse selection"}" class="form-submit-button btn btn-sm btn-default">{intl l="Reverse selection"}</button>
+                        <button id="check-all-but" title="{intl l="Check all"}" class="form-submit-button btn btn-sm btn-default">{intl l="Check all"}</button>
+                        <button id="uncheck-all-but" title="{intl l="Uncheck all"}" class="form-submit-button btn btn-sm btn-default">{intl l="Uncheck all"}</button>
+                        <button id="reverse-all-but" title="{intl l="Reverse selection"}" class="form-submit-button btn btn-sm btn-default">{intl l="Reverse selection"}</button>
                     </div>
                 </div>
-                {form name="icirelais.selection"}
-                    <form action="{url path="/admin/module/icirelais/exportgo"}">
+            {form name="icirelais.selection"}
+                <form action="{url path="/admin/module/icirelais/exportgo"}">
+                    <div class="panel panel-default">
+                        <div class="panel-heading clearfix">
+                            {intl l="Change orders status after export"}
+                        </div>
+                        <div class="panel-body">
+                            {form_field form=$form field="new_status_id"}
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label for="nochange">{intl l="Do not change"}</label>&nbsp;
+                                    </td>
+                                    <td>
+                                        <input type="radio"  id="nochange" name="{$name}" value="nochange" {if $data eq "nochange"}checked{/if} />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label for="processing">{intl l="Processing"}</label>&nbsp;
+                                    </td>
+                                    <td>
+                                        <input type="radio"  id="processing" name="{$name}" value="processing" {if $data eq "processing"}checked{/if} />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label for="sent">{intl l="Sent"}*</label>&nbsp;
+                                    </td>
+                                    <td>
+                                        <input type="radio"  id="sent" name="{$name}" value="sent" {if $data eq "sent"}checked{/if} />
+                                    </td>
+                                </tr>
+                            </table>
+                            {/form_field}
+                            <span class="p">{intl l="*If you choose this option, the exported orders would not be available on this page anymore"}</span>
+                        </div>
+                    </div>
                     {form_hidden_fields form=$form}
                         <table class="table table-striped table-condensed">
                             <thead>
@@ -307,4 +328,5 @@
         </div>
     </div>
 </div>
+
 {/elseloop}

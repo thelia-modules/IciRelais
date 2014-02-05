@@ -25,6 +25,7 @@ namespace IciRelais\Controller;
 
 use IciRelais\Form\ExportExaprintSelection;
 use IciRelais\IciRelais;
+use IciRelais\Loop\IciRelaisOrders;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\Translation\Translator;
 
@@ -102,8 +103,12 @@ class Export extends BaseAdminController
 
         // FORM VALIDATION
         $form = new ExportExaprintSelection($this->getRequest());
+        $status_id = null;
         try {
             $vform = $this->validateForm($form);
+            $status_id=$vform->get("new_status_id")->getData();
+            if(!preg_match("#^nochange|processing|sent$#",$status_id))
+                throw new \Exception();
         } catch(\Exception $e) {
             Tlog::getInstance()->error("Form icirelais.selection sent with bad infos. ");
             return Response::create(Translator::getInstance()->trans("Form sent with bad arguments"),500);
@@ -111,6 +116,11 @@ class Export extends BaseAdminController
         //---
         foreach ($orders as $order) {
             if($vform->get(str_replace(".","-",$order->getRef()))->getData()) {
+                if($status_id == "processing") {
+                    $order->setStatusId(IciRelaisOrders::STATUS_PROCESSING)->save();
+                } elseif($status_id == "sent") {
+                    $order->setStatusId(IciRelaisOrders::STATUS_SENT)->save();
+                }
                 //Get OrderAddress object - customer's address
                 $address = OrderAddressQuery::create()
                     ->findPK($order->getInvoiceOrderAddressId());

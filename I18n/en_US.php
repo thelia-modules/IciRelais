@@ -61,4 +61,11 @@ return array(
     'Uncheck all'=>'Uncheck all',
     'Reverse selection'=>'Reverse selection',
     'operations'=>'Operations',
+    'Can\'t write Config directory'=>'Can\'t write Config directory',
+    'Export EXAPRINT file of this order'=>'Export EXAPRINT file of this order',
+    'Change orders status after export'=>'Change orders status after export',
+    'Do not change'=>'Do not change',
+    'Processing'=>'Processing',
+    'Sent'=>'Sent',
+
 );
