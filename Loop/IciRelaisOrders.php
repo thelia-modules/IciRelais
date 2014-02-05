@@ -22,7 +22,6 @@
 /*************************************************************************************/
 
 namespace IciRelais\Loop;
-use Propel\Runtime\ActiveQuery\Criteria;
 use Thelia\Core\Template\Loop\Order;
 use IciRelais\IciRelais;
 use Thelia\Model\OrderQuery;

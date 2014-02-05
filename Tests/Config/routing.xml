@@ -1,0 +1,23 @@
+<routes xmlns="http://symfony.com/schema/routing"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
+
+	<route id="icirelais.searchroute" path="/module/icirelais/{zipcode}/{city}" methods="get">
+		<default key="_controller">IciRelais\Controller\SearchCityController::searchAction</default>
+		<requirement key="zipcode">\d{5}</requirement>
+		<requirement key="city">.+</requirement>
+	</route>
+
+	<route id="icirelais.export" path="/admin/module/icirelais/exportgo" methods="get">
+		<default key="_controller">IciRelais\Controller\Export::exportfile</default>
+	</route>
+
+	<route id="icirelais.export.exaprint" path="/admin/module/icirelais/export" methods="post">
+		<default key="_controller">IciRelais\Controller\ExportExaprint::export</default>
+	</route>
+
+	<route id="icirelais.edit.prices" path="/admin/module/icirelais/prices" methods="post">
+		<default key="_controller">IciRelais\Controller\EditPrices::editprices</default>
+	</route>
+
+</routes>

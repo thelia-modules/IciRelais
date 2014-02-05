@@ -47,10 +47,10 @@ class CheckRightsLoop extends BaseLoop implements ArraySearchLoopInterface
     {
         $ret = array();
         $dir = __DIR__."/../Config/";
-        if(!is_readable($dir)) {
+        if (!is_readable($dir)) {
             $ret[] = array("ERRMES"=>Translator::getInstance()->trans("Can't read Config directory"), "ERRFILE"=>"");
         }
-        if(!is_writable($dir)) {
+        if (!is_writable($dir)) {
             $ret[] = array("ERRMES"=>Translator::getInstance()->trans("Can't write Config directory"), "ERRFILE"=>"");
         }
         if ($handle = opendir($dir)) {

@@ -54,19 +54,22 @@ class EditPrices extends BaseAdminController
 
                 if (is_readable($json_path)) {
                     $json_data = json_decode(file_get_contents($json_path),true);
+                } elseif(!file_exists($json_path)) {
+                    $json_data = array();
                 } else {
                     throw new \Exception("Can't read IciRelais".IciRelais::JSON_PRICE_RESOURCE.". Please change the rights on the file.");
                 }
                 if((float) $weight > 0 && $operation == "add"
-                  && preg_match("#\d+\.?\d{0,}#", $price)) {
+                  && preg_match("#\d+\.?\d*#", $price)) {
                     $json_data[$area]['slices'][$weight] = $price;
                 } elseif ($operation == "delete") {
-                    unset($json_data[$area]['slices'][$weight]);
+                    if(isset($json_data[$area]['slices'][$weight]))
+                        unset($json_data[$area]['slices'][$weight]);
                 } else {
                     throw new \Exception("Weight must be superior to 0");
                 }
                 ksort($json_data[$area]['slices']);
-                if (is_writable($json_path)) {
+                if ((file_exists($json_path) ?is_writable($json_path):is_writable(__DIR__."/../"))) {
                     $file = fopen($json_path, 'w');
                     fwrite($file, json_encode($json_data));;
                     fclose($file);

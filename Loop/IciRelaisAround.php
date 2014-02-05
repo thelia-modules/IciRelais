@@ -56,8 +56,8 @@ class IciRelaisAround extends BaseLoop implements PropelSearchLoopInterface
 
     public function buildModelCriteria()
     {
-    	$zipcode = $this->getZipcode();
-		$city = $this->getCity();
+        $zipcode = $this->getZipcode();
+        $city = $this->getCity();
         if (!empty($zipcode) and !empty($city)) {
             $this->zipcode = $zipcode;
             $this->city = $city;
@@ -111,8 +111,8 @@ class IciRelaisAround extends BaseLoop implements PropelSearchLoopInterface
                     "[%s %s - SOAP Error %d]: %s",
                     $date,
                     date("H:i:s"),
-                    (int)$e->getCode(),
-                    (string)$e->getMessage()
+                    (int) $e->getCode(),
+                    (string) $e->getMessage()
                 )
             );
 
@@ -129,7 +129,7 @@ class IciRelaisAround extends BaseLoop implements PropelSearchLoopInterface
             if (strlen($distance) < 4) {
                 $distance .= " m";
             } else {
-                $distance = (string)floatval($distance) / 1000;
+                $distance = (string) floatval($distance) / 1000;
                 while (substr($distance, strlen($distance) - 1, 1) == "0") {
                     $distance = substr($distance, 0, strlen($distance) - 1);
                 }

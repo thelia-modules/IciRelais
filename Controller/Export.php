@@ -107,18 +107,19 @@ class Export extends BaseAdminController
         try {
             $vform = $this->validateForm($form);
             $status_id=$vform->get("new_status_id")->getData();
-            if(!preg_match("#^nochange|processing|sent$#",$status_id))
+            if (!preg_match("#^nochange|processing|sent$#",$status_id))
                 throw new \Exception();
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             Tlog::getInstance()->error("Form icirelais.selection sent with bad infos. ");
+
             return Response::create(Translator::getInstance()->trans("Form sent with bad arguments"),500);
         }
         //---
         foreach ($orders as $order) {
-            if($vform->get(str_replace(".","-",$order->getRef()))->getData()) {
-                if($status_id == "processing") {
+            if ($vform->get(str_replace(".","-",$order->getRef()))->getData()) {
+                if ($status_id == "processing") {
                     $order->setStatusId(IciRelaisOrders::STATUS_PROCESSING)->save();
-                } elseif($status_id == "sent") {
+                } elseif ($status_id == "sent") {
                     $order->setStatusId(IciRelaisOrders::STATUS_SENT)->save();
                 }
                 //Get OrderAddress object - customer's address
@@ -132,7 +133,7 @@ class Export extends BaseAdminController
                 //Get OrderAddressIciRelais object
                 $icirelais_code = OrderAddressIcirelaisQuery::create()
                     ->findPK($order->getDeliveryOrderAddressId());
-                if($icirelais_code !== null) {
+                if ($icirelais_code !== null) {
                     //Get OrderProduct object
                     $products = OrderProductQuery::create()
                         ->filterByOrderId($order->getId())
@@ -208,7 +209,6 @@ class Export extends BaseAdminController
                 }
             }
         }
-
 
         $response = new Response(
             $res,

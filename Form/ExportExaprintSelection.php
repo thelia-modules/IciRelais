@@ -59,7 +59,7 @@ class ExportExaprintSelection extends BaseForm
                     'data'=>'nochange'
                     )
                 );
-        foreach($entries as $order) {
+        foreach ($entries as $order) {
             $this->formBuilder
                 ->add(str_replace(".","-",$order->getRef()), 'checkbox', array(
                     'label' => str_replace(".","-",$order->getRef()),
