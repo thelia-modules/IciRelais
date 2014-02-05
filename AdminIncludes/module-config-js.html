@@ -1,33 +1,35 @@
 <script>
-    checkboxes = [{loop name="icirelais.get.checkboxes.names" type="icirelais.orders"}"{$REF|replace:'.':'-'}",{/loop}];
-    $("#check-all-but").click( function() {
-        checkboxes.forEach(function(entry) {
-           $("#"+entry).prop('checked', true);
+    $(document).ready(function() {
+        checkboxes = [{loop name="icirelais.get.checkboxes.names" type="icirelais.orders"}"{$REF|replace:'.':'-'}",{/loop}];
+        $("#check-all-but").click( function() {
+            checkboxes.forEach(function(entry) {
+               $("#"+entry).prop('checked', true);
+            });
         });
-    });
-    $("#uncheck-all-but").click( function() {
-        checkboxes.forEach(function(entry) {
-            $("#"+entry).prop('checked', false);
+        $("#uncheck-all-but").click( function() {
+            checkboxes.forEach(function(entry) {
+                $("#"+entry).prop('checked', false);
+            });
         });
-    });
-    $("#reverse-all-but").click( function() {
-        checkboxes.forEach(function(entry) {
-            var box=$("#"+entry);
-            box.prop('checked', !box.is(":checked"));
-        });
-    });
-    $("button[name=save_mode]").click(function() {
-        var value = $("input[name='exportexaprintselection[new_status_id]']:checked").val();
-        if(value == "sent") {
+        $("#reverse-all-but").click( function() {
             checkboxes.forEach(function(entry) {
                 var box=$("#"+entry);
-                if(box.is(":checked")) {
-                    var row= box.parent().parent(); // box = <input />, first parent: <td></td>, second: <tr></tr>
-                    row.hide('slow', function() {
-                        row.remove();
-                    });
-                }
+                box.prop('checked', !box.is(":checked"));
             });
-        }
+        });
+        $("button[name=save_mode]").click(function() {
+            var value = $("input[name='exportexaprintselection[new_status_id]']:checked").val();
+            if(value == "sent") {
+                checkboxes.forEach(function(entry) {
+                    var box=$("#"+entry);
+                    if(box.is(":checked")) {
+                        var row= box.parents("tr"); // get first tr parent
+                        row.hide('slow', function() {
+                            row.remove();
+                        });
+                    }
+                });
+            }
+        });
     });
 </script>

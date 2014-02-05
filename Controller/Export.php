@@ -27,6 +27,8 @@ use IciRelais\Form\ExportExaprintSelection;
 use IciRelais\IciRelais;
 use IciRelais\Loop\IciRelaisOrders;
 use Thelia\Controller\Admin\BaseAdminController;
+use Thelia\Core\Event\Order\OrderEvent;
+use Thelia\Core\Event\TheliaEvents;
 use Thelia\Core\Translation\Translator;
 
 use IciRelais\Model\OrderAddressIcirelaisQuery;
@@ -37,6 +39,7 @@ use Thelia\Model\OrderAddressQuery;
 use Thelia\Model\OrderQuery;
 use Thelia\Model\OrderProductQuery;
 use Thelia\Model\CustomerQuery;
+use Thelia\Model\OrderStatusQuery;
 
 /**
  * Class Export
@@ -118,9 +121,14 @@ class Export extends BaseAdminController
         foreach ($orders as $order) {
             if ($vform->get(str_replace(".","-",$order->getRef()))->getData()) {
                 if ($status_id == "processing") {
-                    $order->setStatusId(IciRelaisOrders::STATUS_PROCESSING)->save();
+                    $event = new OrderEvent($order);
+                    $event->setStatus(IciRelaisOrders::STATUS_PROCESSING);
+                    $this->getDispatcher()->dispatch(TheliaEvents::ORDER_UPDATE_STATUS, $event);
+
                 } elseif ($status_id == "sent") {
-                    $order->setStatusId(IciRelaisOrders::STATUS_SENT)->save();
+                    $event = new OrderEvent($order);
+                    $event->setStatus(IciRelaisOrders::STATUS_SENT);
+                    $this->getDispatcher()->dispatch(TheliaEvents::ORDER_UPDATE_STATUS, $event);
                 }
                 //Get OrderAddress object - customer's address
                 $address = OrderAddressQuery::create()
