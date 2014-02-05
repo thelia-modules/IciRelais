@@ -39,7 +39,6 @@ use Thelia\Model\OrderAddressQuery;
 use Thelia\Model\OrderQuery;
 use Thelia\Model\OrderProductQuery;
 use Thelia\Model\CustomerQuery;
-use Thelia\Model\OrderStatusQuery;
 
 /**
  * Class Export
