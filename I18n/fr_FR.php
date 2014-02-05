@@ -67,5 +67,5 @@ return array(
     'Do not change'=>'Ne pas changer',
     'Processing'=>'Traitement',
     'Sent'=>'Envoyée',
-
+    '*If you choose this option, the exported orders would not be available on this page anymore'=>'*En choisissant cette option, les commandes exportées ne seront plus disponible sur cette page',
 );
