@@ -179,7 +179,7 @@ class Export extends BaseAdminController
                     $assur_price = ($assur_package == 'true') ? $price:0;
                     $date_format = date("d/m/Y", $order->getUpdatedAt()->getTimestamp());
 
-                    $res .= self::harmonise($customer->getRef(), 'alphanumeric', 35);
+                    $res .= self::harmonise($order->getRef(), 'alphanumeric', 35);
                     $res .= self::harmonise("", 'alphanumeric', 2);
                     $res .= self::harmonise($weight, 'numeric', 8);
                     $res .= self::harmonise("", 'alphanumeric', 15);
@@ -214,7 +214,7 @@ class Export extends BaseAdminController
                     $res .= self::harmonise($date_format, 'alphanumeric', 10);
                     $res .= self::harmonise($exp_code, 'numeric', 8); 									    // N° COMPTE CHARGEUR ICIRELAIS ?
                     $res .= self::harmonise("", 'alphanumeric', 35); 							    // CODE BARRE
-                    $res .= self::harmonise($order->getRef(), 'alphanumeric', 35);
+                    $res .= self::harmonise($customer->getRef(), 'alphanumeric', 35);
                     $res .= self::harmonise("", 'alphanumeric', 29);
                     $res .= self::harmonise($assur_price, 'float', 9);					            // MONTANT DE LA VALEUR MARCHANDE A ASSURER EX: 20 euros -> 000020.00
                     $res .= self::harmonise("", 'alphanumeric', 8);
