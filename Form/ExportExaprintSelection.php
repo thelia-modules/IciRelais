@@ -21,28 +21,54 @@
 /*                                                                                   */
 /*************************************************************************************/
 
-namespace IciRelais\Loop;
-
-use Thelia\Core\Template\Loop\Delivery;
-use Thelia\Core\Template\Element\LoopResult;
+namespace IciRelais\Form;
 
 use IciRelais\IciRelais;
+use Thelia\Form\BaseForm;
+use Thelia\Core\Translation\Translator;
+use Thelia\Model\OrderQuery;
+
 /**
- * Class IciRelaisDelivery
- * @package IciRelais\Loop
+ * Class ExportExaprintSelection
+ * @package IciRelais\Form
  * @author Thelia <info@thelia.net>
  */
-class IciRelaisDelivery extends Delivery
+class ExportExaprintSelection extends BaseForm
 {
-    public function parseResults(LoopResult $loopResult)
+    public function getName()
     {
-        $icirelaiskey = IciRelais::getModCode();
+        return "exportexaprintselection";
+    }
 
-        $loopResult = parent::parseResults($loopResult);
-        for ($loopResult->rewind(); $loopResult->valid(); $loopResult->next()) {
-            $loopResult->current()->set("ICI_RELAIS_MODULE", $icirelaiskey);
+    protected function buildForm()
+    {
+        $entries = OrderQuery::create()
+            ->filterByDeliveryModuleId(IciRelais::getModCode())
+            ->find();
+        $this->formBuilder
+            ->add('new_status_id', 'choice',array(
+                    'label' => Translator::getInstance()->trans('server'),
+                    'choices' => array(
+                        "nochange" => Translator::getInstance()->trans("Do not change"),
+                        "processing" => Translator::getInstance()->trans("Set orders status as processing"),
+                        "sent" => Translator::getInstance()->trans("Set orders status as sent")
+                    ),
+                    'required' => 'true',
+                    'expanded'=>true,
+                    'multiple'=>false,
+                    'data'=>'nochange'
+                    )
+                );
+        foreach ($entries as $order) {
+            $this->formBuilder
+                ->add(str_replace(".","-",$order->getRef()), 'checkbox', array(
+                    'label' => str_replace(".","-",$order->getRef()),
+                    'label_attr' => array(
+                        'for' => str_replace(".","-",$order->getRef())
+                    )
+                ))
+                ->add(str_replace(".","-",$order->getRef())."-assur", 'checkbox')
+            ;
         }
-
-        return $loopResult;
     }
 }

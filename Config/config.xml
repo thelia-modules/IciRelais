@@ -10,10 +10,13 @@
     	<loop name="icirelais" class="IciRelais\Loop\IciRelaisPrice" />
     	<loop name="icirelais.relais.around" class="IciRelais\Loop\IciRelaisAround" />
         <loop name="icirelais.check.rights" class="IciRelais\Loop\CheckRightsLoop" />
+        <loop name="icirelais.orders" class="IciRelais\Loop\IciRelaisOrders" />
+        <loop name="icirelais.urltracking" class="IciRelais\Loop\IciRelaisUrlTracking" />
     </loops>
 
     <forms>
 		<form name="icirelais.export" class="IciRelais\Form\ExportExaprintForm"/>
+        <form name="icirelais.selection" class="IciRelais\Form\ExportExaprintSelection" />
     </forms>
 
     <commands>

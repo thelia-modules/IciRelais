@@ -54,6 +54,13 @@ Cette route pointe vers le controlleur "SearchCityController" qui génère un fi
 Pour afficher l'adresse du point relais en adresse de livraison sur la page order-invoice.html, 
 il vous suffit de replacer le type de la boucle nommée "delivery-address" en address.ici, à la place de "delivery"
 
+Pour rajouter l'adresse de suivi du colis dans le mail de confirmation de la commande, une boucle est mise à votre disposition: "icirelais.urltracking"
+elle prend un argument ref, qui est la référence de la commande, et une sortie $URL.
+Si l'url ne peut être générée, elle ne renvoie rien.
+On peut donc l'intégrer de la manière suivante:
+{loop name="tracking" type="icirelais.urltracking" ref=$REF}
+Vous pouvez suivre votre colis <a href="{$URL}">ici</a>
+{/loop}
 === en_US ===
 
 I) Install notes
@@ -90,6 +97,12 @@ A loop is provided to get the 10 nearest pick-up & go stores of user's default a
 There's also a route to get 10 pick-p & go stores in another city: /module/icirelais/{city}/{zipcode}
 This route uses "SearchCityController" controller. It generate a json output, which you can use with, for example, jquery/ajax.
 
-Pour afficher l'adresse du point relais en addresse de livraison sur la page order-invoice.html, 
-il vous suffit de replacer le type de la boucle nommée "delivery-address" en address.ici, à la place de "delivery"
 If you want to show the store's address as delivery address, you just have to replace the "delivery-address" loop type by address.ici
+
+If you want to add the package tracking link to the order email, you can use the loop: "icirelais.urltracking"
+It take only one argument ref, that is the order's reference, and it has one output $URL.
+If the link can't be generated, there's no output.
+You can, for exemple, integrate the link like that in the email:
+{loop name="tracking" type="icirelais.urltracking" ref=$REF}
+You can track your package <a href="{$URL}">here</a>
+{/loop}

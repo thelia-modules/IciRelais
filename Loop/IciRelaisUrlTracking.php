@@ -23,26 +23,54 @@
 
 namespace IciRelais\Loop;
 
-use Thelia\Core\Template\Loop\Delivery;
+use IciRelais\Controller\ExportExaprint;
+use Thelia\Core\Template\Element\ArraySearchLoopInterface;
+use Thelia\Core\Template\Element\BaseLoop;
 use Thelia\Core\Template\Element\LoopResult;
+use Thelia\Core\Template\Element\LoopResultRow;
 
-use IciRelais\IciRelais;
+use Thelia\Core\Template\Loop\Argument\Argument;
+use Thelia\Core\Template\Loop\Argument\ArgumentCollection;
+
 /**
- * Class IciRelaisDelivery
+ * Class IciRelaisUrlTracking
  * @package IciRelais\Loop
  * @author Thelia <info@thelia.net>
  */
-class IciRelaisDelivery extends Delivery
+class IciRelaisUrlTracking extends BaseLoop implements ArraySearchLoopInterface
 {
+    /**
+     * @return ArgumentCollection
+     */
+    const BASE_URL="http://e-trace.ils-consult.fr/ici-webtrace/webclients.aspx?verknr=%s&versdat=&kundenr=%s&cmd=VERKNR_SEARCH";
+    protected function getArgDefinitions()
+    {
+        return new ArgumentCollection(
+            Argument::createAnyTypeArgument('ref', null, true)
+        );
+    }
+
+    public function buildArray()
+    {
+        $path=ExportExaprint::getJSONpath();
+        if(is_readable($path)) {
+            $json=json_decode(file_get_contents($path),true);
+            return array($this->getRef()=>$json['expcode']);
+        } else {
+            return array();
+        }
+    }
+
     public function parseResults(LoopResult $loopResult)
     {
-        $icirelaiskey = IciRelais::getModCode();
+        foreach ($loopResult->getResultDataCollection() as $ref => $code) {
+            $loopResultRow = new LoopResultRow();
+            $loopResultRow->set("URL", sprintf(self::BASE_URL,$ref,$code));
 
-        $loopResult = parent::parseResults($loopResult);
-        for ($loopResult->rewind(); $loopResult->valid(); $loopResult->next()) {
-            $loopResult->current()->set("ICI_RELAIS_MODULE", $icirelaiskey);
+            $loopResult->addRow($loopResultRow);
         }
 
         return $loopResult;
+
     }
 }

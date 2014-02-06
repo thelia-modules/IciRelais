@@ -103,11 +103,12 @@ class ExportExaprintForm extends BaseForm
                 'label_attr' => array(
                     'for' => 'mail'
                 )			))
-            ->add('assur', 'checkbox', array(
-                'label' => Translator::getInstance()->trans('Package warranty'),
-                'value' => (isset($values['assur']) ? $values['assur']:""),
+            ->add('expcode', 'text', array(
+                'label' => Translator::getInstance()->trans('IciRelais Sender\'s code'),
+                'constraints' => array(new NotBlank()),
+                'data'=>(isset($values['expcode']) ? $values['expcode']:""),
                 'label_attr' => array(
-                    'for' => 'assur'
+                    'for' => 'expcode'
                 )			))
         ;
     }

@@ -22,27 +22,25 @@
 /*************************************************************************************/
 
 namespace IciRelais\Loop;
-
-use Thelia\Core\Template\Loop\Delivery;
-use Thelia\Core\Template\Element\LoopResult;
-
+use Thelia\Core\Template\Loop\Order;
 use IciRelais\IciRelais;
+use Thelia\Model\OrderQuery;
+
 /**
- * Class IciRelaisDelivery
+ * Class IciRelaisOrders
  * @package IciRelais\Loop
  * @author Thelia <info@thelia.net>
  */
-class IciRelaisDelivery extends Delivery
+class IciRelaisOrders extends Order
 {
-    public function parseResults(LoopResult $loopResult)
+    const STATUS_PAID = 2;
+    const STATUS_PROCESSING = 3;
+    const STATUS_SENT = 4;
+    public function buildModelCriteria()
     {
-        $icirelaiskey = IciRelais::getModCode();
-
-        $loopResult = parent::parseResults($loopResult);
-        for ($loopResult->rewind(); $loopResult->valid(); $loopResult->next()) {
-            $loopResult->current()->set("ICI_RELAIS_MODULE", $icirelaiskey);
-        }
-
-        return $loopResult;
+        return OrderQuery::create()
+            ->filterByDeliveryModuleId(IciRelais::getModCode())
+            ->filterByStatusId(array(self::STATUS_PAID,self::STATUS_PROCESSING));
     }
+
 }

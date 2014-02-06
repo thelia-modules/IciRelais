@@ -110,7 +110,7 @@ class SetDeliveryModule implements EventSubscriberInterface
 
     public function updateDeliveryAddress(OrderEvent $event)
     {
-        if($this->check_module($event->getOrder()->getDeliveryModuleId())) {
+        if ($this->check_module($event->getOrder()->getDeliveryModuleId())) {
             $request = $this->getRequest();
             $tmp_address = AddressIcirelaisQuery::create()
                 ->findPk($request->getSession()->get('IciRelaisDeliveryId'));
