@@ -51,6 +51,24 @@ class IciRelais extends BaseModule implements DeliveryModuleInterface
 
     public function postActivation(ConnectionInterface $con = null)
     {
+        $this->getModuleModel()
+            ->setTitle("Livraison en point ICI relais par Exapaq")
+            ->setChapo("Livraison 24/ 48H parmi 5 000 relais en France")
+            ->setDescription("Choisissez la livraison sans contrainte avec ICI relais !
+
+Faites-vous livrer dans l’un de nos 5 000 commerces de proximité disponibles sur toute la France.  Vous avez la liberté de choisir le commerce qui vous convient le mieux : près de chez vous ou encore près de votre travail, et d’aller y retirer votre colis 7/7 jours (*).
+
+Dès que votre colis est livré dans l’espace ICI relais préalablement choisi, vous êtes automatiquement prévenus par email ou SMS de sa disponibilité.
+Si vous ne pouvez pas le récupérer le jour même, pas de souci, votre colis reste disponible jusqu’à 9 jours !
+
+ICI relais c’est l’assurance d’une livraison de qualité avec :
+\t- Une livraison toute France en 24/48 H
+\t- Un choix parmi plus de 5 000 commerces répartis sur toute la France et rigoureusement sélectionnés  (situation géographique, capacité de stockage, horaires d’ouverture…)
+\t- Un suivi détaillé (tracing) de votre colis disponible 24/24H sur www.icirelais.com
+\t- Une alerte (email / SMS) dès l’arrivée de votre colis dans l’espace ICI relais
+\t- Des outils innovants en phase avec la tendance de mobilité : des applications ICI relais pour Iphone et Android.")
+        ->save();
+
         $database = new Database($con->getWrappedConnection());
 
         $database->insertSql(null, array(__DIR__ . '/Config/thelia.sql'));

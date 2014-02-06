@@ -47,9 +47,10 @@ class ExportExaprint extends BaseAdminController
             if(preg_match("#^\d{5}$#",$vform->get('zipcode')->getData()) &&
                 preg_match("#^0[[1-5]|[8-9]]{1}\d{8}$#",$vform->get('tel')->getData()) &&
                 preg_match("#^0[6-7]{1}\d{8}$#",$vform->get('mobile')->getData()) &&
-                preg_match("#^[A-Z0-9\._%\+\-]{2,}@[A-Z0-9\.\-]{2,}\.[A-Z]{2,4}$#i",$vform->get('mail')->getData())
+                preg_match("#^[A-Z0-9\._%\+\-]{2,}@[A-Z0-9\.\-]{2,}\.[A-Z]{2,4}$#i",$vform->get('mail')->getData()) &&
+                preg_match("#^\d{7}$#",$vform->get('expcode')->getData())
               ) {
-                $file_path = __DIR__."/../Config/exportdat.json";
+                $file_path = self::getJSONpath();
                 if ((file_exists($file_path) ? is_writable($file_path):is_writable(__DIR__."/../Config/"))) {
                     $file = fopen(self::getJSONpath(), 'w');
                     fwrite($file, json_encode(
@@ -62,7 +63,7 @@ class ExportExaprint extends BaseAdminController
                                     "tel"=>$vform->get('tel')->getData(),
                                     "mobile"=>$vform->get('mobile')->getData(),
                                     "mail"=>$vform->get('mail')->getData(),
-                                    "assur"=>($vform->get('assur')->getData()?"true":"")
+                                    "expcode"=>($vform->get('expcode')->getData())
                                 )
                             )
                         );

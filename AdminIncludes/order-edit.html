@@ -17,5 +17,9 @@
             <button type="submit" name="export_order" value="stay" class="form-submit-button btn btn-sm btn-default" title="{intl l='Export'}">{intl l='Export'} <span class="glyphicon glyphicon-ok"></span></button>
         </form>
         {/form}
+        <br/>
+        {loop name="tracking" type="icirelais.urltracking" ref=$REF}
+            Suivi du colis: <a href="{$URL}">ici</a>
+        {/loop}
     </div>
 </div>

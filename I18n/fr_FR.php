@@ -44,7 +44,7 @@ return array(
     'Sender\'s phone' => 'Téléphone  de l\'expéditeur',
     'Sender\'s mobile phone' => 'Téléphone mobile  de l\'expéditeur',
     'Sender\'s email' => 'Email de  de l\'expéditeur',
-    'Package warranty' => 'Garantie des colis',
+    'Package warranty' => 'Garantie du colis',
     'Can\'t read file' => 'Le fichier suivant ne peut être lu',
     'Can\'t write file' => 'Le fichier suivant ne peut être écrit',
     'Can\'t read Config directory' => 'Le dossier Config ne peut être lu',
@@ -68,4 +68,5 @@ return array(
     'Processing'=>'Traitement',
     'Sent'=>'Envoyée',
     '*If you choose this option, the exported orders would not be available on this page anymore'=>'*En choisissant cette option, les commandes exportées ne seront plus disponible sur cette page',
+    'IciRelais Sender\'s code'=>'Code IciRelais de l\'expéditeur',
 );

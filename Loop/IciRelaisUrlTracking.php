@@ -21,54 +21,56 @@
 /*                                                                                   */
 /*************************************************************************************/
 
-namespace IciRelais\Form;
+namespace IciRelais\Loop;
 
-use IciRelais\IciRelais;
-use Thelia\Form\BaseForm;
-use Thelia\Core\Translation\Translator;
-use Thelia\Model\OrderQuery;
+use IciRelais\Controller\ExportExaprint;
+use Thelia\Core\Template\Element\ArraySearchLoopInterface;
+use Thelia\Core\Template\Element\BaseLoop;
+use Thelia\Core\Template\Element\LoopResult;
+use Thelia\Core\Template\Element\LoopResultRow;
+
+use Thelia\Core\Template\Loop\Argument\Argument;
+use Thelia\Core\Template\Loop\Argument\ArgumentCollection;
 
 /**
- * Class ExportExaprintSelection
- * @package IciRelais\Form
+ * Class IciRelaisUrlTracking
+ * @package IciRelais\Loop
  * @author Thelia <info@thelia.net>
  */
-class ExportExaprintSelection extends BaseForm
+class IciRelaisUrlTracking extends BaseLoop implements ArraySearchLoopInterface
 {
-    public function getName()
+    /**
+     * @return ArgumentCollection
+     */
+    const BASE_URL="http://e-trace.ils-consult.fr/ici-webtrace/webclients.aspx?verknr=%s&versdat=&kundenr=%s&cmd=VERKNR_SEARCH";
+    protected function getArgDefinitions()
     {
-        return "exportexaprintselection";
+        return new ArgumentCollection(
+            Argument::createAnyTypeArgument('ref', null, true)
+        );
     }
 
-    protected function buildForm()
+    public function buildArray()
     {
-        $entries = OrderQuery::create()
-            ->filterByDeliveryModuleId(IciRelais::getModCode())
-            ->find();
-        $this->formBuilder
-            ->add('new_status_id', 'choice',array(
-                    'label' => Translator::getInstance()->trans('server'),
-                    'choices' => array(
-                        "nochange" => Translator::getInstance()->trans("Do not change"),
-                        "processing" => Translator::getInstance()->trans("Set orders status as processing"),
-                        "sent" => Translator::getInstance()->trans("Set orders status as sent")
-                    ),
-                    'required' => 'true',
-                    'expanded'=>true,
-                    'multiple'=>false,
-                    'data'=>'nochange'
-                    )
-                );
-        foreach ($entries as $order) {
-            $this->formBuilder
-                ->add(str_replace(".","-",$order->getRef()), 'checkbox', array(
-                    'label' => str_replace(".","-",$order->getRef()),
-                    'label_attr' => array(
-                        'for' => str_replace(".","-",$order->getRef())
-                    )
-                ))
-                ->add(str_replace(".","-",$order->getRef())."-assur", 'checkbox')
-            ;
+        $path=ExportExaprint::getJSONpath();
+        if(is_readable($path)) {
+            $json=json_decode(file_get_contents($path),true);
+            return array($this->getRef()=>$json['expcode']);
+        } else {
+            return array();
         }
+    }
+
+    public function parseResults(LoopResult $loopResult)
+    {
+        foreach ($loopResult->getResultDataCollection() as $ref => $code) {
+            $loopResultRow = new LoopResultRow();
+            $loopResultRow->set("URL", sprintf(self::BASE_URL,$ref,$code));
+
+            $loopResult->addRow($loopResultRow);
+        }
+
+        return $loopResult;
+
     }
 }

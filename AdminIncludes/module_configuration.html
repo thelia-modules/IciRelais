@@ -85,8 +85,11 @@
                                     <th class="object-title">
                                         {intl l="Date"}
                                     </th>
-                                    <th>
+                                    <th class="object-title">
                                         {intl l="Total taxed amount"}
+                                    </th>
+                                    <th class="object-title">
+                                        {intl l="Package warranty"}
                                     </th>
                                     <th class="object-title">
                                         {intl l="Export"}
@@ -95,10 +98,11 @@
                             </thead>
                             <tbody id="icirelais-orders-form-selection-container">
                                     {loop name="list.icirelais.orders" type="icirelais.orders"}
-                                        {form_field form=$form field=$REF|replace:'.':'-'}
+
                                         <tr>
+
                                             <td>
-                                                <label for="{$label_attr.for}">
+                                                <label for="{$REF|replace:'.':'-'}">
                                                     {$REF}
                                                 </label>
                                             </td>
@@ -108,11 +112,19 @@
                                             <td>
                                                 {$TOTAL_TAXED_AMOUNT} {loop name="list.icirelais.getcurrency" type="currency" id=$CURRENCY}{$SYMBOL} {/loop}
                                             </td>
+                                            {assign var="assurref" value="`$REF|replace:'.':'-'`-assur"}
+                                            {form_field form=$form field=$assurref}
+                                            <td>
+                                                <input type="checkbox" name="{$name}" value="true" class="form-control" />
+                                            </td>
+                                            {/form_field}
+                                            {form_field form=$form field=$REF|replace:'.':'-'}
                                             <td>
                                                 <input type="checkbox" name="{$name}" id="{$label_attr.for}" value=="true" class="form-control"/>
                                             </td>
+                                            {/form_field}
                                         </tr>
-                                        {/form_field}
+
                                     {/loop}
 
                             </tbody>
@@ -206,13 +218,13 @@
                     </div>
                     {/form_field}
 
-                    {form_field form=$form field="assur"}
+                    {form_field form=$form field="expcode"}
                     <div class="form-group {if $error}has-error{/if}">
                         <label for="{$label_attr.for}" class="control-label">
                             {$label} :
                         </label>
 
-                        <input type="checkbox" id="{$label_attr.for}" name="{$name}" value="true" {if $value eq "true"}checked{/if} placeholder="{intl l='assur'}" class="form-control"/>
+                        <input type="text" id="{$label_attr.for}" name="{$name}" value="{$value}" placeholder="{intl l='expcode'}" class="form-control" {literal}pattern="\d{7}"{/literal}/>
                     </div>
                     {/form_field}
 
