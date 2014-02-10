@@ -24,6 +24,7 @@
 namespace IciRelais\Loop;
 
 use IciRelais\Controller\ExportExaprint;
+use IciRelais\IciRelais;
 use Thelia\Core\Template\Element\ArraySearchLoopInterface;
 use Thelia\Core\Template\Element\BaseLoop;
 use Thelia\Core\Template\Element\LoopResult;
@@ -31,6 +32,7 @@ use Thelia\Core\Template\Element\LoopResultRow;
 
 use Thelia\Core\Template\Loop\Argument\Argument;
 use Thelia\Core\Template\Loop\Argument\ArgumentCollection;
+use Thelia\Model\OrderQuery;
 
 /**
  * Class IciRelaisUrlTracking
@@ -53,7 +55,8 @@ class IciRelaisUrlTracking extends BaseLoop implements ArraySearchLoopInterface
     public function buildArray()
     {
         $path=ExportExaprint::getJSONpath();
-        if(is_readable($path)) {
+        if(is_readable($path) && ($order=OrderQuery::create()->findOneByRef($this->getRef())) !== null
+          && $order->getDeliveryModuleId() === IciRelais::getModCode()) {
             $json=json_decode(file_get_contents($path),true);
             return array($this->getRef()=>$json['expcode']);
         } else {
