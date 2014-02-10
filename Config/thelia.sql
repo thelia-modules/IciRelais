@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS `address_icirelais`
 -- ---------------------------------------------------------------------
 -- First, delete existing entries
 SET @var := 0;
-SELECT @var := `ìd` FROM `message` WHERE name="order_confirmation_icirelais";
+SELECT @var := `id` FROM `message` WHERE name="order_confirmation_icirelais";
 DELETE FROM `message` WHERE `id`=@var;
 -- Try if ON DELETE constraint isn't set
 DELETE FROM `message_i18n` WHERE `id`=@var;
