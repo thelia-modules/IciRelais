@@ -52,6 +52,7 @@ class IciRelais extends BaseModule implements DeliveryModuleInterface
     public function postActivation(ConnectionInterface $con = null)
     {
         $this->getModuleModel()
+            ->setLocale('fr_FR')
             ->setTitle("Livraison en point ICI relais par Exapaq")
             ->setChapo("Livraison 24/ 48H parmi 5 000 relais en France")
             ->setDescription("Choisissez la livraison sans contrainte avec ICI relais !
