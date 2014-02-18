@@ -94,14 +94,14 @@
 						var buf = "";
 						for(i = 0; i < Object.keys(locations).length; i++){  
 							buf += '<tr><td style="padding: 5px;">'+locations[i][0]+', '+locations[i][4]+', '+locations[i][5]+' '+locations[i][6];
-							buf += '- '+locations[i][7]+' <!--<a href="#" onclick="show_relay(\'?fond=details_pr&choix=#CODE\'); return false;">+ d\'infos</a>-->';
+							buf += '- '+locations[i][7];
 							buf += '</td><td><input type="radio" name="pr_code" id="pr'+locations[i][3]+'" value="'+locations[i][3]+'" ';
 							if(i == 0) buf += 'checked'
 							buf += '/></td></tr>';
 							marker = new google.maps.Marker({
 						    	position: new google.maps.LatLng(locations[i][1], locations[i][2]),
 						    	// Icone d'un point relai
-						    	icon: new google.maps.MarkerImage(url_site + "../assets/frontOffice/default/IciRelais/img/logo_pr.png"),
+						    	icon: new google.maps.MarkerImage("{image file="assets/logo_pr.png" source="IciRelais"}"),
 						    	map: map
 						    });
 						    
