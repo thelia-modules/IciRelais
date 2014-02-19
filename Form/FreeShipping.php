@@ -21,59 +21,52 @@
 /*                                                                                   */
 /*************************************************************************************/
 
-namespace IciRelais\Loop;
+namespace IciRelais\Form;
 
-use IciRelais\Controller\ExportExaprint;
-use IciRelais\IciRelais;
-use Thelia\Core\Template\Element\ArraySearchLoopInterface;
-use Thelia\Core\Template\Element\BaseLoop;
-use Thelia\Core\Template\Element\LoopResult;
-use Thelia\Core\Template\Element\LoopResultRow;
 
-use Thelia\Core\Template\Loop\Argument\Argument;
-use Thelia\Core\Template\Loop\Argument\ArgumentCollection;
-use Thelia\Model\OrderQuery;
+use IciRelais\Model\IcirelaisFreeshippingQuery;
+use Thelia\Core\Translation\Translator;
+use Thelia\Form\BaseForm;
 
-/**
- * Class IciRelaisUrlTracking
- * @package IciRelais\Loop
- * @author Thelia <info@thelia.net>
- */
-class IciRelaisUrlTracking extends BaseLoop implements ArraySearchLoopInterface
-{
+class FreeShipping extends BaseForm {
     /**
-     * @return ArgumentCollection
+     *
+     * in this function you add all the fields you need for your Form.
+     * Form this you have to call add method on $this->formBuilder attribute :
+     *
+     * $this->formBuilder->add("name", "text")
+     *   ->add("email", "email", array(
+     *           "attr" => array(
+     *               "class" => "field"
+     *           ),
+     *           "label" => "email",
+     *           "constraints" => array(
+     *               new \Symfony\Component\Validator\Constraints\NotBlank()
+     *           )
+     *       )
+     *   )
+     *   ->add('age', 'integer');
+     *
+     * @return null
      */
-    const BASE_URL="http://e-trace.ils-consult.fr/ici-webtrace/webclients.aspx?verknr=%s&versdat=&kundenr=%s&cmd=VERKNR_SEARCH";
-    protected function getArgDefinitions()
+    protected function buildForm()
     {
-        return new ArgumentCollection(
-            Argument::createAnyTypeArgument('ref', null, true)
-        );
+        $freeshipping = IcirelaisFreeshippingQuery::create()->getLast();
+        $this->formBuilder
+            ->add("freeshipping", "checkbox", array(
+                'data'=>$freeshipping,
+                'label'=>Translator::getInstance()->trans("Activate free shipping: ")
+            ))
+        ;
     }
 
-    public function buildArray()
+    /**
+     * @return string the name of you form. This name must be unique
+     */
+    public function getName()
     {
-        $path=ExportExaprint::getJSONpath();
-        if(is_readable($path) && ($order=OrderQuery::create()->findOneByRef($this->getRef())) !== null
-          && $order->getDeliveryModuleId() === IciRelais::getModCode()) {
-            $json=json_decode(file_get_contents($path),true);
-            return array($this->getRef()=>$json['expcode']);
-        } else {
-            return array();
-        }
+        return "icirelaisfreeshipping";
     }
 
-    public function parseResults(LoopResult $loopResult)
-    {
-        foreach ($loopResult->getResultDataCollection() as $ref => $code) {
-            $loopResultRow = new LoopResultRow();
-            $loopResultRow->set("URL", sprintf(self::BASE_URL,$ref,$code));
 
-            $loopResult->addRow($loopResultRow);
-        }
-
-        return $loopResult;
-
-    }
 }

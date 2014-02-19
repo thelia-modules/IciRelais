@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <routes xmlns="http://symfony.com/schema/routing"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
@@ -20,4 +21,7 @@
 		<default key="_controller">IciRelais\Controller\EditPrices::editprices</default>
 	</route>
 
+    <route id="icirelais.edit.freeshipping" path="/admin/module/icirelais/freeshipping" methods="post">
+        <default key="_controller">IciRelais\Controller\FreeShipping::set</default>
+    </route>
 </routes>

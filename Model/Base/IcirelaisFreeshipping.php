@@ -2,12 +2,12 @@
 
 namespace IciRelais\Model\Base;
 
+use \DateTime;
 use \Exception;
 use \PDO;
-use IciRelais\Model\OrderAddressIcirelaisQuery as ChildOrderAddressIcirelaisQuery;
-use IciRelais\Model\Map\OrderAddressIcirelaisTableMap;
-use IciRelais\Model\Thelia\Model\OrderAddress as ChildOrderAddress;
-use IciRelais\Model\Thelia\Model\OrderAddressQuery;
+use IciRelais\Model\IcirelaisFreeshipping as ChildIcirelaisFreeshipping;
+use IciRelais\Model\IcirelaisFreeshippingQuery as ChildIcirelaisFreeshippingQuery;
+use IciRelais\Model\Map\IcirelaisFreeshippingTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
@@ -18,13 +18,14 @@ use Propel\Runtime\Exception\BadMethodCallException;
 use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
+use Propel\Runtime\Util\PropelDateTime;
 
-abstract class OrderAddressIcirelais implements ActiveRecordInterface
+abstract class IcirelaisFreeshipping implements ActiveRecordInterface
 {
     /**
      * TableMap class name
      */
-    const TABLE_MAP = '\\IciRelais\\Model\\Map\\OrderAddressIcirelaisTableMap';
+    const TABLE_MAP = '\\IciRelais\\Model\\Map\\IcirelaisFreeshippingTableMap';
 
 
     /**
@@ -60,15 +61,22 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
     protected $id;
 
     /**
-     * The value for the code field.
-     * @var        string
+     * The value for the active field.
+     * @var        boolean
      */
-    protected $code;
+    protected $active;
 
     /**
-     * @var        OrderAddress
+     * The value for the created_at field.
+     * @var        string
      */
-    protected $aOrderAddress;
+    protected $created_at;
+
+    /**
+     * The value for the updated_at field.
+     * @var        string
+     */
+    protected $updated_at;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -79,7 +87,7 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
     protected $alreadyInSave = false;
 
     /**
-     * Initializes internal state of IciRelais\Model\Base\OrderAddressIcirelais object.
+     * Initializes internal state of IciRelais\Model\Base\IcirelaisFreeshipping object.
      */
     public function __construct()
     {
@@ -174,9 +182,9 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
     }
 
     /**
-     * Compares this with another <code>OrderAddressIcirelais</code> instance.  If
-     * <code>obj</code> is an instance of <code>OrderAddressIcirelais</code>, delegates to
-     * <code>equals(OrderAddressIcirelais)</code>.  Otherwise, returns <code>false</code>.
+     * Compares this with another <code>IcirelaisFreeshipping</code> instance.  If
+     * <code>obj</code> is an instance of <code>IcirelaisFreeshipping</code>, delegates to
+     * <code>equals(IcirelaisFreeshipping)</code>.  Otherwise, returns <code>false</code>.
      *
      * @param  mixed   $obj The object to compare to.
      * @return boolean Whether equal to the object specified.
@@ -259,7 +267,7 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
      * @param string $name  The virtual column name
      * @param mixed  $value The value to give to the virtual column
      *
-     * @return OrderAddressIcirelais The current object, for fluid interface
+     * @return IcirelaisFreeshipping The current object, for fluid interface
      */
     public function setVirtualColumn($name, $value)
     {
@@ -291,7 +299,7 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
      *                       or a format name ('XML', 'YAML', 'JSON', 'CSV')
      * @param string $data The source data to import from
      *
-     * @return OrderAddressIcirelais The current object, for fluid interface
+     * @return IcirelaisFreeshipping The current object, for fluid interface
      */
     public function importFrom($parser, $data)
     {
@@ -348,21 +356,61 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
     }
 
     /**
-     * Get the [code] column value.
+     * Get the [active] column value.
      *
-     * @return   string
+     * @return   boolean
      */
-    public function getCode()
+    public function getActive()
     {
 
-        return $this->code;
+        return $this->active;
+    }
+
+    /**
+     * Get the [optionally formatted] temporal [created_at] column value.
+     *
+     *
+     * @param      string $format The date/time format string (either date()-style or strftime()-style).
+     *                            If format is NULL, then the raw \DateTime object will be returned.
+     *
+     * @return mixed Formatted date/time value as string or \DateTime object (if format is NULL), NULL if column is NULL, and 0 if column value is 0000-00-00 00:00:00
+     *
+     * @throws PropelException - if unable to parse/validate the date/time value.
+     */
+    public function getCreatedAt($format = NULL)
+    {
+        if ($format === null) {
+            return $this->created_at;
+        } else {
+            return $this->created_at instanceof \DateTime ? $this->created_at->format($format) : null;
+        }
+    }
+
+    /**
+     * Get the [optionally formatted] temporal [updated_at] column value.
+     *
+     *
+     * @param      string $format The date/time format string (either date()-style or strftime()-style).
+     *                            If format is NULL, then the raw \DateTime object will be returned.
+     *
+     * @return mixed Formatted date/time value as string or \DateTime object (if format is NULL), NULL if column is NULL, and 0 if column value is 0000-00-00 00:00:00
+     *
+     * @throws PropelException - if unable to parse/validate the date/time value.
+     */
+    public function getUpdatedAt($format = NULL)
+    {
+        if ($format === null) {
+            return $this->updated_at;
+        } else {
+            return $this->updated_at instanceof \DateTime ? $this->updated_at->format($format) : null;
+        }
     }
 
     /**
      * Set the value of [id] column.
      *
      * @param      int $v new value
-     * @return   \IciRelais\Model\OrderAddressIcirelais The current object (for fluent API support)
+     * @return   \IciRelais\Model\IcirelaisFreeshipping The current object (for fluent API support)
      */
     public function setId($v)
     {
@@ -372,11 +420,7 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
 
         if ($this->id !== $v) {
             $this->id = $v;
-            $this->modifiedColumns[OrderAddressIcirelaisTableMap::ID] = true;
-        }
-
-        if ($this->aOrderAddress !== null && $this->aOrderAddress->getId() !== $v) {
-            $this->aOrderAddress = null;
+            $this->modifiedColumns[IcirelaisFreeshippingTableMap::ID] = true;
         }
 
 
@@ -384,25 +428,75 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
     } // setId()
 
     /**
-     * Set the value of [code] column.
+     * Sets the value of the [active] column.
+     * Non-boolean arguments are converted using the following rules:
+     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
      *
-     * @param      string $v new value
-     * @return   \IciRelais\Model\OrderAddressIcirelais The current object (for fluent API support)
+     * @param      boolean|integer|string $v The new value
+     * @return   \IciRelais\Model\IcirelaisFreeshipping The current object (for fluent API support)
      */
-    public function setCode($v)
+    public function setActive($v)
     {
         if ($v !== null) {
-            $v = (string) $v;
+            if (is_string($v)) {
+                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+            } else {
+                $v = (boolean) $v;
+            }
         }
 
-        if ($this->code !== $v) {
-            $this->code = $v;
-            $this->modifiedColumns[OrderAddressIcirelaisTableMap::CODE] = true;
+        if ($this->active !== $v) {
+            $this->active = $v;
+            $this->modifiedColumns[IcirelaisFreeshippingTableMap::ACTIVE] = true;
         }
 
 
         return $this;
-    } // setCode()
+    } // setActive()
+
+    /**
+     * Sets the value of [created_at] column to a normalized version of the date/time value specified.
+     *
+     * @param      mixed $v string, integer (timestamp), or \DateTime value.
+     *               Empty strings are treated as NULL.
+     * @return   \IciRelais\Model\IcirelaisFreeshipping The current object (for fluent API support)
+     */
+    public function setCreatedAt($v)
+    {
+        $dt = PropelDateTime::newInstance($v, null, '\DateTime');
+        if ($this->created_at !== null || $dt !== null) {
+            if ($dt !== $this->created_at) {
+                $this->created_at = $dt;
+                $this->modifiedColumns[IcirelaisFreeshippingTableMap::CREATED_AT] = true;
+            }
+        } // if either are not null
+
+
+        return $this;
+    } // setCreatedAt()
+
+    /**
+     * Sets the value of [updated_at] column to a normalized version of the date/time value specified.
+     *
+     * @param      mixed $v string, integer (timestamp), or \DateTime value.
+     *               Empty strings are treated as NULL.
+     * @return   \IciRelais\Model\IcirelaisFreeshipping The current object (for fluent API support)
+     */
+    public function setUpdatedAt($v)
+    {
+        $dt = PropelDateTime::newInstance($v, null, '\DateTime');
+        if ($this->updated_at !== null || $dt !== null) {
+            if ($dt !== $this->updated_at) {
+                $this->updated_at = $dt;
+                $this->modifiedColumns[IcirelaisFreeshippingTableMap::UPDATED_AT] = true;
+            }
+        } // if either are not null
+
+
+        return $this;
+    } // setUpdatedAt()
 
     /**
      * Indicates whether the columns in this object are only set to default values.
@@ -441,11 +535,23 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
         try {
 
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : OrderAddressIcirelaisTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : IcirelaisFreeshippingTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
             $this->id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : OrderAddressIcirelaisTableMap::translateFieldName('Code', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->code = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : IcirelaisFreeshippingTableMap::translateFieldName('Active', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->active = (null !== $col) ? (boolean) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : IcirelaisFreeshippingTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            if ($col === '0000-00-00 00:00:00') {
+                $col = null;
+            }
+            $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, '\DateTime') : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : IcirelaisFreeshippingTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            if ($col === '0000-00-00 00:00:00') {
+                $col = null;
+            }
+            $this->updated_at = (null !== $col) ? PropelDateTime::newInstance($col, null, '\DateTime') : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -454,10 +560,10 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 2; // 2 = OrderAddressIcirelaisTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 4; // 4 = IcirelaisFreeshippingTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException("Error populating \IciRelais\Model\OrderAddressIcirelais object", 0, $e);
+            throw new PropelException("Error populating \IciRelais\Model\IcirelaisFreeshipping object", 0, $e);
         }
     }
 
@@ -476,9 +582,6 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
-        if ($this->aOrderAddress !== null && $this->id !== $this->aOrderAddress->getId()) {
-            $this->aOrderAddress = null;
-        }
     } // ensureConsistency
 
     /**
@@ -502,13 +605,13 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getReadConnection(OrderAddressIcirelaisTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getReadConnection(IcirelaisFreeshippingTableMap::DATABASE_NAME);
         }
 
         // We don't need to alter the object instance pool; we're just modifying this instance
         // already in the pool.
 
-        $dataFetcher = ChildOrderAddressIcirelaisQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
+        $dataFetcher = ChildIcirelaisFreeshippingQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
         $row = $dataFetcher->fetch();
         $dataFetcher->close();
         if (!$row) {
@@ -518,7 +621,6 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->aOrderAddress = null;
         } // if (deep)
     }
 
@@ -528,8 +630,8 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
      * @param      ConnectionInterface $con
      * @return void
      * @throws PropelException
-     * @see OrderAddressIcirelais::setDeleted()
-     * @see OrderAddressIcirelais::isDeleted()
+     * @see IcirelaisFreeshipping::setDeleted()
+     * @see IcirelaisFreeshipping::isDeleted()
      */
     public function delete(ConnectionInterface $con = null)
     {
@@ -538,12 +640,12 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(OrderAddressIcirelaisTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(IcirelaisFreeshippingTableMap::DATABASE_NAME);
         }
 
         $con->beginTransaction();
         try {
-            $deleteQuery = ChildOrderAddressIcirelaisQuery::create()
+            $deleteQuery = ChildIcirelaisFreeshippingQuery::create()
                 ->filterByPrimaryKey($this->getPrimaryKey());
             $ret = $this->preDelete($con);
             if ($ret) {
@@ -580,7 +682,7 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(OrderAddressIcirelaisTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(IcirelaisFreeshippingTableMap::DATABASE_NAME);
         }
 
         $con->beginTransaction();
@@ -589,8 +691,19 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
             $ret = $this->preSave($con);
             if ($isInsert) {
                 $ret = $ret && $this->preInsert($con);
+                // timestampable behavior
+                if (!$this->isColumnModified(IcirelaisFreeshippingTableMap::CREATED_AT)) {
+                    $this->setCreatedAt(time());
+                }
+                if (!$this->isColumnModified(IcirelaisFreeshippingTableMap::UPDATED_AT)) {
+                    $this->setUpdatedAt(time());
+                }
             } else {
                 $ret = $ret && $this->preUpdate($con);
+                // timestampable behavior
+                if ($this->isModified() && !$this->isColumnModified(IcirelaisFreeshippingTableMap::UPDATED_AT)) {
+                    $this->setUpdatedAt(time());
+                }
             }
             if ($ret) {
                 $affectedRows = $this->doSave($con);
@@ -600,7 +713,7 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
                     $this->postUpdate($con);
                 }
                 $this->postSave($con);
-                OrderAddressIcirelaisTableMap::addInstanceToPool($this);
+                IcirelaisFreeshippingTableMap::addInstanceToPool($this);
             } else {
                 $affectedRows = 0;
             }
@@ -629,18 +742,6 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
         $affectedRows = 0; // initialize var to track total num of affected rows
         if (!$this->alreadyInSave) {
             $this->alreadyInSave = true;
-
-            // We call the save method on the following object(s) if they
-            // were passed to this object by their corresponding set
-            // method.  This object relates to these object(s) by a
-            // foreign key reference.
-
-            if ($this->aOrderAddress !== null) {
-                if ($this->aOrderAddress->isModified() || $this->aOrderAddress->isNew()) {
-                    $affectedRows += $this->aOrderAddress->save($con);
-                }
-                $this->setOrderAddress($this->aOrderAddress);
-            }
 
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
@@ -673,17 +774,27 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
         $modifiedColumns = array();
         $index = 0;
 
+        $this->modifiedColumns[IcirelaisFreeshippingTableMap::ID] = true;
+        if (null !== $this->id) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key (' . IcirelaisFreeshippingTableMap::ID . ')');
+        }
 
          // check the columns in natural order for more readable SQL queries
-        if ($this->isColumnModified(OrderAddressIcirelaisTableMap::ID)) {
+        if ($this->isColumnModified(IcirelaisFreeshippingTableMap::ID)) {
             $modifiedColumns[':p' . $index++]  = 'ID';
         }
-        if ($this->isColumnModified(OrderAddressIcirelaisTableMap::CODE)) {
-            $modifiedColumns[':p' . $index++]  = 'CODE';
+        if ($this->isColumnModified(IcirelaisFreeshippingTableMap::ACTIVE)) {
+            $modifiedColumns[':p' . $index++]  = 'ACTIVE';
+        }
+        if ($this->isColumnModified(IcirelaisFreeshippingTableMap::CREATED_AT)) {
+            $modifiedColumns[':p' . $index++]  = 'CREATED_AT';
+        }
+        if ($this->isColumnModified(IcirelaisFreeshippingTableMap::UPDATED_AT)) {
+            $modifiedColumns[':p' . $index++]  = 'UPDATED_AT';
         }
 
         $sql = sprintf(
-            'INSERT INTO order_address_icirelais (%s) VALUES (%s)',
+            'INSERT INTO icirelais_freeshipping (%s) VALUES (%s)',
             implode(', ', $modifiedColumns),
             implode(', ', array_keys($modifiedColumns))
         );
@@ -695,8 +806,14 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
                     case 'ID':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case 'CODE':
-                        $stmt->bindValue($identifier, $this->code, PDO::PARAM_STR);
+                    case 'ACTIVE':
+                        $stmt->bindValue($identifier, (int) $this->active, PDO::PARAM_INT);
+                        break;
+                    case 'CREATED_AT':
+                        $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
+                        break;
+                    case 'UPDATED_AT':
+                        $stmt->bindValue($identifier, $this->updated_at ? $this->updated_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -705,6 +822,13 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
             Propel::log($e->getMessage(), Propel::LOG_ERR);
             throw new PropelException(sprintf('Unable to execute INSERT statement [%s]', $sql), 0, $e);
         }
+
+        try {
+            $pk = $con->lastInsertId();
+        } catch (Exception $e) {
+            throw new PropelException('Unable to get autoincrement id.', 0, $e);
+        }
+        $this->setId($pk);
 
         $this->setNew(false);
     }
@@ -737,7 +861,7 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
      */
     public function getByName($name, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = OrderAddressIcirelaisTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = IcirelaisFreeshippingTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
         $field = $this->getByPosition($pos);
 
         return $field;
@@ -757,7 +881,13 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
                 return $this->getId();
                 break;
             case 1:
-                return $this->getCode();
+                return $this->getActive();
+                break;
+            case 2:
+                return $this->getCreatedAt();
+                break;
+            case 3:
+                return $this->getUpdatedAt();
                 break;
             default:
                 return null;
@@ -776,31 +906,27 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
      *                    Defaults to TableMap::TYPE_PHPNAME.
      * @param     boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns. Defaults to TRUE.
      * @param     array $alreadyDumpedObjects List of objects to skip to avoid recursion
-     * @param     boolean $includeForeignObjects (optional) Whether to include hydrated related objects. Default to FALSE.
      *
      * @return array an associative array containing the field names (as keys) and field values
      */
-    public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
+    public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array())
     {
-        if (isset($alreadyDumpedObjects['OrderAddressIcirelais'][$this->getPrimaryKey()])) {
+        if (isset($alreadyDumpedObjects['IcirelaisFreeshipping'][$this->getPrimaryKey()])) {
             return '*RECURSION*';
         }
-        $alreadyDumpedObjects['OrderAddressIcirelais'][$this->getPrimaryKey()] = true;
-        $keys = OrderAddressIcirelaisTableMap::getFieldNames($keyType);
+        $alreadyDumpedObjects['IcirelaisFreeshipping'][$this->getPrimaryKey()] = true;
+        $keys = IcirelaisFreeshippingTableMap::getFieldNames($keyType);
         $result = array(
             $keys[0] => $this->getId(),
-            $keys[1] => $this->getCode(),
+            $keys[1] => $this->getActive(),
+            $keys[2] => $this->getCreatedAt(),
+            $keys[3] => $this->getUpdatedAt(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
         }
 
-        if ($includeForeignObjects) {
-            if (null !== $this->aOrderAddress) {
-                $result['OrderAddress'] = $this->aOrderAddress->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
-            }
-        }
 
         return $result;
     }
@@ -818,7 +944,7 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
      */
     public function setByName($name, $value, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = OrderAddressIcirelaisTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = IcirelaisFreeshippingTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
 
         return $this->setByPosition($pos, $value);
     }
@@ -838,7 +964,13 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
                 $this->setId($value);
                 break;
             case 1:
-                $this->setCode($value);
+                $this->setActive($value);
+                break;
+            case 2:
+                $this->setCreatedAt($value);
+                break;
+            case 3:
+                $this->setUpdatedAt($value);
                 break;
         } // switch()
     }
@@ -862,10 +994,12 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
      */
     public function fromArray($arr, $keyType = TableMap::TYPE_PHPNAME)
     {
-        $keys = OrderAddressIcirelaisTableMap::getFieldNames($keyType);
+        $keys = IcirelaisFreeshippingTableMap::getFieldNames($keyType);
 
         if (array_key_exists($keys[0], $arr)) $this->setId($arr[$keys[0]]);
-        if (array_key_exists($keys[1], $arr)) $this->setCode($arr[$keys[1]]);
+        if (array_key_exists($keys[1], $arr)) $this->setActive($arr[$keys[1]]);
+        if (array_key_exists($keys[2], $arr)) $this->setCreatedAt($arr[$keys[2]]);
+        if (array_key_exists($keys[3], $arr)) $this->setUpdatedAt($arr[$keys[3]]);
     }
 
     /**
@@ -875,10 +1009,12 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
      */
     public function buildCriteria()
     {
-        $criteria = new Criteria(OrderAddressIcirelaisTableMap::DATABASE_NAME);
+        $criteria = new Criteria(IcirelaisFreeshippingTableMap::DATABASE_NAME);
 
-        if ($this->isColumnModified(OrderAddressIcirelaisTableMap::ID)) $criteria->add(OrderAddressIcirelaisTableMap::ID, $this->id);
-        if ($this->isColumnModified(OrderAddressIcirelaisTableMap::CODE)) $criteria->add(OrderAddressIcirelaisTableMap::CODE, $this->code);
+        if ($this->isColumnModified(IcirelaisFreeshippingTableMap::ID)) $criteria->add(IcirelaisFreeshippingTableMap::ID, $this->id);
+        if ($this->isColumnModified(IcirelaisFreeshippingTableMap::ACTIVE)) $criteria->add(IcirelaisFreeshippingTableMap::ACTIVE, $this->active);
+        if ($this->isColumnModified(IcirelaisFreeshippingTableMap::CREATED_AT)) $criteria->add(IcirelaisFreeshippingTableMap::CREATED_AT, $this->created_at);
+        if ($this->isColumnModified(IcirelaisFreeshippingTableMap::UPDATED_AT)) $criteria->add(IcirelaisFreeshippingTableMap::UPDATED_AT, $this->updated_at);
 
         return $criteria;
     }
@@ -893,8 +1029,8 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
      */
     public function buildPkeyCriteria()
     {
-        $criteria = new Criteria(OrderAddressIcirelaisTableMap::DATABASE_NAME);
-        $criteria->add(OrderAddressIcirelaisTableMap::ID, $this->id);
+        $criteria = new Criteria(IcirelaisFreeshippingTableMap::DATABASE_NAME);
+        $criteria->add(IcirelaisFreeshippingTableMap::ID, $this->id);
 
         return $criteria;
     }
@@ -935,17 +1071,19 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object $copyObj An object of \IciRelais\Model\OrderAddressIcirelais (or compatible) type.
+     * @param      object $copyObj An object of \IciRelais\Model\IcirelaisFreeshipping (or compatible) type.
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
      */
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
-        $copyObj->setId($this->getId());
-        $copyObj->setCode($this->getCode());
+        $copyObj->setActive($this->getActive());
+        $copyObj->setCreatedAt($this->getCreatedAt());
+        $copyObj->setUpdatedAt($this->getUpdatedAt());
         if ($makeNew) {
             $copyObj->setNew(true);
+            $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
         }
     }
 
@@ -958,7 +1096,7 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
      * objects.
      *
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return                 \IciRelais\Model\OrderAddressIcirelais Clone of current object.
+     * @return                 \IciRelais\Model\IcirelaisFreeshipping Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)
@@ -972,57 +1110,14 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
     }
 
     /**
-     * Declares an association between this object and a ChildOrderAddress object.
-     *
-     * @param                  ChildOrderAddress $v
-     * @return                 \IciRelais\Model\OrderAddressIcirelais The current object (for fluent API support)
-     * @throws PropelException
-     */
-    public function setOrderAddress(ChildOrderAddress $v = null)
-    {
-        if ($v === null) {
-            $this->setId(NULL);
-        } else {
-            $this->setId($v->getId());
-        }
-
-        $this->aOrderAddress = $v;
-
-        // Add binding for other direction of this 1:1 relationship.
-        if ($v !== null) {
-            $v->setOrderAddressIcirelais($this);
-        }
-
-
-        return $this;
-    }
-
-
-    /**
-     * Get the associated ChildOrderAddress object
-     *
-     * @param      ConnectionInterface $con Optional Connection object.
-     * @return                 ChildOrderAddress The associated ChildOrderAddress object.
-     * @throws PropelException
-     */
-    public function getOrderAddress(ConnectionInterface $con = null)
-    {
-        if ($this->aOrderAddress === null && ($this->id !== null)) {
-            $this->aOrderAddress = OrderAddressQuery::create()->findPk($this->id, $con);
-            // Because this foreign key represents a one-to-one relationship, we will create a bi-directional association.
-            $this->aOrderAddress->setOrderAddressIcirelais($this);
-        }
-
-        return $this->aOrderAddress;
-    }
-
-    /**
      * Clears the current object and sets all attributes to their default values
      */
     public function clear()
     {
         $this->id = null;
-        $this->code = null;
+        $this->active = null;
+        $this->created_at = null;
+        $this->updated_at = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->resetModified();
@@ -1044,7 +1139,6 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
         if ($deep) {
         } // if ($deep)
 
-        $this->aOrderAddress = null;
     }
 
     /**
@@ -1054,7 +1148,21 @@ abstract class OrderAddressIcirelais implements ActiveRecordInterface
      */
     public function __toString()
     {
-        return (string) $this->exportTo(OrderAddressIcirelaisTableMap::DEFAULT_STRING_FORMAT);
+        return (string) $this->exportTo(IcirelaisFreeshippingTableMap::DEFAULT_STRING_FORMAT);
+    }
+
+    // timestampable behavior
+
+    /**
+     * Mark the current object so that the update date doesn't get updated during next save
+     *
+     * @return     ChildIcirelaisFreeshipping The current object (for fluent API support)
+     */
+    public function keepUpdateDateUnchanged()
+    {
+        $this->modifiedColumns[IcirelaisFreeshippingTableMap::UPDATED_AT] = true;
+
+        return $this;
     }
 
     /**

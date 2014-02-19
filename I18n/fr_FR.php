@@ -69,4 +69,5 @@ return array(
     'Sent'=>'Envoyée',
     '*If you choose this option, the exported orders would not be available on this page anymore'=>'*En choisissant cette option, les commandes exportées ne seront plus disponible sur cette page',
     'IciRelais Sender\'s code'=>'Code IciRelais de l\'expéditeur',
+    'Activate free shipping: '=>'Livraison offerte: ',
 );

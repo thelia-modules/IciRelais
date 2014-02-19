@@ -23,6 +23,7 @@
 
 namespace IciRelais;
 
+use IciRelais\Model\IcirelaisFreeshippingQuery;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Thelia\Exception\OrderException;
@@ -91,31 +92,35 @@ ICI relais c’est l’assurance d’une livraison de qualité avec :
 
     public static function getPostageAmount($areaId, $weight)
     {
-        $prices = self::getPrices();
+        $freeshipping = IcirelaisFreeshippingQuery::create()->getLast();
+        $postage=0;
+        if(!$freeshipping) {
+            $prices = self::getPrices();
 
-        /* check if IciRelais delivers the asked area */
-        if (!isset($prices[$areaId]) || !isset($prices[$areaId]["slices"])) {
-            throw new OrderException("Ici Relais delivery unavailable for the chosen delivery country", OrderException::DELIVERY_MODULE_UNAVAILABLE);
-        }
+            /* check if IciRelais delivers the asked area */
+            if (!isset($prices[$areaId]) || !isset($prices[$areaId]["slices"])) {
+                throw new OrderException("Ici Relais delivery unavailable for the chosen delivery country", OrderException::DELIVERY_MODULE_UNAVAILABLE);
+            }
 
-        $areaPrices = $prices[$areaId]["slices"];
-        ksort($areaPrices);
+            $areaPrices = $prices[$areaId]["slices"];
+            ksort($areaPrices);
 
-        /* check this weight is not too much */
-        end($areaPrices);
-        $maxWeight = key($areaPrices);
-        if ($weight > $maxWeight) {
-            throw new OrderException(sprintf("Ici Relais delivery unavailable for this cart weight (%s kg)", $weight), OrderException::DELIVERY_MODULE_UNAVAILABLE);
-        }
-
-        $postage = current($areaPrices);
-
-        while (prev($areaPrices)) {
-            if ($weight > key($areaPrices)) {
-                break;
+            /* check this weight is not too much */
+            end($areaPrices);
+            $maxWeight = key($areaPrices);
+            if ($weight > $maxWeight) {
+                throw new OrderException(sprintf("Ici Relais delivery unavailable for this cart weight (%s kg)", $weight), OrderException::DELIVERY_MODULE_UNAVAILABLE);
             }
 
             $postage = current($areaPrices);
+
+            while (prev($areaPrices)) {
+                if ($weight > key($areaPrices)) {
+                    break;
+                }
+
+                $postage = current($areaPrices);
+            }
         }
 
         return $postage;
