@@ -115,7 +115,7 @@ class IciRelaisAround extends BaseLoop implements PropelSearchLoopInterface
                     (string) $e->getMessage()
                 )
             );
-
+            return array();
         }
 
         $xml = new \SimpleXMLElement($response->GetPudoListResult->any);
