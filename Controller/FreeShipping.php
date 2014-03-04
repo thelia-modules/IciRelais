@@ -21,59 +21,28 @@
 /*                                                                                   */
 /*************************************************************************************/
 
-namespace IciRelais\Loop;
+namespace IciRelais\Controller;
 
-use IciRelais\Controller\ExportExaprint;
-use IciRelais\IciRelais;
-use Thelia\Core\Template\Element\ArraySearchLoopInterface;
-use Thelia\Core\Template\Element\BaseLoop;
-use Thelia\Core\Template\Element\LoopResult;
-use Thelia\Core\Template\Element\LoopResultRow;
+use IciRelais\Model\IciRelaisFreeshipping;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Thelia\Controller\Admin\BaseAdminController;
+use Thelia\Core\HttpFoundation\Response;
 
-use Thelia\Core\Template\Loop\Argument\Argument;
-use Thelia\Core\Template\Loop\Argument\ArgumentCollection;
-use Thelia\Model\OrderQuery;
+class FreeShipping extends BaseAdminController {
+    public function set() {
+        $form = new \IciRelais\Form\FreeShipping($this->getRequest());
+        $response=null;
 
-/**
- * Class IciRelaisUrlTracking
- * @package IciRelais\Loop
- * @author Thelia <info@thelia.net>
- */
-class IciRelaisUrlTracking extends BaseLoop implements ArraySearchLoopInterface
-{
-    /**
-     * @return ArgumentCollection
-     */
-    const BASE_URL="http://e-trace.ils-consult.fr/ici-webtrace/webclients.aspx?verknr=%s&versdat=&kundenr=%s&cmd=VERKNR_SEARCH";
-    protected function getArgDefinitions()
-    {
-        return new ArgumentCollection(
-            Argument::createAnyTypeArgument('ref', null, true)
-        );
-    }
+        try {
+            $vform = $this->validateForm($form);
+            $data = $vform->get('freeshipping')->getData();
 
-    public function buildArray()
-    {
-        $path=ExportExaprint::getJSONpath();
-        if(is_readable($path) && ($order=OrderQuery::create()->findOneByRef($this->getRef())) !== null
-          && $order->getDeliveryModuleId() === IciRelais::getModCode()) {
-            $json=json_decode(file_get_contents($path),true);
-            return array($this->getRef()=>$json['expcode']);
-        } else {
-            return array();
+            $save = new IcirelaisFreeshipping();
+            $save->setActive(!empty($data))->save();
+            $response = Response::create('');
+        } catch (\Exception $e) {
+            $response = JsonResponse::create(array("error"=>$e->getMessage()), 500);
         }
-    }
-
-    public function parseResults(LoopResult $loopResult)
-    {
-        foreach ($loopResult->getResultDataCollection() as $ref => $code) {
-            $loopResultRow = new LoopResultRow();
-            $loopResultRow->set("URL", sprintf(self::BASE_URL,$ref,$code));
-
-            $loopResult->addRow($loopResultRow);
-        }
-
-        return $loopResult;
-
+        return $response;
     }
 }

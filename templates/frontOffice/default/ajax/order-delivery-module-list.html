@@ -1,8 +1,16 @@
 {form name="thelia.order.delivery"}
+
+
+{* Check if IciRelais webservice is up *}
+{assign var="isIcirelaisUp" value=0}
+{loop name="is.icirelais.up"  type="icirelais.around"}{/loop}
+{ifloop rel="is.icirelais.up"}
+{assign var="isIcirelaisUp" value=1}
+{/ifloop}
+
 {loop type="delivery.ici" name="deliveries" force_return="true" country=$country}
 
-
-
+{if ($ID == $ICI_RELAIS_MODULE and $isIcirelaisUp) or $ID != $ICI_RELAIS_MODULE}
 {assign var="isDeliveryMethodChecked" value="0"}
     <div class="radio">
         {form_field form=$form field='delivery-module'}
@@ -199,6 +207,7 @@
         	</div>
         {/if}
     </div>
+{/if}
 {/loop}
 {elseloop rel="deliveries"}<div class="deliveries-warning">{intl l="<strong>Sorry!</strong> We are not able to give you a delivery method for your order."}</div>{/elseloop}
 {/form}

@@ -27,5 +27,11 @@
 	      <reference foreign="id" local="country_id" />
 	    </foreign-key>
     </table>
+
+    <table name="icirelais_freeshipping">
+        <column name="id" primaryKey="true" autoIncrement="true" required="true" type="INTEGER" />
+        <column name="active" required="true" type="BOOLEAN" />
+        <behavior name="timestampable" />
+    </table>
 	<external-schema filename="/home/benjamin/dev/thelia2/local/config/schema.xml" referenceOnly="true" />
 </database>

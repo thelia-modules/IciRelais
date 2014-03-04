@@ -2,8 +2,8 @@
 
 namespace IciRelais\Model\Map;
 
-use IciRelais\Model\AddressIcirelais;
-use IciRelais\Model\AddressIcirelaisQuery;
+use IciRelais\Model\IcirelaisFreeshipping;
+use IciRelais\Model\IcirelaisFreeshippingQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -16,7 +16,7 @@ use Propel\Runtime\Map\TableMapTrait;
 
 
 /**
- * This class defines the structure of the 'address_icirelais' table.
+ * This class defines the structure of the 'icirelais_freeshipping' table.
  *
  *
  *
@@ -26,14 +26,14 @@ use Propel\Runtime\Map\TableMapTrait;
  * (i.e. if it's a text column type).
  *
  */
-class AddressIcirelaisTableMap extends TableMap
+class IcirelaisFreeshippingTableMap extends TableMap
 {
     use InstancePoolTrait;
     use TableMapTrait;
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'IciRelais.Model.Map.AddressIcirelaisTableMap';
+    const CLASS_NAME = 'IciRelais.Model.Map.IcirelaisFreeshippingTableMap';
 
     /**
      * The default database name for this class
@@ -43,22 +43,22 @@ class AddressIcirelaisTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'address_icirelais';
+    const TABLE_NAME = 'icirelais_freeshipping';
 
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\IciRelais\\Model\\AddressIcirelais';
+    const OM_CLASS = '\\IciRelais\\Model\\IcirelaisFreeshipping';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'IciRelais.Model.AddressIcirelais';
+    const CLASS_DEFAULT = 'IciRelais.Model.IcirelaisFreeshipping';
 
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 12;
+    const NUM_COLUMNS = 4;
 
     /**
      * The number of lazy-loaded columns
@@ -68,67 +68,27 @@ class AddressIcirelaisTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 12;
+    const NUM_HYDRATE_COLUMNS = 4;
 
     /**
      * the column name for the ID field
      */
-    const ID = 'address_icirelais.ID';
+    const ID = 'icirelais_freeshipping.ID';
 
     /**
-     * the column name for the TITLE_ID field
+     * the column name for the ACTIVE field
      */
-    const TITLE_ID = 'address_icirelais.TITLE_ID';
+    const ACTIVE = 'icirelais_freeshipping.ACTIVE';
 
     /**
-     * the column name for the COMPANY field
+     * the column name for the CREATED_AT field
      */
-    const COMPANY = 'address_icirelais.COMPANY';
+    const CREATED_AT = 'icirelais_freeshipping.CREATED_AT';
 
     /**
-     * the column name for the FIRSTNAME field
+     * the column name for the UPDATED_AT field
      */
-    const FIRSTNAME = 'address_icirelais.FIRSTNAME';
-
-    /**
-     * the column name for the LASTNAME field
-     */
-    const LASTNAME = 'address_icirelais.LASTNAME';
-
-    /**
-     * the column name for the ADDRESS1 field
-     */
-    const ADDRESS1 = 'address_icirelais.ADDRESS1';
-
-    /**
-     * the column name for the ADDRESS2 field
-     */
-    const ADDRESS2 = 'address_icirelais.ADDRESS2';
-
-    /**
-     * the column name for the ADDRESS3 field
-     */
-    const ADDRESS3 = 'address_icirelais.ADDRESS3';
-
-    /**
-     * the column name for the ZIPCODE field
-     */
-    const ZIPCODE = 'address_icirelais.ZIPCODE';
-
-    /**
-     * the column name for the CITY field
-     */
-    const CITY = 'address_icirelais.CITY';
-
-    /**
-     * the column name for the COUNTRY_ID field
-     */
-    const COUNTRY_ID = 'address_icirelais.COUNTRY_ID';
-
-    /**
-     * the column name for the CODE field
-     */
-    const CODE = 'address_icirelais.CODE';
+    const UPDATED_AT = 'icirelais_freeshipping.UPDATED_AT';
 
     /**
      * The default string format for model objects of the related table
@@ -142,12 +102,12 @@ class AddressIcirelaisTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'TitleId', 'Company', 'Firstname', 'Lastname', 'Address1', 'Address2', 'Address3', 'Zipcode', 'City', 'CountryId', 'Code', ),
-        self::TYPE_STUDLYPHPNAME => array('id', 'titleId', 'company', 'firstname', 'lastname', 'address1', 'address2', 'address3', 'zipcode', 'city', 'countryId', 'code', ),
-        self::TYPE_COLNAME       => array(AddressIcirelaisTableMap::ID, AddressIcirelaisTableMap::TITLE_ID, AddressIcirelaisTableMap::COMPANY, AddressIcirelaisTableMap::FIRSTNAME, AddressIcirelaisTableMap::LASTNAME, AddressIcirelaisTableMap::ADDRESS1, AddressIcirelaisTableMap::ADDRESS2, AddressIcirelaisTableMap::ADDRESS3, AddressIcirelaisTableMap::ZIPCODE, AddressIcirelaisTableMap::CITY, AddressIcirelaisTableMap::COUNTRY_ID, AddressIcirelaisTableMap::CODE, ),
-        self::TYPE_RAW_COLNAME   => array('ID', 'TITLE_ID', 'COMPANY', 'FIRSTNAME', 'LASTNAME', 'ADDRESS1', 'ADDRESS2', 'ADDRESS3', 'ZIPCODE', 'CITY', 'COUNTRY_ID', 'CODE', ),
-        self::TYPE_FIELDNAME     => array('id', 'title_id', 'company', 'firstname', 'lastname', 'address1', 'address2', 'address3', 'zipcode', 'city', 'country_id', 'code', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, )
+        self::TYPE_PHPNAME       => array('Id', 'Active', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_STUDLYPHPNAME => array('id', 'active', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(IcirelaisFreeshippingTableMap::ID, IcirelaisFreeshippingTableMap::ACTIVE, IcirelaisFreeshippingTableMap::CREATED_AT, IcirelaisFreeshippingTableMap::UPDATED_AT, ),
+        self::TYPE_RAW_COLNAME   => array('ID', 'ACTIVE', 'CREATED_AT', 'UPDATED_AT', ),
+        self::TYPE_FIELDNAME     => array('id', 'active', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, )
     );
 
     /**
@@ -157,12 +117,12 @@ class AddressIcirelaisTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'TitleId' => 1, 'Company' => 2, 'Firstname' => 3, 'Lastname' => 4, 'Address1' => 5, 'Address2' => 6, 'Address3' => 7, 'Zipcode' => 8, 'City' => 9, 'CountryId' => 10, 'Code' => 11, ),
-        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'titleId' => 1, 'company' => 2, 'firstname' => 3, 'lastname' => 4, 'address1' => 5, 'address2' => 6, 'address3' => 7, 'zipcode' => 8, 'city' => 9, 'countryId' => 10, 'code' => 11, ),
-        self::TYPE_COLNAME       => array(AddressIcirelaisTableMap::ID => 0, AddressIcirelaisTableMap::TITLE_ID => 1, AddressIcirelaisTableMap::COMPANY => 2, AddressIcirelaisTableMap::FIRSTNAME => 3, AddressIcirelaisTableMap::LASTNAME => 4, AddressIcirelaisTableMap::ADDRESS1 => 5, AddressIcirelaisTableMap::ADDRESS2 => 6, AddressIcirelaisTableMap::ADDRESS3 => 7, AddressIcirelaisTableMap::ZIPCODE => 8, AddressIcirelaisTableMap::CITY => 9, AddressIcirelaisTableMap::COUNTRY_ID => 10, AddressIcirelaisTableMap::CODE => 11, ),
-        self::TYPE_RAW_COLNAME   => array('ID' => 0, 'TITLE_ID' => 1, 'COMPANY' => 2, 'FIRSTNAME' => 3, 'LASTNAME' => 4, 'ADDRESS1' => 5, 'ADDRESS2' => 6, 'ADDRESS3' => 7, 'ZIPCODE' => 8, 'CITY' => 9, 'COUNTRY_ID' => 10, 'CODE' => 11, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'title_id' => 1, 'company' => 2, 'firstname' => 3, 'lastname' => 4, 'address1' => 5, 'address2' => 6, 'address3' => 7, 'zipcode' => 8, 'city' => 9, 'country_id' => 10, 'code' => 11, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Active' => 1, 'CreatedAt' => 2, 'UpdatedAt' => 3, ),
+        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'active' => 1, 'createdAt' => 2, 'updatedAt' => 3, ),
+        self::TYPE_COLNAME       => array(IcirelaisFreeshippingTableMap::ID => 0, IcirelaisFreeshippingTableMap::ACTIVE => 1, IcirelaisFreeshippingTableMap::CREATED_AT => 2, IcirelaisFreeshippingTableMap::UPDATED_AT => 3, ),
+        self::TYPE_RAW_COLNAME   => array('ID' => 0, 'ACTIVE' => 1, 'CREATED_AT' => 2, 'UPDATED_AT' => 3, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'active' => 1, 'created_at' => 2, 'updated_at' => 3, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, )
     );
 
     /**
@@ -175,24 +135,16 @@ class AddressIcirelaisTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('address_icirelais');
-        $this->setPhpName('AddressIcirelais');
-        $this->setClassName('\\IciRelais\\Model\\AddressIcirelais');
+        $this->setName('icirelais_freeshipping');
+        $this->setPhpName('IcirelaisFreeshipping');
+        $this->setClassName('\\IciRelais\\Model\\IcirelaisFreeshipping');
         $this->setPackage('IciRelais.Model');
-        $this->setUseIdGenerator(false);
+        $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('ID', 'Id', 'INTEGER', true, null, null);
-        $this->addForeignKey('TITLE_ID', 'TitleId', 'INTEGER', 'customer_title', 'ID', true, null, null);
-        $this->addColumn('COMPANY', 'Company', 'VARCHAR', false, 255, null);
-        $this->addColumn('FIRSTNAME', 'Firstname', 'VARCHAR', true, 255, null);
-        $this->addColumn('LASTNAME', 'Lastname', 'VARCHAR', true, 255, null);
-        $this->addColumn('ADDRESS1', 'Address1', 'VARCHAR', true, 255, null);
-        $this->addColumn('ADDRESS2', 'Address2', 'VARCHAR', true, 255, null);
-        $this->addColumn('ADDRESS3', 'Address3', 'VARCHAR', true, 255, null);
-        $this->addColumn('ZIPCODE', 'Zipcode', 'VARCHAR', true, 10, null);
-        $this->addColumn('CITY', 'City', 'VARCHAR', true, 255, null);
-        $this->addForeignKey('COUNTRY_ID', 'CountryId', 'INTEGER', 'country', 'ID', true, null, null);
-        $this->addColumn('CODE', 'Code', 'VARCHAR', true, 10, null);
+        $this->addColumn('ACTIVE', 'Active', 'BOOLEAN', true, 1, null);
+        $this->addColumn('CREATED_AT', 'CreatedAt', 'TIMESTAMP', false, null, null);
+        $this->addColumn('UPDATED_AT', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
 
     /**
@@ -200,9 +152,20 @@ class AddressIcirelaisTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('CustomerTitle', '\\IciRelais\\Model\\Thelia\\Model\\CustomerTitle', RelationMap::MANY_TO_ONE, array('title_id' => 'id', ), 'RESTRICT', 'RESTRICT');
-        $this->addRelation('Country', '\\IciRelais\\Model\\Thelia\\Model\\Country', RelationMap::MANY_TO_ONE, array('country_id' => 'id', ), 'RESTRICT', 'RESTRICT');
     } // buildRelations()
+
+    /**
+     *
+     * Gets the list of behaviors registered for this table
+     *
+     * @return array Associative array (name => parameters) of behaviors
+     */
+    public function getBehaviors()
+    {
+        return array(
+            'timestampable' => array('create_column' => 'created_at', 'update_column' => 'updated_at', ),
+        );
+    } // getBehaviors()
 
     /**
      * Retrieves a string version of the primary key from the DB resultset row that can be used to uniquely identify a row in this table.
@@ -260,7 +223,7 @@ class AddressIcirelaisTableMap extends TableMap
      */
     public static function getOMClass($withPrefix = true)
     {
-        return $withPrefix ? AddressIcirelaisTableMap::CLASS_DEFAULT : AddressIcirelaisTableMap::OM_CLASS;
+        return $withPrefix ? IcirelaisFreeshippingTableMap::CLASS_DEFAULT : IcirelaisFreeshippingTableMap::OM_CLASS;
     }
 
     /**
@@ -274,21 +237,21 @@ class AddressIcirelaisTableMap extends TableMap
      *
      * @throws PropelException Any exceptions caught during processing will be
      *         rethrown wrapped into a PropelException.
-     * @return array (AddressIcirelais object, last column rank)
+     * @return array (IcirelaisFreeshipping object, last column rank)
      */
     public static function populateObject($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        $key = AddressIcirelaisTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
-        if (null !== ($obj = AddressIcirelaisTableMap::getInstanceFromPool($key))) {
+        $key = IcirelaisFreeshippingTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
+        if (null !== ($obj = IcirelaisFreeshippingTableMap::getInstanceFromPool($key))) {
             // We no longer rehydrate the object, since this can cause data loss.
             // See http://www.propelorm.org/ticket/509
             // $obj->hydrate($row, $offset, true); // rehydrate
-            $col = $offset + AddressIcirelaisTableMap::NUM_HYDRATE_COLUMNS;
+            $col = $offset + IcirelaisFreeshippingTableMap::NUM_HYDRATE_COLUMNS;
         } else {
-            $cls = AddressIcirelaisTableMap::OM_CLASS;
+            $cls = IcirelaisFreeshippingTableMap::OM_CLASS;
             $obj = new $cls();
             $col = $obj->hydrate($row, $offset, false, $indexType);
-            AddressIcirelaisTableMap::addInstanceToPool($obj, $key);
+            IcirelaisFreeshippingTableMap::addInstanceToPool($obj, $key);
         }
 
         return array($obj, $col);
@@ -311,8 +274,8 @@ class AddressIcirelaisTableMap extends TableMap
         $cls = static::getOMClass(false);
         // populate the object(s)
         while ($row = $dataFetcher->fetch()) {
-            $key = AddressIcirelaisTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
-            if (null !== ($obj = AddressIcirelaisTableMap::getInstanceFromPool($key))) {
+            $key = IcirelaisFreeshippingTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
+            if (null !== ($obj = IcirelaisFreeshippingTableMap::getInstanceFromPool($key))) {
                 // We no longer rehydrate the object, since this can cause data loss.
                 // See http://www.propelorm.org/ticket/509
                 // $obj->hydrate($row, 0, true); // rehydrate
@@ -321,7 +284,7 @@ class AddressIcirelaisTableMap extends TableMap
                 $obj = new $cls();
                 $obj->hydrate($row);
                 $results[] = $obj;
-                AddressIcirelaisTableMap::addInstanceToPool($obj, $key);
+                IcirelaisFreeshippingTableMap::addInstanceToPool($obj, $key);
             } // if key exists
         }
 
@@ -342,31 +305,15 @@ class AddressIcirelaisTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(AddressIcirelaisTableMap::ID);
-            $criteria->addSelectColumn(AddressIcirelaisTableMap::TITLE_ID);
-            $criteria->addSelectColumn(AddressIcirelaisTableMap::COMPANY);
-            $criteria->addSelectColumn(AddressIcirelaisTableMap::FIRSTNAME);
-            $criteria->addSelectColumn(AddressIcirelaisTableMap::LASTNAME);
-            $criteria->addSelectColumn(AddressIcirelaisTableMap::ADDRESS1);
-            $criteria->addSelectColumn(AddressIcirelaisTableMap::ADDRESS2);
-            $criteria->addSelectColumn(AddressIcirelaisTableMap::ADDRESS3);
-            $criteria->addSelectColumn(AddressIcirelaisTableMap::ZIPCODE);
-            $criteria->addSelectColumn(AddressIcirelaisTableMap::CITY);
-            $criteria->addSelectColumn(AddressIcirelaisTableMap::COUNTRY_ID);
-            $criteria->addSelectColumn(AddressIcirelaisTableMap::CODE);
+            $criteria->addSelectColumn(IcirelaisFreeshippingTableMap::ID);
+            $criteria->addSelectColumn(IcirelaisFreeshippingTableMap::ACTIVE);
+            $criteria->addSelectColumn(IcirelaisFreeshippingTableMap::CREATED_AT);
+            $criteria->addSelectColumn(IcirelaisFreeshippingTableMap::UPDATED_AT);
         } else {
             $criteria->addSelectColumn($alias . '.ID');
-            $criteria->addSelectColumn($alias . '.TITLE_ID');
-            $criteria->addSelectColumn($alias . '.COMPANY');
-            $criteria->addSelectColumn($alias . '.FIRSTNAME');
-            $criteria->addSelectColumn($alias . '.LASTNAME');
-            $criteria->addSelectColumn($alias . '.ADDRESS1');
-            $criteria->addSelectColumn($alias . '.ADDRESS2');
-            $criteria->addSelectColumn($alias . '.ADDRESS3');
-            $criteria->addSelectColumn($alias . '.ZIPCODE');
-            $criteria->addSelectColumn($alias . '.CITY');
-            $criteria->addSelectColumn($alias . '.COUNTRY_ID');
-            $criteria->addSelectColumn($alias . '.CODE');
+            $criteria->addSelectColumn($alias . '.ACTIVE');
+            $criteria->addSelectColumn($alias . '.CREATED_AT');
+            $criteria->addSelectColumn($alias . '.UPDATED_AT');
         }
     }
 
@@ -379,7 +326,7 @@ class AddressIcirelaisTableMap extends TableMap
      */
     public static function getTableMap()
     {
-        return Propel::getServiceContainer()->getDatabaseMap(AddressIcirelaisTableMap::DATABASE_NAME)->getTable(AddressIcirelaisTableMap::TABLE_NAME);
+        return Propel::getServiceContainer()->getDatabaseMap(IcirelaisFreeshippingTableMap::DATABASE_NAME)->getTable(IcirelaisFreeshippingTableMap::TABLE_NAME);
     }
 
     /**
@@ -387,16 +334,16 @@ class AddressIcirelaisTableMap extends TableMap
      */
     public static function buildTableMap()
     {
-      $dbMap = Propel::getServiceContainer()->getDatabaseMap(AddressIcirelaisTableMap::DATABASE_NAME);
-      if (!$dbMap->hasTable(AddressIcirelaisTableMap::TABLE_NAME)) {
-        $dbMap->addTableObject(new AddressIcirelaisTableMap());
+      $dbMap = Propel::getServiceContainer()->getDatabaseMap(IcirelaisFreeshippingTableMap::DATABASE_NAME);
+      if (!$dbMap->hasTable(IcirelaisFreeshippingTableMap::TABLE_NAME)) {
+        $dbMap->addTableObject(new IcirelaisFreeshippingTableMap());
       }
     }
 
     /**
-     * Performs a DELETE on the database, given a AddressIcirelais or Criteria object OR a primary key value.
+     * Performs a DELETE on the database, given a IcirelaisFreeshipping or Criteria object OR a primary key value.
      *
-     * @param mixed               $values Criteria or AddressIcirelais object or primary key or array of primary keys
+     * @param mixed               $values Criteria or IcirelaisFreeshipping object or primary key or array of primary keys
      *              which is used to create the DELETE statement
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).  This includes CASCADE-related rows
@@ -407,25 +354,25 @@ class AddressIcirelaisTableMap extends TableMap
      public static function doDelete($values, ConnectionInterface $con = null)
      {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(AddressIcirelaisTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(IcirelaisFreeshippingTableMap::DATABASE_NAME);
         }
 
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \IciRelais\Model\AddressIcirelais) { // it's a model object
+        } elseif ($values instanceof \IciRelais\Model\IcirelaisFreeshipping) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
-            $criteria = new Criteria(AddressIcirelaisTableMap::DATABASE_NAME);
-            $criteria->add(AddressIcirelaisTableMap::ID, (array) $values, Criteria::IN);
+            $criteria = new Criteria(IcirelaisFreeshippingTableMap::DATABASE_NAME);
+            $criteria->add(IcirelaisFreeshippingTableMap::ID, (array) $values, Criteria::IN);
         }
 
-        $query = AddressIcirelaisQuery::create()->mergeWith($criteria);
+        $query = IcirelaisFreeshippingQuery::create()->mergeWith($criteria);
 
-        if ($values instanceof Criteria) { AddressIcirelaisTableMap::clearInstancePool();
+        if ($values instanceof Criteria) { IcirelaisFreeshippingTableMap::clearInstancePool();
         } elseif (!is_object($values)) { // it's a primary key, or an array of pks
-            foreach ((array) $values as $singleval) { AddressIcirelaisTableMap::removeInstanceFromPool($singleval);
+            foreach ((array) $values as $singleval) { IcirelaisFreeshippingTableMap::removeInstanceFromPool($singleval);
             }
         }
 
@@ -433,20 +380,20 @@ class AddressIcirelaisTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the address_icirelais table.
+     * Deletes all rows from the icirelais_freeshipping table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
      */
     public static function doDeleteAll(ConnectionInterface $con = null)
     {
-        return AddressIcirelaisQuery::create()->doDeleteAll($con);
+        return IcirelaisFreeshippingQuery::create()->doDeleteAll($con);
     }
 
     /**
-     * Performs an INSERT on the database, given a AddressIcirelais or Criteria object.
+     * Performs an INSERT on the database, given a IcirelaisFreeshipping or Criteria object.
      *
-     * @param mixed               $criteria Criteria or AddressIcirelais object containing data that is used to create the INSERT statement.
+     * @param mixed               $criteria Criteria or IcirelaisFreeshipping object containing data that is used to create the INSERT statement.
      * @param ConnectionInterface $con the ConnectionInterface connection to use
      * @return mixed           The new primary key.
      * @throws PropelException Any exceptions caught during processing will be
@@ -455,18 +402,22 @@ class AddressIcirelaisTableMap extends TableMap
     public static function doInsert($criteria, ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(AddressIcirelaisTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(IcirelaisFreeshippingTableMap::DATABASE_NAME);
         }
 
         if ($criteria instanceof Criteria) {
             $criteria = clone $criteria; // rename for clarity
         } else {
-            $criteria = $criteria->buildCriteria(); // build Criteria from AddressIcirelais object
+            $criteria = $criteria->buildCriteria(); // build Criteria from IcirelaisFreeshipping object
+        }
+
+        if ($criteria->containsKey(IcirelaisFreeshippingTableMap::ID) && $criteria->keyContainsValue(IcirelaisFreeshippingTableMap::ID) ) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key ('.IcirelaisFreeshippingTableMap::ID.')');
         }
 
 
         // Set the correct dbName
-        $query = AddressIcirelaisQuery::create()->mergeWith($criteria);
+        $query = IcirelaisFreeshippingQuery::create()->mergeWith($criteria);
 
         try {
             // use transaction because $criteria could contain info
@@ -482,7 +433,7 @@ class AddressIcirelaisTableMap extends TableMap
         return $pk;
     }
 
-} // AddressIcirelaisTableMap
+} // IcirelaisFreeshippingTableMap
 // This is the static code needed to register the TableMap for this table with the main Propel class.
 //
-AddressIcirelaisTableMap::buildTableMap();
+IcirelaisFreeshippingTableMap::buildTableMap();

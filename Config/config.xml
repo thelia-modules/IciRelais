@@ -17,6 +17,8 @@
     <forms>
 		<form name="icirelais.export" class="IciRelais\Form\ExportExaprintForm"/>
         <form name="icirelais.selection" class="IciRelais\Form\ExportExaprintSelection" />
+        <form name="icirelais.freeshipping.form" class="IciRelais\Form\FreeShipping" />
+
     </forms>
 
     <commands>

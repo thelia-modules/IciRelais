@@ -52,6 +52,23 @@ CREATE TABLE IF NOT EXISTS `address_icirelais`
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
+-- icirelais_freeshipping
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `icirelais_freeshipping`;
+
+CREATE TABLE `icirelais_freeshipping`
+(
+  `id` INTEGER NOT NULL AUTO_INCREMENT,
+  `active` TINYINT(1) NOT NULL,
+  `created_at` DATETIME,
+  `updated_at` DATETIME,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+
+INSERT INTO `icirelais_freeshipping`(`active`, `created_at`, `updated_at`) VALUES(0, NOW(), NOW());
+
+-- ---------------------------------------------------------------------
 -- Mail templates for icirelais
 -- ---------------------------------------------------------------------
 -- First, delete existing entries

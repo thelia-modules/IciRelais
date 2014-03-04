@@ -1,5 +1,39 @@
+{javascripts file='assets/js/bootstrap-switch/bootstrap-switch.js'}
+<script src='{$asset_url}'></script>
+{/javascripts}
+
 <script>
     $(document).ready(function() {
+        $(".freeshipping-activation-IciRelais").bootstrapSwitch();
+        $(".freeshipping-activation-IciRelais").on("switch-change", function(e, data){
+            var is_checked = data.value;
+            var form = $("#freeshippingform");
+            $('body').append('<div class="modal-backdrop fade in" id="loading-event"><div class="loading"></div></div>');
+
+            $.ajax({
+                url: form.attr('action'),
+                type: form.attr('method'),
+                data: form.serialize()
+            }).done(function(){
+                $("#loading-event").remove();
+            })
+                    .success(function() {
+                        if (is_checked) {
+                            $('#config-btn-0').removeClass('disabled');
+                            $('#table-prices-icirelais').hide('slow');
+                        } else {
+                            $('#config-btn-0').addClass('disabled');
+                            $('#table-prices-icirelais').show('slow');
+                        }
+                    })
+                    .fail(function(jqXHR, textStatus, errorThrown){
+                        $("#loading-event").remove();
+                        $('#freeshipping-failed-body').html(jqXHR.responseJSON.error);
+                        $("#freeshipping-failed").modal("show");
+                    });
+
+        });
+
         checkboxes = [{loop name="icirelais.get.checkboxes.names" type="icirelais.orders"}"{$REF|replace:'.':'-'}",{/loop}];
         $("#check-all-but").click( function() {
             checkboxes.forEach(function(entry) {
