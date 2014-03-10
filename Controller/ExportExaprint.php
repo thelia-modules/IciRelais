@@ -26,6 +26,9 @@ use IciRelais\Form\ExportExaprintForm;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\Translation\Translator;
 
+use Thelia\Core\Security\Resource\AdminResources;
+use Thelia\Core\Security\AccessManager;
+
 /**
  * Class ExportExaprint
  * @package IciRelais\Controller
@@ -39,6 +42,10 @@ class ExportExaprint extends BaseAdminController
     }
     public function export()
     {
+        if (null !== $response = $this->checkAuth(array(AdminResources::MODULE), array('IciRelais'), AccessManager::UPDATE)) {
+            return $response;
+        }
+
         $form = new ExportExaprintForm($this->getRequest());
         $error_message = null;
         try {

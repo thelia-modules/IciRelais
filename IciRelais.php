@@ -94,7 +94,7 @@ ICI relais c’est l’assurance d’une livraison de qualité avec :
     {
         $freeshipping = IcirelaisFreeshippingQuery::create()->getLast();
         $postage=0;
-        if(!$freeshipping) {
+        if (!$freeshipping) {
             $prices = self::getPrices();
 
             /* check if IciRelais delivers the asked area */

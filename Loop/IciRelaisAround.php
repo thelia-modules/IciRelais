@@ -115,6 +115,7 @@ class IciRelaisAround extends BaseLoop implements PropelSearchLoopInterface
                     (string) $e->getMessage()
                 )
             );
+
             return array();
         }
 

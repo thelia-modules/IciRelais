@@ -25,6 +25,8 @@ namespace IciRelais\Controller;
 use IciRelais\IciRelais;
 use Thelia\Model\AreaQuery;
 use Thelia\Controller\Admin\BaseAdminController;
+use Thelia\Core\Security\Resource\AdminResources;
+use Thelia\Core\Security\AccessManager;
 
 /**
  * Class EditPrices
@@ -36,6 +38,9 @@ class EditPrices extends BaseAdminController
 
     public function editprices()
     {
+        if (null !== $response = $this->checkAuth(array(AdminResources::MODULE), array('IciRelais'), AccessManager::UPDATE)) {
+            return $response;
+        }
         // Get data & treat
         $post = $this->getRequest();
         $operation = $post->get('operation');
@@ -54,7 +59,7 @@ class EditPrices extends BaseAdminController
 
                 if (is_readable($json_path)) {
                     $json_data = json_decode(file_get_contents($json_path),true);
-                } elseif(!file_exists($json_path)) {
+                } elseif (!file_exists($json_path)) {
                     $json_data = array();
                 } else {
                     throw new \Exception("Can't read IciRelais".IciRelais::JSON_PRICE_RESOURCE.". Please change the rights on the file.");

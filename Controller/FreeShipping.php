@@ -28,8 +28,17 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\HttpFoundation\Response;
 
-class FreeShipping extends BaseAdminController {
-    public function set() {
+use Thelia\Core\Security\Resource\AdminResources;
+use Thelia\Core\Security\AccessManager;
+
+class FreeShipping extends BaseAdminController
+{
+    public function set()
+    {
+        if (null !== $response = $this->checkAuth(array(AdminResources::MODULE), array('IciRelais'), AccessManager::UPDATE)) {
+            return $response;
+        }
+
         $form = new \IciRelais\Form\FreeShipping($this->getRequest());
         $response=null;
 
@@ -43,6 +52,7 @@ class FreeShipping extends BaseAdminController {
         } catch (\Exception $e) {
             $response = JsonResponse::create(array("error"=>$e->getMessage()), 500);
         }
+
         return $response;
     }
 }
