@@ -23,7 +23,6 @@
 
 namespace IciRelais\Listener;
 
-
 use IciRelais\IciRelais;
 use IciRelais\Loop\IciRelaisOrders;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -51,7 +50,7 @@ class SendEMail extends BaseAction implements EventSubscriberInterface
      */
     protected $parser;
 
-    function __construct(ParserInterface $parser,MailerFactory $mailer)
+    public function __construct(ParserInterface $parser,MailerFactory $mailer)
     {
         $this->parser = $parser;
         $this->mailer = $mailer;
@@ -69,10 +68,11 @@ class SendEMail extends BaseAction implements EventSubscriberInterface
      * @params OrderEvent $order
      * Checks if order delivery module is icirelais and if order new status is sent, send an email to the customer.
      */
-    public function update_status(OrderEvent $event) {
-        if($event->getOrder()->getDeliveryModuleId() === IciRelais::getModCode()) {
+    public function update_status(OrderEvent $event)
+    {
+        if ($event->getOrder()->getDeliveryModuleId() === IciRelais::getModCode()) {
 
-            if($event->getOrder()->getStatusId() === IciRelaisOrders::STATUS_SENT ) {
+            if ($event->getOrder()->getStatusId() === IciRelaisOrders::STATUS_SENT ) {
                 $contact_email = ConfigQuery::read('store_email');
 
                 if ($contact_email) {
@@ -136,4 +136,4 @@ class SendEMail extends BaseAction implements EventSubscriberInterface
         );
     }
 
-} 
+}

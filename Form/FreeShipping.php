@@ -23,12 +23,12 @@
 
 namespace IciRelais\Form;
 
-
 use IciRelais\Model\IcirelaisFreeshippingQuery;
 use Thelia\Core\Translation\Translator;
 use Thelia\Form\BaseForm;
 
-class FreeShipping extends BaseForm {
+class FreeShipping extends BaseForm
+{
     /**
      *
      * in this function you add all the fields you need for your Form.
@@ -67,6 +67,5 @@ class FreeShipping extends BaseForm {
     {
         return "icirelaisfreeshipping";
     }
-
 
 }

@@ -4,7 +4,6 @@ namespace IciRelais\Model;
 
 use IciRelais\Model\Base\IcirelaisFreeshippingQuery as BaseIcirelaisFreeshippingQuery;
 
-
 /**
  * Skeleton subclass for performing query and update operations on the 'icirelais_freeshipping' table.
  *
@@ -17,7 +16,8 @@ use IciRelais\Model\Base\IcirelaisFreeshippingQuery as BaseIcirelaisFreeshipping
  */
 class IcirelaisFreeshippingQuery extends BaseIcirelaisFreeshippingQuery
 {
-    public function getLast() {
+    public function getLast()
+    {
         return $this->orderById('desc')->findOne()->getActive();
     }
 } // IcirelaisFreeshippingQuery

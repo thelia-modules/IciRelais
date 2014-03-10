@@ -40,6 +40,9 @@ use Thelia\Model\OrderQuery;
 use Thelia\Model\OrderProductQuery;
 use Thelia\Model\CustomerQuery;
 
+use Thelia\Core\Security\Resource\AdminResources;
+use Thelia\Core\Security\AccessManager;
+
 /**
  * Class Export
  * @package IciRelais\Controller
@@ -70,13 +73,13 @@ class Export extends BaseAdminController
                 }
                 break;
             case 'float':
-                if(!preg_match("#\d{1,6}\.\d{1,}#",$value)) {
+                if (!preg_match("#\d{1,6}\.\d{1,}#",$value)) {
                     $value=str_repeat("0",$len-3).".00";
                 } else {
                     $value=explode(".",$value);
                     $int = self::harmonise($value[0],'numeric',$len-3);
                     $dec = substr($value[1],0,2).".".substr($value[1],2, strlen($value[1]));
-                    $dec = (string)ceil(floatval($dec));
+                    $dec = (string) ceil(floatval($dec));
                     $dec = str_repeat("0", 2-strlen($dec)).$dec;
                     $value=$int.".".$dec;
                 }
@@ -88,6 +91,9 @@ class Export extends BaseAdminController
 
     public function exportfile()
     {
+        if (null !== $response = $this->checkAuth(array(AdminResources::MODULE), array('IciRelais'), AccessManager::UPDATE)) {
+            return $response;
+        }
         if (is_readable(ExportExaprint::getJSONpath())) {
             $admici = json_decode(file_get_contents(ExportExaprint::getJSONpath()),true);
             $keys= array("name", "addr", "zipcode","city","tel","mobile","mail","expcode");
