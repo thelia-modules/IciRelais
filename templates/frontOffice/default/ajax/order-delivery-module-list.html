@@ -3,7 +3,7 @@
 
 {* Check if IciRelais webservice is up *}
 {assign var="isIcirelaisUp" value=0}
-{loop name="is.icirelais.up"  type="icirelais.around"}{/loop}
+{loop name="is.icirelais.up"  type="icirelais.relais.around"}{/loop}
 {ifloop rel="is.icirelais.up"}
 {assign var="isIcirelaisUp" value=1}
 {/ifloop}
