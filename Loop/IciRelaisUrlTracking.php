@@ -56,7 +56,7 @@ class IciRelaisUrlTracking extends BaseLoop implements ArraySearchLoopInterface
     {
         $path=ExportExaprint::getJSONpath();
         if(is_readable($path) && ($order=OrderQuery::create()->findOneByRef($this->getRef())) !== null
-          && $order->getDeliveryModuleId() === IciRelais::getModCode()) {
+          && $order->getDeliveryModuleId() === IciRelais::getModuleId()) {
             $json=json_decode(file_get_contents($path),true);
 
             return array($this->getRef()=>$json['expcode']);

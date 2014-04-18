@@ -36,7 +36,7 @@ class IciRelaisDelivery extends Delivery
 {
     public function parseResults(LoopResult $loopResult)
     {
-        $icirelaiskey = IciRelais::getModCode();
+        $icirelaiskey = IciRelais::getModuleId();
 
         $loopResult = parent::parseResults($loopResult);
         for ($loopResult->rewind(); $loopResult->valid(); $loopResult->next()) {

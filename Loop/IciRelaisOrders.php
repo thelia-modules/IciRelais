@@ -39,7 +39,7 @@ class IciRelaisOrders extends Order
     public function buildModelCriteria()
     {
         return OrderQuery::create()
-            ->filterByDeliveryModuleId(IciRelais::getModCode())
+            ->filterByDeliveryModuleId(IciRelais::getModuleId())
             ->filterByStatusId(array(self::STATUS_PAID,self::STATUS_PROCESSING));
     }
 
