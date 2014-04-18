@@ -59,7 +59,7 @@ class SetDeliveryModule implements EventSubscriberInterface
 
     protected function check_module($id)
     {
-        return $id == IciRelais::getModCode();
+        return $id == IciRelais::getModuleId();
     }
 
     public function isModuleIciRelais(OrderEvent $event)
@@ -103,7 +103,7 @@ class SetDeliveryModule implements EventSubscriberInterface
                     ->setCountryId($customer_name->getCountryId())
                     ->save();
             } else {
-                throw new \ErrorException("No pick-up & go store choosed for IciRelais delivery module");
+                throw new \ErrorException("No pick-up & go store chosen for IciRelais delivery module");
             }
         }
     }

@@ -119,7 +119,7 @@ class Export extends BaseAdminController
         $res = self::harmonise('$' . "VERSION=110", 'alphanumeric', 12) . "\r\n";
 
         $orders = OrderQuery::create()
-            ->filterByDeliveryModuleId(IciRelais::getModCode())
+            ->filterByDeliveryModuleId(IciRelais::getModuleId())
             ->find();
 
         // FORM VALIDATION

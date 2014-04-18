@@ -43,7 +43,7 @@ class ExportExaprintSelection extends BaseForm
     protected function buildForm()
     {
         $entries = OrderQuery::create()
-            ->filterByDeliveryModuleId(IciRelais::getModCode())
+            ->filterByDeliveryModuleId(IciRelais::getModuleId())
             ->find();
         $this->formBuilder
             ->add('new_status_id', 'choice',array(

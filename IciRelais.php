@@ -24,28 +24,15 @@
 namespace IciRelais;
 
 use IciRelais\Model\IcirelaisFreeshippingQuery;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Thelia\Exception\OrderException;
-use Thelia\Module\BaseModule;
-use Thelia\Model\ModuleQuery;
-use Thelia\Module\DeliveryModuleInterface;
-use Thelia\Model\Country;
 use Propel\Runtime\Connection\ConnectionInterface;
+use Thelia\Exception\OrderException;
 use Thelia\Install\Database;
+use Thelia\Model\Country;
+use Thelia\Model\ModuleQuery;
+use Thelia\Module\AbstractDeliveryModule;
 
-class IciRelais extends BaseModule implements DeliveryModuleInterface
+class IciRelais extends AbstractDeliveryModule
 {
-    /*
-     * You may now override BaseModuleInterface methods, such as:
-     * install, destroy, preActivation, postActivation, preDeactivation, postDeactivation
-     *
-     * Have fun !
-     */
-
-    protected $request;
-    protected $dispatcher;
-
     private static $prices = null;
 
     const JSON_PRICE_RESOURCE = "/Config/prices.json";
@@ -71,7 +58,7 @@ ICI relais c’est l’assurance d’une livraison de qualité avec :
 \t- Des outils innovants en phase avec la tendance de mobilité : des applications ICI relais pour Iphone et Android.")
         ->save();
 
-        $database = new Database($con->getWrappedConnection());
+        $database = new Database($con);
 
         $database->insertSql(null, array(__DIR__ . '/Config/thelia.sql'));
     }
@@ -88,6 +75,43 @@ ICI relais c’est l’assurance d’une livraison de qualité avec :
         }
 
         return self::$prices;
+    }
+
+    /**
+     * This method is called by the Delivery  loop, to check if the current module has to be displayed to the customer.
+     * Override it to implements your delivery rules/
+     *
+     * If you return true, the delivery method will de displayed to the customer
+     * If you return false, the delivery method will not be displayed
+     *
+     * @param Country $country the country to deliver to.
+     *
+     * @return boolean
+     */
+    public function isValidDelivery(Country $country)
+    {
+        $cartWeight = $this->getRequest()->getSession()->getCart()->getWeight();
+
+        $areaId = $country->getAreaId();
+
+        $prices = self::getPrices();
+
+        /* check if Ici Relais delivers the asked area */
+        if (isset($prices[$areaId]) && isset($prices[$areaId]["slices"])) {
+
+            $areaPrices = $prices[$areaId]["slices"];
+            ksort($areaPrices);
+
+            /* check this weight is not too much */
+            end($areaPrices);
+
+            $maxWeight = key($areaPrices);
+            if ($cartWeight <= $maxWeight) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static function getPostageAmount($areaId, $weight)
@@ -126,29 +150,9 @@ ICI relais c’est l’assurance d’une livraison de qualité avec :
         return $postage;
     }
 
-    public function setRequest(Request $request)
-    {
-        $this->request = $request;
-    }
-
-    public function getRequest()
-    {
-        return $this->request;
-    }
-
-    public function setDispatcher(EventDispatcherInterface $dispatcher)
-    {
-        $this->dispatcher = $dispatcher;
-    }
-
-    public function getDispatcher()
-    {
-        return $this->dispatcher;
-    }
-
     public function getPostage(Country $country)
     {
-        $cartWeight = $this->getContainer()->get('request')->getSession()->getCart()->getWeight();
+        $cartWeight = $this->getRequest()->getSession()->getCart()->getWeight();
 
         $postage = self::getPostageAmount(
             $country->getAreaId(),
@@ -158,17 +162,8 @@ ICI relais c’est l’assurance d’une livraison de qualité avec :
         return $postage;
     }
 
-    public function getCode()
+    public static function getModuleId()
     {
-        return "Icirelais";
-    }
-
-    public static function getModCode()
-    {
-        $mod_code = "IciRelais";
-        $search = ModuleQuery::create()
-            ->findOneByCode($mod_code);
-
-        return $search->getId();
+        return ModuleQuery::create()->findOneByCode("IciRelais")->getId();
     }
 }

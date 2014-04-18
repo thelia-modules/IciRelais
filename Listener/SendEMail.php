@@ -70,7 +70,7 @@ class SendEMail extends BaseAction implements EventSubscriberInterface
      */
     public function update_status(OrderEvent $event)
     {
-        if ($event->getOrder()->getDeliveryModuleId() === IciRelais::getModCode()) {
+        if ($event->getOrder()->getDeliveryModuleId() === IciRelais::getModuleId()) {
 
             if ($event->getOrder()->getStatusId() === IciRelaisOrders::STATUS_SENT ) {
                 $contact_email = ConfigQuery::read('store_email');
