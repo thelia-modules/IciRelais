@@ -42,6 +42,8 @@ use Thelia\Model\CustomerQuery;
 
 use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Core\Security\AccessManager;
+use Thelia\Model\OrderStatus;
+use Thelia\Model\OrderStatusQuery;
 
 /**
  * Class Export
@@ -142,12 +144,17 @@ class Export extends BaseAdminController
                 $assur_package=$vform->get(str_replace(".","-",$order->getRef())."-assur")->getData();
                 if ($status_id == "processing") {
                     $event = new OrderEvent($order);
-                    $event->setStatus(IciRelaisOrders::STATUS_PROCESSING);
+
+                    $status = OrderStatusQuery::create()
+                        ->findOneByCode(OrderStatus::CODE_PROCESSING);
+                    $event->setStatus($status->getId());
                     $this->getDispatcher()->dispatch(TheliaEvents::ORDER_UPDATE_STATUS, $event);
 
                 } elseif ($status_id == "sent") {
                     $event = new OrderEvent($order);
-                    $event->setStatus(IciRelaisOrders::STATUS_SENT);
+                    $status = OrderStatusQuery::create()
+                        ->findOneByCode(OrderStatus::CODE_SENT);
+                    $event->setStatus($status->getId());
                     $this->getDispatcher()->dispatch(TheliaEvents::ORDER_UPDATE_STATUS, $event);
                 }
                 //Get OrderAddress object - customer's address
