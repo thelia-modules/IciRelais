@@ -64,6 +64,9 @@ class SetDeliveryModule implements EventSubscriberInterface
 
     public function isModuleIciRelais(OrderEvent $event)
     {
+        $address = AddressIcirelaisQuery::create()
+            ->findPk($event->getDeliveryAddress());
+
         if ($this->check_module($event->getDeliveryModule())) {
             //tmp solution
             $request = $this->getRequest();
@@ -80,8 +83,6 @@ class SetDeliveryModule implements EventSubscriberInterface
                 $customer_name = AddressQuery::create()
                     ->findPk($event->getDeliveryAddress());
 
-                $address = AddressIcirelaisQuery::create()
-                    ->findPk($event->getDeliveryAddress());
 
                 $request->getSession()->set('IciRelaisDeliveryId', $event->getDeliveryAddress());
                 if ($address === null) {
@@ -105,6 +106,8 @@ class SetDeliveryModule implements EventSubscriberInterface
             } else {
                 throw new \ErrorException("No pick-up & go store chosen for IciRelais delivery module");
             }
+        } elseif (null !== $address) {
+            $address->delete();
         }
     }
 
