@@ -52,7 +52,7 @@ class ExportExaprint extends BaseAdminController
             $vform = $this->validateForm($form);
             // After post checks (PREG_MATCH) & create json file & export file
             if(preg_match("#^\d{5}$#",$vform->get('zipcode')->getData()) &&
-                preg_match("#^0[[1-5]|[8-9]]{1}\d{8}$#",$vform->get('tel')->getData()) &&
+                preg_match("#^0[1-58-9]{1}\d{8}$#",$vform->get('tel')->getData()) &&
                 preg_match("#^0[6-7]{1}\d{8}$#",$vform->get('mobile')->getData()) &&
                 preg_match("#^[A-Z0-9\._%\+\-]{2,}@[A-Z0-9\.\-]{2,}\.[A-Z]{2,4}$#i",$vform->get('mail')->getData()) &&
                 preg_match("#^\d{8}$#",$vform->get('expcode')->getData())
