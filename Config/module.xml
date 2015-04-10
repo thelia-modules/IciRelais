@@ -40,23 +40,3 @@
     <thelia>2.1.0</thelia>
     <stability>beta</stability>
 </module>
-<!--
-<?xml version="1.0" encoding="UTF-8"?>
-<module>
-    <fullnamespace>IciRelais\IciRelais</fullnamespace>
-    <descriptive locale="en_US">
-        <title>Ici Relais</title>
-    </descriptive>
-    <descriptive locale="fr_FR">
-        <title>Livraison en point ICI relais par Exapaq</title>
-    </descriptive>
-    <version>1.0</version>
-    <author>
-        <name>Thelia</name>
-        <email>info@thelia.net</email>
-    </author>
-    <type>delivery</type>
-    <thelia>2.0.0</thelia>
-    <stability>alpha</stability>
-</module>
--->
