@@ -23,6 +23,7 @@
 
 namespace IciRelais\Loop;
 
+use IciRelais\IciRelais;
 use Thelia\Core\Template\Loop\Argument\ArgumentCollection;
 use Thelia\Core\Template\Element\BaseLoop;
 use Thelia\Core\Template\Element\LoopResultRow;
@@ -48,19 +49,35 @@ class CheckRightsLoop extends BaseLoop implements ArraySearchLoopInterface
         $ret = array();
         $dir = __DIR__."/../Config/";
         if (!is_readable($dir)) {
-            $ret[] = array("ERRMES"=>Translator::getInstance()->trans("Can't read Config directory"), "ERRFILE"=>"");
+            $ret[] = array("ERRMES"=>Translator::getInstance()->trans(
+                "Can't read Config directory",
+                [],
+                IciRelais::DOMAIN
+            ), "ERRFILE"=>"");
         }
         if (!is_writable($dir)) {
-            $ret[] = array("ERRMES"=>Translator::getInstance()->trans("Can't write Config directory"), "ERRFILE"=>"");
+            $ret[] = array("ERRMES"=>Translator::getInstance()->trans(
+                "Can't write Config directory",
+                [],
+                IciRelais::DOMAIN
+            ), "ERRFILE"=>"");
         }
         if ($handle = opendir($dir)) {
             while (false !== ($file = readdir($handle))) {
                 if (strlen($file) > 5 && substr($file, -5) === ".json") {
                     if (!is_readable($dir.$file)) {
-                        $ret[] = array("ERRMES"=>Translator::getInstance()->trans("Can't read file"), "ERRFILE"=>"Icirelais/Config/".$file);
+                        $ret[] = array("ERRMES"=>Translator::getInstance()->trans(
+                            "Can't read file",
+                            [],
+                            IciRelais::DOMAIN
+                        ), "ERRFILE"=>"Icirelais/Config/".$file);
                     }
                     if (!is_writable($dir.$file)) {
-                        $ret[] = array("ERRMES"=>Translator::getInstance()->trans("Can't write file"), "ERRFILE"=>"Icirelais/Config/".$file);
+                        $ret[] = array("ERRMES"=>Translator::getInstance()->trans(
+                            "Can't write file",
+                            [],
+                            IciRelais::DOMAIN
+                        ), "ERRFILE"=>"Icirelais/Config/".$file);
                     }
                 }
             }

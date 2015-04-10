@@ -65,5 +65,9 @@
                 });
             }
         });
+
+        {if ! empty($current_tab)}
+            $('.nav-tabs a[href="#{$current_tab}"]').trigger("click");
+        {/if}
     });
 </script>

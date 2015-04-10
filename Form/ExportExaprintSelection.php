@@ -45,30 +45,43 @@ class ExportExaprintSelection extends BaseForm
         $entries = OrderQuery::create()
             ->filterByDeliveryModuleId(IciRelais::getModuleId())
             ->find();
+
         $this->formBuilder
-            ->add('new_status_id', 'choice',array(
-                    'label' => Translator::getInstance()->trans('server'),
+            ->add(
+                'new_status_id',
+                'choice',
+                array(
+                    'label' => Translator::getInstance()->trans('Change order status to', [], IciRelais::DOMAIN),
                     'choices' => array(
-                        "nochange" => Translator::getInstance()->trans("Do not change"),
-                        "processing" => Translator::getInstance()->trans("Set orders status as processing"),
-                        "sent" => Translator::getInstance()->trans("Set orders status as sent")
+                        "nochange" => Translator::getInstance()->trans("Do not change", [], IciRelais::DOMAIN),
+                        "processing" => Translator::getInstance()->trans("Set orders status as processing", [], IciRelais::DOMAIN),
+                        "sent" => Translator::getInstance()->trans("Set orders status as sent", [], IciRelais::DOMAIN)
                     ),
-                    'required' => 'true',
-                    'expanded'=>true,
-                    'multiple'=>false,
-                    'data'=>'nochange'
-                    )
-                );
+                    'required' => true,
+                    'expanded' => true,
+                    'multiple' => false,
+                    'data' => 'nochange'
+                )
+            );
+
         foreach ($entries as $order) {
+            $orderRef = str_replace(".", "-", $order->getRef());
+
             $this->formBuilder
-                ->add(str_replace(".","-",$order->getRef()), 'checkbox', array(
-                    'label' => str_replace(".","-",$order->getRef()),
-                    'label_attr' => array(
-                        'for' => str_replace(".","-",$order->getRef())
+                ->add(
+                    $orderRef,
+                    'checkbox',
+                    array(
+                        'label' => $orderRef,
+                        'label_attr' => array(
+                            'for' => $orderRef
+                        )
                     )
-                ))
-                ->add(str_replace(".","-",$order->getRef())."-assur", 'checkbox')
-            ;
+                )
+                ->add(
+                    $orderRef . "-assur",
+                    'checkbox'
+                );
         }
     }
 }

@@ -28,37 +28,29 @@ use Propel\Runtime\Connection\ConnectionInterface;
 use Thelia\Exception\OrderException;
 use Thelia\Install\Database;
 use Thelia\Model\Country;
-use Thelia\Model\ModuleQuery;
 use Thelia\Module\AbstractDeliveryModule;
 
 class IciRelais extends AbstractDeliveryModule
 {
+    /*
+     * You may now override BaseModuleInterface methods, such as:
+     * install, destroy, preActivation, postActivation, preDeactivation, postDeactivation
+     *
+     * Have fun !
+     */
+
+    const DOMAIN = 'icirelais';
+
+    protected $request;
+    protected $dispatcher;
+
     private static $prices = null;
 
     const JSON_PRICE_RESOURCE = "/Config/prices.json";
 
     public function postActivation(ConnectionInterface $con = null)
     {
-        $this->getModuleModel()
-            ->setLocale('fr_FR')
-            ->setTitle("Livraison en point ICI relais par Exapaq")
-            ->setChapo("Livraison 24/ 48H parmi 5 000 relais en France")
-            ->setDescription("Choisissez la livraison sans contrainte avec ICI relais !
-
-Faites-vous livrer dans l’un de nos 5 000 commerces de proximité disponibles sur toute la France.  Vous avez la liberté de choisir le commerce qui vous convient le mieux : près de chez vous ou encore près de votre travail, et d’aller y retirer votre colis 7/7 jours (*).
-
-Dès que votre colis est livré dans l’espace ICI relais préalablement choisi, vous êtes automatiquement prévenus par email ou SMS de sa disponibilité.
-Si vous ne pouvez pas le récupérer le jour même, pas de souci, votre colis reste disponible jusqu’à 9 jours !
-
-ICI relais c’est l’assurance d’une livraison de qualité avec :
-\t- Une livraison toute France en 24/48 H
-\t- Un choix parmi plus de 5 000 commerces répartis sur toute la France et rigoureusement sélectionnés  (situation géographique, capacité de stockage, horaires d’ouverture…)
-\t- Un suivi détaillé (tracing) de votre colis disponible 24/24H sur www.icirelais.com
-\t- Une alerte (email / SMS) dès l’arrivée de votre colis dans l’espace ICI relais
-\t- Des outils innovants en phase avec la tendance de mobilité : des applications ICI relais pour Iphone et Android.")
-        ->save();
-
-        $database = new Database($con);
+        $database = new Database($con->getWrappedConnection());
 
         $database->insertSql(null, array(__DIR__ . '/Config/thelia.sql'));
     }
@@ -67,7 +59,10 @@ ICI relais c’est l’assurance d’une livraison de qualité avec :
     {
         if (null === self::$prices) {
             if (is_readable(sprintf('%s/%s', __DIR__, self::JSON_PRICE_RESOURCE))) {
-                self::$prices = json_decode(file_get_contents(sprintf('%s/%s', __DIR__, self::JSON_PRICE_RESOURCE)), true);
+                self::$prices = json_decode(
+                    file_get_contents(sprintf('%s/%s', __DIR__, self::JSON_PRICE_RESOURCE)),
+                    true
+                );
             } else {
                 self::$prices = null;
             }
@@ -98,7 +93,6 @@ ICI relais c’est l’assurance d’une livraison de qualité avec :
 
         /* check if Ici Relais delivers the asked area */
         if (isset($prices[$areaId]) && isset($prices[$areaId]["slices"])) {
-
             $areaPrices = $prices[$areaId]["slices"];
             ksort($areaPrices);
 
@@ -123,7 +117,10 @@ ICI relais c’est l’assurance d’une livraison de qualité avec :
 
             /* check if IciRelais delivers the asked area */
             if (!isset($prices[$areaId]) || !isset($prices[$areaId]["slices"])) {
-                throw new OrderException("Ici Relais delivery unavailable for the chosen delivery country", OrderException::DELIVERY_MODULE_UNAVAILABLE);
+                throw new OrderException(
+                    "Ici Relais delivery unavailable for the chosen delivery country",
+                    OrderException::DELIVERY_MODULE_UNAVAILABLE
+                );
             }
 
             $areaPrices = $prices[$areaId]["slices"];
@@ -133,7 +130,10 @@ ICI relais c’est l’assurance d’une livraison de qualité avec :
             end($areaPrices);
             $maxWeight = key($areaPrices);
             if ($weight > $maxWeight) {
-                throw new OrderException(sprintf("Ici Relais delivery unavailable for this cart weight (%s kg)", $weight), OrderException::DELIVERY_MODULE_UNAVAILABLE);
+                throw new OrderException(
+                    sprintf("Ici Relais delivery unavailable for this cart weight (%s kg)", $weight),
+                    OrderException::DELIVERY_MODULE_UNAVAILABLE
+                );
             }
 
             $postage = current($areaPrices);
@@ -160,10 +160,5 @@ ICI relais c’est l’assurance d’une livraison de qualité avec :
         );
 
         return $postage;
-    }
-
-    public static function getModuleId()
-    {
-        return ModuleQuery::create()->findOneByCode("IciRelais")->getId();
     }
 }

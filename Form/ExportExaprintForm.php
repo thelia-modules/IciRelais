@@ -23,6 +23,8 @@
 
 namespace IciRelais\Form;
 
+use IciRelais\IciRelais;
+use Symfony\Component\Validator\Constraints\Regex;
 use Thelia\Form\BaseForm;
 use Thelia\Core\Translation\Translator;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -45,71 +47,116 @@ class ExportExaprintForm extends BaseForm
         // Add value(s) if Config/exportdat.json exists
 
         if (is_readable(ExportExaprint::getJSONpath())) {
-            $values = json_decode(file_get_contents(ExportExaprint::getJSONpath()),true);
+            $values = json_decode(file_get_contents(ExportExaprint::getJSONpath()), true);
         }
+
         $this->formBuilder
-            ->add('name', 'text', array(
-                'label' => Translator::getInstance()->trans('Sender\'s name'),
-                'data' => (isset($values['name']) ? $values['name']:""),
-                'constraints' => array(new NotBlank()),
-                'label_attr' => array(
-                    'for' => 'name'
-                )			))
-            ->add('addr', 'text', array(
-                'label' => Translator::getInstance()->trans('Sender\'s address1'),
-                'data' => (isset($values['addr']) ? $values['addr']:""),
-                'constraints' => array(new NotBlank()),
-                'label_attr' => array(
-                    'for' => 'addr'
-                )			))
-            ->add('addr2', 'text', array(
-                'label' => Translator::getInstance()->trans('Sender\'s address2'),
-                'data' => (isset($values['addr2']) ? $values['addr2']:""),
-                'label_attr' => array(
-                    'for' => 'addr2'
-                )			))
-            ->add('zipcode', 'text', array(
-                'label' => Translator::getInstance()->trans('Sender\'s zipcode'),
-                'data' => (isset($values['zipcode']) ? $values['zipcode']:""),
-                'constraints' => array(new NotBlank()),
-                'label_attr' => array(
-                    'for' => 'zipcode'
-                )			))
-            ->add('city', 'text', array(
-                'label' => Translator::getInstance()->trans('Sender\'s city'),
-                'data' => (isset($values['city']) ? $values['city']:""),
-                'constraints' => array(new NotBlank()),
-                'label_attr' => array(
-                    'for' => 'city'
-                )			))
-            ->add('tel', 'text', array(
-                'label' => Translator::getInstance()->trans('Sender\'s phone'),
-                'data' => (isset($values['tel']) ? $values['tel']:""),
-                'constraints' => array(new NotBlank()),
-                'label_attr' => array(
-                    'for' => 'tel'
-                )			))
-            ->add('mobile', 'text', array(
-                'label' => Translator::getInstance()->trans('Sender\'s mobile phone'),
-                'data' => (isset($values['mobile']) ? $values['mobile']:""),
-                'constraints' => array(new NotBlank()),
-                'label_attr' => array(
-                    'for' => 'mobile'
-                )			))
-            ->add('mail', 'text', array(
-                'label' => Translator::getInstance()->trans('Sender\'s email'),
-                'data' => (isset($values['mail']) ? $values['mail']:""),
-                'constraints' => array(new NotBlank()),
-                'label_attr' => array(
-                    'for' => 'mail'
-                )			))
-            ->add('expcode', 'text', array(
-                'label' => Translator::getInstance()->trans('IciRelais Sender\'s code'),
-                'constraints' => array(new NotBlank()),
-                'data'=>(isset($values['expcode']) ? $values['expcode']:""),
-                'label_attr' => array(
-                    'for' => 'expcode'
-                )			))
-        ;
+            ->add(
+                'name',
+                'text',
+                array(
+                    'label' => Translator::getInstance()->trans('Sender\'s name', [], IciRelais::DOMAIN),
+                    'data' => (isset($values['name']) ? $values['name'] : ""),
+                    'constraints' => array(new NotBlank()),
+                    'label_attr' => array(
+                        'for' => 'name'
+                    )
+                )
+            )
+            ->add(
+                'addr',
+                'text',
+                array(
+                    'label' => Translator::getInstance()->trans('Sender\'s address1', [], IciRelais::DOMAIN),
+                    'data' => (isset($values['addr']) ? $values['addr'] : ""),
+                    'constraints' => array(new NotBlank()),
+                    'label_attr' => array(
+                        'for' => 'addr'
+                    )
+                )
+            )
+            ->add(
+                'addr2',
+                'text',
+                array(
+                    'label' => Translator::getInstance()->trans('Sender\'s address2', [], IciRelais::DOMAIN),
+                    'data' => (isset($values['addr2']) ? $values['addr2'] : ""),
+                    'label_attr' => array(
+                        'for' => 'addr2'
+                    )
+                )
+            )
+            ->add(
+                'zipcode',
+                'text',
+                array(
+                    'label' => Translator::getInstance()->trans('Sender\'s zipcode', [], IciRelais::DOMAIN),
+                    'data' => (isset($values['zipcode']) ? $values['zipcode'] : ""),
+                    'constraints' => array(new NotBlank(), new Regex(['pattern' => "/^(2[A-B])|([0-9]{2})\d{3}$/"])),
+                    'label_attr' => array(
+                        'for' => 'zipcode'
+                    )
+                )
+            )
+            ->add(
+                'city',
+                'text',
+                array(
+                    'label' => Translator::getInstance()->trans('Sender\'s city', [], IciRelais::DOMAIN),
+                    'data' => (isset($values['city']) ? $values['city'] : ""),
+                    'constraints' => array(new NotBlank()),
+                    'label_attr' => array(
+                        'for' => 'city'
+                    )
+                )
+            )
+            ->add(
+                'tel',
+                'text',
+                array(
+                    'label' => Translator::getInstance()->trans('Sender\'s phone', [], IciRelais::DOMAIN),
+                    'data' => (isset($values['tel']) ? $values['tel'] : ""),
+                    'constraints' => array(new NotBlank(), new Regex(['pattern' => "/^0[1-9]\d{8}$/"])),
+                    'label_attr' => array(
+                        'for' => 'tel'
+                    )
+                )
+            )
+            ->add(
+                'mobile',
+                'text',
+                array(
+                    'label' => Translator::getInstance()->trans('Sender\'s mobile phone', [], IciRelais::DOMAIN),
+                    'data' => (isset($values['mobile']) ? $values['mobile'] : ""),
+                    'constraints' => array(new NotBlank(), new Regex(['pattern' => "#^0[6-7]{1}\d{8}$#"])),
+                    'label_attr' => array(
+                        'for' => 'mobile'
+                    )
+                )
+            )
+            ->add(
+                'mail',
+                'email',
+                array(
+                    'label' => Translator::getInstance()->trans('Sender\'s email', [], IciRelais::DOMAIN),
+                    'data' => (isset($values['mail']) ? $values['mail'] : ""),
+                    'constraints' => array(new NotBlank()),
+                    'label_attr' => array(
+                        'for' => 'mail'
+                    )
+                )
+            )
+            ->add(
+                'expcode',
+                'text',
+                array(
+                    'label' => Translator::getInstance()->trans('IciRelais Sender\'s code', [], IciRelais::DOMAIN),
+                    'constraints' => array(new NotBlank(), new Regex(['pattern' => "#^\d{8}$#"])),
+                    'data' => (isset($values['expcode']) ? $values['expcode'] : ""),
+                    'label_attr' => array(
+                        'for' => 'expcode'
+                    )
+                )
+            );
     }
 }
