@@ -1,7 +1,6 @@
 <?php
 
 return array(
-    '*If you choose this option, the exported orders would not be available on this page anymore' => '*En choisissant cette option, les commandes exportées ne seront plus disponible sur cette page',
     'Actions' => 'Actions',
     'Area : ' => 'Zone de livraison : ',
     'Cancel' => 'Annuler',
@@ -24,6 +23,7 @@ return array(
     'Export EXAPRINT file' => 'Exporter le fichier EXAPRINT',
     'Export EXAPRINT file of this order' => 'Exporter le fichier EXAPRINT de cette commande',
     'Ici Relais Module allows you to send your products in France.' => 'Le module IciRelais vous permet d\'envoyer des colis en France.',
+    'If you choose this option, the exported orders would not be available on this page anymore' => 'En choisissant cette option, les commandes exportées ne seront plus disponible sur cette page',
     'Package warranty' => 'Garantie du colis',
     'Please change the access rights' => 'Veuillez changer les droits d\'accès',
     'Price (%sym)' => 'Prix (%sym)',
@@ -33,6 +33,7 @@ return array(
     'Reverse selection' => 'Inverser la sélection',
     'Save changes' => 'Enregistrer les changements',
     'Sent' => 'Envoyée',
+    'There are currently no pending order to ship by IciRelais.' => 'Vous n\'avez actuellement aucune commande en attente d\'expédition par IciRelais.',
     'Total taxed amount' => 'Montant T.T.C.',
     'Uncheck all' => 'Tout décocher',
     'Weight up to ... (kg)' => 'Poids ... (kg)',
@@ -43,7 +44,6 @@ return array(
     'mail' => 'Email',
     'mobile' => 'Téléphone mobile',
     'name' => 'Nom',
-    'operations' => 'Opérations',
     'tel' => 'Téléphone',
     'zipcode' => 'Code postal',
 );

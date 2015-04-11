@@ -1,7 +1,6 @@
 <?php
 
 return array(
-    '*If you choose this option, the exported orders would not be available on this page anymore' => '*If you choose this option, the exported orders would not be available on this page anymore',
     'Actions' => 'Actions',
     'Area : ' => 'Shipping zone : ',
     'Cancel' => 'Cancel',
@@ -24,6 +23,7 @@ return array(
     'Export EXAPRINT file' => 'Export EXAPRINT file',
     'Export EXAPRINT file of this order' => 'Export EXAPRINT file for this order',
     'Ici Relais Module allows you to send your products in France.' => 'Ici Relais Module allows you to send your products in France.',
+    'If you choose this option, the exported orders would not be available on this page anymore' => 'If you choose this option, the exported orders would not be available on this page anymore',
     'Package warranty' => 'Package warranty',
     'Please change the access rights' => 'Please change the access rights',
     'Price (%sym)' => 'Price (%sym)',
@@ -33,6 +33,7 @@ return array(
     'Reverse selection' => 'Reverse selection',
     'Save changes' => 'Save changes',
     'Sent' => 'Sent',
+    'There are currently no pending order to ship by IciRelais.' => 'There are currently no pending order to ship by IciRelais.',
     'Total taxed amount' => 'Total taxed amount',
     'Uncheck all' => 'Uncheck all',
     'Weight up to ... (kg)' => 'Weight up to ... (Kg)',
@@ -43,7 +44,6 @@ return array(
     'mail' => 'Sender e-mail',
     'mobile' => 'Sender mobile phone',
     'name' => 'Sender name',
-    'operations' => 'operations',
     'tel' => 'Sender phone',
     'zipcode' => 'Sender zip code',
 );
