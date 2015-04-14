@@ -35,21 +35,24 @@
         });
 
         checkboxes = [{loop name="icirelais.get.checkboxes.names" type="icirelais.orders"}"{$REF|replace:'.':'-'}",{/loop}];
-        $("#check-all-but").click( function() {
+        $("#check-all-but").click( function(ev) {
             checkboxes.forEach(function(entry) {
                $("#"+entry).prop('checked', true);
             });
+            ev.preventDefault();
         });
-        $("#uncheck-all-but").click( function() {
+        $("#uncheck-all-but").click( function(ev) {
             checkboxes.forEach(function(entry) {
                 $("#"+entry).prop('checked', false);
             });
+            ev.preventDefault();
         });
-        $("#reverse-all-but").click( function() {
+        $("#reverse-all-but").click( function(ev) {
             checkboxes.forEach(function(entry) {
                 var box=$("#"+entry);
                 box.prop('checked', !box.is(":checked"));
             });
+            ev.preventDefault();
         });
         $("button[name=save_mode]").click(function() {
             var value = $("input[name='exportexaprintselection[new_status_id]']:checked").val();
@@ -65,5 +68,9 @@
                 });
             }
         });
+
+        {if ! empty($current_tab)}
+            $('.nav-tabs a[href="#{$current_tab}"]').trigger("click");
+        {/if}
     });
 </script>

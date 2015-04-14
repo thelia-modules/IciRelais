@@ -23,41 +23,26 @@
 
 namespace IciRelais\Form;
 
+use IciRelais\IciRelais;
 use IciRelais\Model\IcirelaisFreeshippingQuery;
 use Thelia\Core\Translation\Translator;
 use Thelia\Form\BaseForm;
 
 class FreeShipping extends BaseForm
 {
-    /**
-     *
-     * in this function you add all the fields you need for your Form.
-     * Form this you have to call add method on $this->formBuilder attribute :
-     *
-     * $this->formBuilder->add("name", "text")
-     *   ->add("email", "email", array(
-     *           "attr" => array(
-     *               "class" => "field"
-     *           ),
-     *           "label" => "email",
-     *           "constraints" => array(
-     *               new \Symfony\Component\Validator\Constraints\NotBlank()
-     *           )
-     *       )
-     *   )
-     *   ->add('age', 'integer');
-     *
-     * @return null
-     */
     protected function buildForm()
     {
         $freeshipping = IcirelaisFreeshippingQuery::create()->getLast();
+
         $this->formBuilder
-            ->add("freeshipping", "checkbox", array(
-                'data'=>$freeshipping,
-                'label'=>Translator::getInstance()->trans("Activate free shipping: ")
-            ))
-        ;
+            ->add(
+                "freeshipping",
+                "checkbox",
+                array(
+                    'data' => $freeshipping,
+                    'label' => Translator::getInstance()->trans("Activate free shipping: ", [], IciRelais::DOMAIN)
+                )
+            );
     }
 
     /**

@@ -59,31 +59,33 @@ class Export extends BaseAdminController
     {
         switch ($type) {
             case 'numeric':
-                $value = (string) $value;
-                if(mb_strlen($value, 'utf8') > $len);
+                $value = (string)$value;
+                if (mb_strlen($value, 'utf8') > $len) {
                     $value = substr($value, 0, $len);
+                }
                 for ($i = mb_strlen($value, 'utf8'); $i < $len; $i++) {
                     $value = '0' . $value;
                 }
                 break;
             case 'alphanumeric':
-                $value = (string) $value;
-                if(mb_strlen($value, 'utf8') > $len);
+                $value = (string)$value;
+                if (mb_strlen($value, 'utf8') > $len) {
                     $value = substr($value, 0, $len);
+                }
                 for ($i = mb_strlen($value, 'utf8'); $i < $len; $i++) {
                     $value .= ' ';
                 }
                 break;
             case 'float':
-                if (!preg_match("#\d{1,6}\.\d{1,}#",$value)) {
-                    $value=str_repeat("0",$len-3).".00";
+                if (!preg_match("#\d{1,6}\.\d{1,}#", $value)) {
+                    $value = str_repeat("0", $len - 3) . ".00";
                 } else {
-                    $value=explode(".",$value);
-                    $int = self::harmonise($value[0],'numeric',$len-3);
-                    $dec = substr($value[1],0,2).".".substr($value[1],2, strlen($value[1]));
-                    $dec = (string) ceil(floatval($dec));
-                    $dec = str_repeat("0", 2-strlen($dec)).$dec;
-                    $value=$int.".".$dec;
+                    $value = explode(".", $value);
+                    $int = self::harmonise($value[0], 'numeric', $len - 3);
+                    $dec = substr($value[1], 0, 2) . "." . substr($value[1], 2, strlen($value[1]));
+                    $dec = (string)ceil(floatval($dec));
+                    $dec = str_repeat("0", 2 - strlen($dec)) . $dec;
+                    $value = $int . "." . $dec;
                 }
                 break;
         }
@@ -93,31 +95,49 @@ class Export extends BaseAdminController
 
     public function exportfile()
     {
-        if (null !== $response = $this->checkAuth(array(AdminResources::MODULE), array('IciRelais'), AccessManager::UPDATE)) {
+        if (null !== $response = $this->checkAuth(
+            array(AdminResources::MODULE),
+            array('IciRelais'),
+            AccessManager::UPDATE
+        )) {
             return $response;
         }
         if (is_readable(ExportExaprint::getJSONpath())) {
-            $admici = json_decode(file_get_contents(ExportExaprint::getJSONpath()),true);
-            $keys= array("name", "addr", "zipcode","city","tel","mobile","mail","expcode");
+            $admici = json_decode(file_get_contents(ExportExaprint::getJSONpath()), true);
+            $keys = array("name", "addr", "zipcode", "city", "tel", "mobile", "mail", "expcode");
             $valid = true;
             foreach ($keys as $key) {
-                $valid &= isset($admici[$key]) && ($key === "assur" ? true:!empty($admici[$key]));
+                $valid &= isset($admici[$key]) && ($key === "assur" ? true : !empty($admici[$key]));
             }
             if (!$valid) {
-                return Response::create(Translator::getInstance()->trans("The file IciRelais/Config/exportdat.json is not valid. Please correct it."), 500);
+                return Response::create(
+                    Translator::getInstance()->trans(
+                        "The file IciRelais/Config/exportdat.json is not valid. Please correct it.",
+                        [],
+                        IciRelais::DOMAIN
+                    ),
+                    500
+                );
             }
         } else {
-            return Response::create(Translator::getInstance()->trans("Can't read IciRelais/Config/exportdat.json. Did you save the export information ?"), 500);
+            return Response::create(
+                Translator::getInstance()->trans(
+                    "Can't read IciRelais/Config/exportdat.json. Did you save the export information ?",
+                    [],
+                    IciRelais::DOMAIN
+                ),
+                500
+            );
         }
-        $exp_name=$admici['name'];
-        $exp_address1=$admici['addr'];
-        $exp_address2=isset($admici['addr2']) ?$admici['addr2']:"";
-        $exp_zipcode=$admici['zipcode'];
-        $exp_city=$admici['city'];
-        $exp_phone=$admici['tel'];
-        $exp_cellphone=$admici['mobile'];
-        $exp_email=$admici['mail'];
-        $exp_code=$admici['expcode'];
+        $exp_name = $admici['name'];
+        $exp_address1 = $admici['addr'];
+        $exp_address2 = isset($admici['addr2']) ? $admici['addr2'] : "";
+        $exp_zipcode = $admici['zipcode'];
+        $exp_city = $admici['city'];
+        $exp_phone = $admici['tel'];
+        $exp_cellphone = $admici['mobile'];
+        $exp_email = $admici['mail'];
+        $exp_code = $admici['expcode'];
         $res = self::harmonise('$' . "VERSION=110", 'alphanumeric', 12) . "\r\n";
 
         $orders = OrderQuery::create()
@@ -129,19 +149,29 @@ class Export extends BaseAdminController
         $status_id = null;
         try {
             $vform = $this->validateForm($form);
-            $status_id=$vform->get("new_status_id")->getData();
-            if (!preg_match("#^nochange|processing|sent$#",$status_id))
-                throw new \Exception();
+            $status_id = $vform->get("new_status_id")->getData();
+            if (!preg_match("#^nochange|processing|sent$#", $status_id)) {
+                throw new \Exception("Invalid status ID. Expecting nochange or processing or sent");
+            }
         } catch (\Exception $e) {
             Tlog::getInstance()->error("Form icirelais.selection sent with bad infos. ");
 
-            return Response::create(Translator::getInstance()->trans("Form sent with bad arguments"),500);
+            return Response::create(
+                Translator::getInstance()->trans(
+                    "Got invalid data : %err",
+                    ['%err' => $e->getMessage()],
+                    IciRelais::DOMAIN
+                ),
+                500
+            );
         }
 
         //---
         foreach ($orders as $order) {
-            if ($vform->get(str_replace(".","-",$order->getRef()))->getData()) {
-                $assur_package=$vform->get(str_replace(".","-",$order->getRef())."-assur")->getData();
+            $orderRef = str_replace(".", "-", $order->getRef());
+
+            if ($vform->get($orderRef)->getData()) {
+                $assur_package = $vform->get($orderRef . "-assur")->getData();
                 if ($status_id == "processing") {
                     $event = new OrderEvent($order);
 
@@ -184,12 +214,12 @@ class Export extends BaseAdminController
                     //Weigth & price calc
                     $weight = 0.0;
                     $price = 0;
-                    $price = $order->getTotalAmount($price,false); // tax = 0 && include postage = flase
+                    $price = $order->getTotalAmount($price, false); // tax = 0 && include postage = flase
                     foreach ($products as $p) {
-                        $weight += ((float) $p->getWeight())*(int) $p->getQuantity();
+                        $weight += ((float)$p->getWeight()) * (int)$p->getQuantity();
                     }
-                    $weight = floor($weight*100);
-                    $assur_price = ($assur_package == 'true') ? $price:0;
+                    $weight = floor($weight * 100);
+                    $assur_price = ($assur_package == 'true') ? $price : 0;
                     $date_format = date("d/m/Y", $order->getUpdatedAt()->getTimestamp());
 
                     $res .= self::harmonise($order->getRef(), 'alphanumeric', 35);
@@ -207,10 +237,14 @@ class Export extends BaseAdminController
                     $res .= self::harmonise("", 'alphanumeric', 10);
                     $res .= self::harmonise($address->getAddress1(), 'alphanumeric', 35);
                     $res .= self::harmonise("", 'alphanumeric', 10);
-                    $res .= self::harmonise("F", 'alphanumeric', 3); 							    // CODE PAYS DESTINATAIRE PAR DEFAUT F
+                    $res .= self::harmonise(
+                        "F",
+                        'alphanumeric',
+                        3
+                    );                                // CODE PAYS DESTINATAIRE PAR DEFAUT F
                     $res .= self::harmonise($address->getPhone(), 'alphanumeric', 30);
                     $res .= self::harmonise("", 'alphanumeric', 15);
-                    $res .= self::harmonise($exp_name, 'alphanumeric', 35); 						// DEBUT EXPEDITEUR
+                    $res .= self::harmonise($exp_name, 'alphanumeric', 35);                        // DEBUT EXPEDITEUR
                     $res .= self::harmonise($exp_address2, 'alphanumeric', 35);
                     $res .= self::harmonise("", 'alphanumeric', 140);
                     $res .= self::harmonise($exp_zipcode, 'alphanumeric', 10);
@@ -218,18 +252,46 @@ class Export extends BaseAdminController
                     $res .= self::harmonise("", 'alphanumeric', 10);
                     $res .= self::harmonise($exp_address1, 'alphanumeric', 35);
                     $res .= self::harmonise("", 'alphanumeric', 10);
-                    $res .= self::harmonise("F", 'alphanumeric', 3);								// CODE PAYS EXPEDITEUR PAR DEFAUT F
+                    $res .= self::harmonise(
+                        "F",
+                        'alphanumeric',
+                        3
+                    );                                // CODE PAYS EXPEDITEUR PAR DEFAUT F
                     $res .= self::harmonise($exp_phone, 'alphanumeric', 30);
-                    $res .= self::harmonise("", 'alphanumeric', 35); 							    // COMMENTAIRE 1 DE LA COMMANDE
-                    $res .= self::harmonise("", 'alphanumeric', 35);								// COMMENTAIRE 2 DE LA COMMANDE
-                    $res .= self::harmonise("", 'alphanumeric', 35);								// COMMENTAIRE 3 DE LA COMMANDE
-                    $res .= self::harmonise("", 'alphanumeric', 35);								// COMMENTAIRE 3 DE LA COMMANDE
+                    $res .= self::harmonise(
+                        "",
+                        'alphanumeric',
+                        35
+                    );                                // COMMENTAIRE 1 DE LA COMMANDE
+                    $res .= self::harmonise(
+                        "",
+                        'alphanumeric',
+                        35
+                    );                                // COMMENTAIRE 2 DE LA COMMANDE
+                    $res .= self::harmonise(
+                        "",
+                        'alphanumeric',
+                        35
+                    );                                // COMMENTAIRE 3 DE LA COMMANDE
+                    $res .= self::harmonise(
+                        "",
+                        'alphanumeric',
+                        35
+                    );                                // COMMENTAIRE 3 DE LA COMMANDE
                     $res .= self::harmonise($date_format, 'alphanumeric', 10);
-                    $res .= self::harmonise($exp_code, 'numeric', 8); 									    // N° COMPTE CHARGEUR ICIRELAIS ?
-                    $res .= self::harmonise("", 'alphanumeric', 35); 							    // CODE BARRE
+                    $res .= self::harmonise(
+                        $exp_code,
+                        'numeric',
+                        8
+                    );                                        // N° COMPTE CHARGEUR ICIRELAIS ?
+                    $res .= self::harmonise("", 'alphanumeric', 35);                                // CODE BARRE
                     $res .= self::harmonise($customer->getRef(), 'alphanumeric', 35);
                     $res .= self::harmonise("", 'alphanumeric', 29);
-                    $res .= self::harmonise($assur_price, 'float', 9);					            // MONTANT DE LA VALEUR MARCHANDE A ASSURER EX: 20 euros -> 000020.00
+                    $res .= self::harmonise(
+                        $assur_price,
+                        'float',
+                        9
+                    );                                // MONTANT DE LA VALEUR MARCHANDE A ASSURER EX: 20 euros -> 000020.00
                     $res .= self::harmonise("", 'alphanumeric', 8);
                     $res .= self::harmonise($customer->getId(), 'alphanumeric', 35);
                     $res .= self::harmonise("", 'alphanumeric', 46);
@@ -238,7 +300,11 @@ class Export extends BaseAdminController
                     $res .= self::harmonise($customer->getEmail(), 'alphanumeric', 80);
                     $res .= self::harmonise($cellphone, 'alphanumeric', 35);
                     $res .= self::harmonise("", 'alphanumeric', 96);
-                    $res .= self::harmonise($icirelais_code->getCode(), 'alphanumeric', 8); 		// IDENTIFIANT ESPACE ICIRELAIS
+                    $res .= self::harmonise(
+                        $icirelais_code->getCode(),
+                        'alphanumeric',
+                        8
+                    );        // IDENTIFIANT ESPACE ICIRELAIS
 
                     $res .= "\r\n";
                 }
@@ -252,7 +318,6 @@ class Export extends BaseAdminController
                 'Content-Type' => 'application/csv-tab-delimited-table',
                 'Content-disposition' => 'filename=export.dat'
             )
-
         );
 
         return $response;
