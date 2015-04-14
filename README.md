@@ -1,3 +1,6 @@
+#### This module is deprecated. Use [DdpPickup](https://github.com/thelia-modules/DpdPickup) now.
+
+
 Ici Relais module v1.0
 author: Thelia <info@thelia.net>
 
